@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace KimScor.Utilities
 {
+
     public static partial class Utilities
     {
         public static List<T> Shuffle<T>(this List<T> list)
