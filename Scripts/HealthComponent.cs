@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace KimScor.Utilities
 {
-	
-	public class HealthComponent : MonoBehaviour
+
+    public class HealthComponent : MonoBehaviour
 	{
 		public delegate void HealthStateHandler(HealthComponent health);
-		public delegate void HealthValueChangeHandler (HealthComponent health, float changeValue);
+		public delegate void HealthValueChangeHandler (HealthComponent health, float currentValue, float prevValue);
 		
 		[SerializeField] private float _MaxHealth;
 		[SerializeField] private float _Health;
@@ -24,18 +24,48 @@ namespace KimScor.Utilities
 		private float _NormalizedHealth;
 		private bool _IsDie;
 		private bool _Full;
-		
-		public event HealthValueChangeHandler OnTakeDamaged;
-		public event HealthValueChangeHandler OnTakeHealed;
+
+		public event HealthValueChangeHandler OnChangedMaxHealth;
+		public event HealthValueChangeHandler OnChangedHealth;
 		public event HealthStateHandler OnFulledHealth;
 		public event HealthStateHandler OnDead;
 	
-		public void ResetHealthBar()
+		public void Setup(float maxHealth, float currentHealth)
+        {
+			_MaxHealth = maxHealth;
+			_Health = currentHealth;
+
+			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
+
+			_IsDie = _Health > 0f;
+
+			_Full = _NormalizedHealth >= 1f;
+		}
+
+		public void ResetHealth()
 		{
 			_Health = _MaxHealth;
 			_NormalizedHealth = 1f;
+			_IsDie = false;
 			_Full = true;
+
+			OnChangeMaxHealth();
+			OnChangeHealth();
 		}
+
+		public void SetMaxHealth(float newMaxHealth)
+        {
+			if (MaxHealth == newMaxHealth)
+				return;
+
+			float prevValue = MaxHealth;
+
+			_MaxHealth = newMaxHealth;
+
+			OnChangeMaxHealth(prevValue);
+
+			CheckHealthState();
+        }
 	
 		public void TakeDamage(float damage)
 		{
@@ -44,14 +74,16 @@ namespace KimScor.Utilities
 				
 			if(damage <= 0f)
 				return;
-				
+
+			float prevValue = _Health;
+
 			_Health -= damage;
-		
-			Mathf.Clamp(_Health, 0f, MaxHealth);
+
+			_Health = Mathf.Clamp(_Health, 0f, MaxHealth);
 		
 			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
 			
-			OnTakeDamage(damage);
+			OnChangeHealth(prevValue);
 			
 			CheckHealthState();
 		}
@@ -63,14 +95,15 @@ namespace KimScor.Utilities
 				
 			if(heal <= 0f)
 				return;
-			
+
+			float prevValue = _Health;
 			_Health += heal;
-			
-			Mathf.Clamp(_Health , 0, MaxHealth);
+
+			_Health = Mathf.Clamp(_Health , 0, MaxHealth);
 			
 			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
-			
-			OnTakeHeal(heal);
+
+			OnChangeHealth(prevValue);
 			
 			CheckHealthState();
 		}
@@ -112,13 +145,13 @@ namespace KimScor.Utilities
 			}
 		}
 		
-		private void OnTakeDamage(float value)
+		private void OnChangeHealth(float value = 0f)
 		{
-			OnTakeDamaged?.Invoke(this, value);
+			OnChangedHealth?.Invoke(this, Health, value);
 		}
-		private void OnTakeHeal(float value)
-		{
-			OnTakeHealed?.Invoke(this, value);	
+		private void OnChangeMaxHealth(float value = 0f)
+        {
+			OnChangedMaxHealth?.Invoke(this, MaxHealth, value);
 		}
 		private void OnDie()
 		{
