@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace KimScor.Utilities
 {
-
     public class HealthComponent : MonoBehaviour
 	{
 		public delegate void HealthStateHandler(HealthComponent health);
@@ -67,13 +66,13 @@ namespace KimScor.Utilities
 			CheckHealthState();
         }
 	
-		public void TakeDamage(float damage)
+		public float TakeDamage(float damage)
 		{
 			if(_IsDie)
-				return;
+				return -1f;
 				
 			if(damage <= 0f)
-				return;
+				return -1f;
 
 			float prevValue = _Health;
 
@@ -86,15 +85,17 @@ namespace KimScor.Utilities
 			OnChangeHealth(prevValue);
 			
 			CheckHealthState();
+
+			return prevValue - _Health;
 		}
 	
-		public void TakeHeal(float heal)
+		public float TakeHeal(float heal)
 		{
 			if(_Full)
-				return;
+				return -1f;
 				
 			if(heal <= 0f)
-				return;
+				return -1f;
 
 			float prevValue = _Health;
 			_Health += heal;
@@ -106,6 +107,13 @@ namespace KimScor.Utilities
 			OnChangeHealth(prevValue);
 			
 			CheckHealthState();
+
+			return _Health - prevValue;
+		}
+
+		public void TakeHealFromPercent(float percent)
+        {
+			TakeHeal(MaxHealth * percent);
 		}
 		
 		private void CheckHealthState()

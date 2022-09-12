@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using System;
+using UnityEngine.Events;
 
 namespace KimScor.Utilities
 {
     [CreateAssetMenu(fileName = "Event_", menuName = "Utilities/Event/New Event")]
-    public class GameEvent : ScriptableObject
+    public class GameEvent : ScriptableObject, ISerializationCallbackReceiver
     {
         private List<GameEventListner> _EventList = new List<GameEventListner>();
+        public event Action Events;
 
         [SerializeField] private bool _UseDebug = false;
 
@@ -29,6 +32,8 @@ namespace KimScor.Utilities
             {
                 _EventList[i].OnGameEvent();
             }
+
+            Events?.Invoke();
         }
 
         public void AddListner(GameEventListner listner)
@@ -64,6 +69,16 @@ namespace KimScor.Utilities
         {
             if (_UseDebug)
                 Utilities.Log("GameEvent [" + name + "] :" + log, this);
+        }
+
+        public void OnBeforeSerialize()
+        {
+        }
+
+        public void OnAfterDeserialize()
+        {
+            _EventList = new();
+            Events = null;
         }
     }
 
