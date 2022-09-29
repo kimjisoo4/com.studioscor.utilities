@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using SimpleRPG;
 using System.Diagnostics;
 
 namespace KimScor.Utilities
