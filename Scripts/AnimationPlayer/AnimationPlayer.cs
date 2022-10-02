@@ -45,6 +45,8 @@ namespace KimScor.Utilities
 
             _Animator.SetInteger(ACTION_NUMBER, actionNumber);
             _Animator.SetTrigger(DO_ACTION);
+
+            _Animator.applyRootMotion = false;
         }
         public float GetActionNormalizedTime()
         {
@@ -53,11 +55,20 @@ namespace KimScor.Utilities
 
             return _AnimationCallback.NormalizedTime;
         }
+        public float GetActionTime()
+        {
+            if (!_AnimationCallback)
+                return -1f;
+
+            return _AnimationCallback.Duration;
+        }
         public void OnEnterAnimation(AnimationCallback animationCallback)
         {
-            Log("On Enter Animation");
+            Log("On Enter Animation");  
 
             _AnimationCallback = animationCallback;
+
+            _Animator.applyRootMotion = _AnimationCallback.UseRootMotion;
         }
         public void OnFinishAnimation(AnimationCallback animationCallback)
         {
@@ -73,6 +84,8 @@ namespace KimScor.Utilities
                 _Hash = default;
 
                 _AnimationCallback = null;
+
+                _Animator.applyRootMotion = false;
             }
         }
         public void OnBlendOutAnimation(AnimationCallback animationCallback)

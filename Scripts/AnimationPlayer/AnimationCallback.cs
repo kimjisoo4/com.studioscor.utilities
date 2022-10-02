@@ -7,12 +7,17 @@ namespace KimScor.Utilities
     {
         private AnimationPlayer _AnimationPlayer;
 
-        [SerializeField] private float _NormalizedTime = 0f;
-        [SerializeField] private int _Hash;
+        private float _Duration = 0f;
+        private float _NormalizedTime = 0f;
+        private int _Hash;
+        [SerializeField] private bool _UseRootMotion = false;
         [SerializeField] private bool _UseDebug = false;
 
         public int Hash => _Hash;
+
+        public float Duration => _Duration;
         public float NormalizedTime => _NormalizedTime;
+        public bool UseRootMotion => _UseRootMotion;
 
         private bool _FinishedTransition = false;
         private bool _IsStartedBlendOut = false;
@@ -37,6 +42,7 @@ namespace KimScor.Utilities
             _IsStartedBlendOut = false;
             _Hash = stateInfo.shortNameHash;
             _NormalizedTime = stateInfo.normalizedTime;
+            _Duration = stateInfo.length * _NormalizedTime;
 
             _AnimationPlayer?.OnEnterAnimation(this);
         }
@@ -44,6 +50,7 @@ namespace KimScor.Utilities
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             _NormalizedTime = stateInfo.normalizedTime;
+            _Duration = stateInfo.length * _NormalizedTime;
 
             if (!_FinishedTransition)
             {
@@ -73,6 +80,7 @@ namespace KimScor.Utilities
             Log("On State Exit");
 
             _NormalizedTime = stateInfo.normalizedTime;
+            _Duration = stateInfo.length * _NormalizedTime;
 
             _AnimationPlayer?.OnFinishAnimation(this);
 
