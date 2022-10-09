@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace KimScor.Utilities
 {
+    
     public class AnimationCallback : StateMachineBehaviour
     {
         private AnimationPlayer _AnimationPlayer;
