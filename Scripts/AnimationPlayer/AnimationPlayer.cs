@@ -16,6 +16,7 @@ namespace KimScor.Utilities
 
         private int _Hash;
         private AnimationCallback _AnimationCallback;
+
         public int CurrentHash => _Hash;
 
         private readonly int DO_ACTION = Animator.StringToHash("DoAction");
