@@ -14,10 +14,12 @@ namespace KimScor.Utilities
         public Action OnFinished;
         public Action OnBlendOut;
 
+        private int _CurrentActionNumber;
         private int _Hash;
         private AnimationCallback _AnimationCallback;
 
         public int CurrentHash => _Hash;
+        public int CurrentActionNumber => _CurrentActionNumber;
 
         private readonly int DO_ACTION = Animator.StringToHash("DoAction");
         private readonly int ACTION_NUMBER = Animator.StringToHash("ActionNumber");
@@ -43,6 +45,7 @@ namespace KimScor.Utilities
             OnFinished = null;
 
             _AnimationCallback = null;
+            _CurrentActionNumber = actionNumber;
 
             _Animator.SetInteger(ACTION_NUMBER, actionNumber);
             _Animator.SetTrigger(DO_ACTION);

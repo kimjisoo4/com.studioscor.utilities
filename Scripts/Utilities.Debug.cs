@@ -80,6 +80,11 @@ namespace KimScor.Utilities
 
             DrawSphere(start, radius, color, duration);
 
+            if (start == end)
+            {
+                return;
+            }
+
             Vector3 startPos = start;
             Vector3 endPos = end;
 
@@ -93,7 +98,7 @@ namespace KimScor.Utilities
                 offset.y = 0;
                 offset.z = 0;
 
-                offset = rotation * offset;
+                offset = (rotation * offset) * radius;
 
                 UnityEngine.Debug.DrawLine(startPos + offset, endPos + offset, color, duration);
             }
@@ -103,7 +108,7 @@ namespace KimScor.Utilities
                 offset.y = i;
                 offset.z = 0;
 
-                offset = rotation * offset;
+                offset = (rotation * offset) * radius;
 
                 UnityEngine.Debug.DrawLine(startPos + offset, endPos + offset, color, duration);
             }

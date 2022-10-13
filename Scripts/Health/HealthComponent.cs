@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Pool;
 
 namespace KimScor.Utilities
 {
-	public class HealthComponent : MonoBehaviour
+
+    public class HealthComponent : MonoBehaviour
 	{
 		public enum ESetup
 		{
@@ -27,6 +29,10 @@ namespace KimScor.Utilities
 		[Header(" [ Regeneration Health ] ")]
 		[SerializeField] private bool _UseRegeneration = true;
 		[SerializeField] private float _RegenerationValue = 1f;
+
+		[Header(" [ Use Floating Text ] ")]
+		[SerializeField] private bool _UseFloatingText;
+		[SerializeField] private Vector3 _FloatingTextOffset;
 
 		[Header(" [ Unity Events ] ")]
 		[SerializeField] private bool _UseUnityEvent = false;
@@ -250,6 +256,16 @@ namespace KimScor.Utilities
 			OnChangeHealth(prevValue);
 			
 			CheckHealthState();
+
+			if (_UseFloatingText)
+			{
+				var manager = FloatingDamageManager.Instance;
+
+				if (manager)
+				{
+					manager.SpawnFloatingDamage(transform.position + _FloatingTextOffset, damage);
+				}
+			}
 
 			return prevValue - _Health;
 		}
