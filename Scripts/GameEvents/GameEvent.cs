@@ -68,7 +68,7 @@ namespace KimScor.Utilities
         private void Log(string log)
         {
             if (_UseDebug)
-                Utilities.Log("GameEvent [" + name + "] :" + log, this);
+                Utilities.Debug.Log("GameEvent [" + name + "] :" + log, this);
         }
 
         public void OnBeforeSerialize()

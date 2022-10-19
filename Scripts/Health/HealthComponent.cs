@@ -6,8 +6,18 @@ using UnityEngine.Pool;
 
 namespace KimScor.Utilities
 {
+	public interface IDamageable
+    {
+		public bool TryTakeDamage(float damage);
+		public bool TryTakeHeal(float heal);
+		public bool CanTakeDamage(float damage);
+		public bool CanTakeHeal(float heal);
 
-    public class HealthComponent : MonoBehaviour
+		public float OnTakeDamage(float damage);
+		public float OnTakeHeal(float heal);
+    }
+
+    public class HealthComponent : MonoBehaviour, IDamageable
 	{
 		public enum ESetup
 		{
@@ -139,7 +149,7 @@ namespace KimScor.Utilities
 		private void Log(object message)
 		{
 			if (_UseDebug)
-				Utilities.Log("HealthCompoenent [" + name + " ] : " + message, this);
+				Utilities.Debug.Log("HealthCompoenent [" + name + " ] : " + message, this);
 		}
 #endif
 
@@ -170,7 +180,7 @@ namespace KimScor.Utilities
 
 			float deltaTime = Time.deltaTime;
 
-			TakeHeal(_RegenerationValue * deltaTime);
+			OnTakeHeal(_RegenerationValue * deltaTime);
         }
 
         public void Setup(float maxHealth, float currentHealth, float regenerationValue = 0f)
@@ -201,7 +211,93 @@ namespace KimScor.Utilities
 			OnChangeHealth();
 		}
 
-		public void SetUseRegeneration(bool useRegeneration)
+		public bool TryTakeDamage(float damage)
+		{
+			if (!CanTakeDamage(damage))
+				return false;
+
+			OnTakeDamage(damage);
+
+			return true;
+		}
+
+		public bool TryTakeHeal(float heal)
+		{
+			if (!CanTakeHeal(heal))
+				return false;
+
+			OnTakeHeal(heal);
+
+			return true;
+		}
+
+		public bool CanTakeDamage(float damage)
+		{
+			return IsAlive || damage > 0f;
+		}
+
+		public bool CanTakeHeal(float heal)
+		{
+			return IsAlive || heal > 0;
+		}
+
+		public float OnTakeDamage(float damage)
+		{
+			if (_IsDie)
+				return -1f;
+
+			if (damage <= 0f)
+				return -1f;
+
+			float prevValue = _Health;
+
+			_Health -= damage;
+
+			_Health = Mathf.Clamp(_Health, 0f, MaxHealth);
+
+			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
+
+			OnChangeHealth(prevValue);
+
+			CheckHealthState();
+
+			if (_UseFloatingText)
+			{
+				var manager = FloatingDamageManager.Instance;
+
+				if (manager)
+				{
+					manager.SpawnFloatingDamage(transform.position + _FloatingTextOffset, damage);
+				}
+			}
+
+			return prevValue - _Health;
+		}
+
+		public float OnTakeHeal(float heal)
+		{
+			if (_Full)
+				return -1f;
+
+			if (heal <= 0f)
+				return -1f;
+
+			float prevValue = _Health;
+			_Health += heal;
+
+			_Health = Mathf.Clamp(_Health, 0, MaxHealth);
+
+			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
+
+			OnChangeHealth(prevValue);
+
+			CheckHealthState();
+
+			return _Health - prevValue;
+		}
+
+        #region Regeneration
+        public void SetUseRegeneration(bool useRegeneration)
         {
 			if (_UseRegeneration == useRegeneration)
 				return;
@@ -222,8 +318,9 @@ namespace KimScor.Utilities
 
 			OnChangeRegenerationHealth(prevValue);
 		}
+        #endregion
 
-		public void SetMaxHealth(float newMaxHealth)
+        public void SetMaxHealth(float newMaxHealth)
         {
 			if (MaxHealth == newMaxHealth)
 				return;
@@ -237,68 +334,15 @@ namespace KimScor.Utilities
 			CheckHealthState();
         }
 
-		public float TakeDamage(float damage)
-		{
-			if(_IsDie)
-				return -1f;
-				
-			if(damage <= 0f)
-				return -1f;
-
-			float prevValue = _Health;
-
-			_Health -= damage;
-
-			_Health = Mathf.Clamp(_Health, 0f, MaxHealth);
 		
-			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
-			
-			OnChangeHealth(prevValue);
-			
-			CheckHealthState();
-
-			if (_UseFloatingText)
-			{
-				var manager = FloatingDamageManager.Instance;
-
-				if (manager)
-				{
-					manager.SpawnFloatingDamage(transform.position + _FloatingTextOffset, damage);
-				}
-			}
-
-			return prevValue - _Health;
-		}
 		public float TakeDamageFromPercent(float percent)
         {
-			return TakeDamage(MaxHealth * percent);
+			return OnTakeDamage(MaxHealth * percent);
         }
-	
-		public float TakeHeal(float heal)
-		{
-			if(_Full)
-				return -1f;
-				
-			if(heal <= 0f)
-				return -1f;
-
-			float prevValue = _Health;
-			_Health += heal;
-
-			_Health = Mathf.Clamp(_Health , 0, MaxHealth);
-			
-			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
-
-			OnChangeHealth(prevValue);
-			
-			CheckHealthState();
-
-			return _Health - prevValue;
-		}
 
 		public float TakeHealFromPercent(float percent)
         {
-			return TakeHeal(MaxHealth * percent);
+			return OnTakeHeal(MaxHealth * percent);
 		}
 		
 		private void CheckHealthState()
@@ -378,7 +422,8 @@ namespace KimScor.Utilities
 			OnFulledHealth?.Invoke(this);
 			
 		}
-	
+
+        
 	}
 
 }

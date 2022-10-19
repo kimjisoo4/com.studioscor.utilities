@@ -27,7 +27,7 @@ namespace KimScor.Utilities
         private void Log(string log)
         {
             if(_UseDebug)
-                Utilities.Log("GameEventListner [" + name + "] :" + log, this);
+                Utilities.Debug.Log("GameEventListner [" + name + "] :" + log, this);
         }
     }
 

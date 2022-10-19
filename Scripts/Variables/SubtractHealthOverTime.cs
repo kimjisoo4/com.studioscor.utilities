@@ -23,7 +23,7 @@ namespace KimScor.Utilities
 
 			float value = _SubtractFloatOverTime.UpdateOverTime(Time.deltaTime);
 
-			_HealthComponent.TakeDamage(value);
+			_HealthComponent.OnTakeDamage(value);
         }
     }
 

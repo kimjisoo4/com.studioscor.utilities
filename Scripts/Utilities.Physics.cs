@@ -1,232 +1,284 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace KimScor.Utilities
 {
 
     public static partial class Utilities
     {
-        public static Collider[] DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask,
-            bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+        public static class Physics
         {
-            Collider[] colliders = Physics.OverlapSphere(position, radius, layerMask);
-
-#if UNITY_EDITOR
-            if (useDebug)
+            #region DrawOverlapSphere
+            public static Collider[] DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
-                Color successColor = hitColor == default ? Color.green : hitColor;
-                Color failedColor = rayColor == default ? Color.red : rayColor;
+                Collider[] colliders = UnityEngine.Physics.OverlapSphere(position, radius, layerMask);
 
-                if (colliders.Length > 0)
-                {
-                    DrawSphere(position, radius, successColor, duration);
-
-                    foreach (var collider in colliders)
-                    {
-                        DrawPoint(collider.transform.position, 0.1f, successColor, duration);
-                    }
-                }
-                else
-                {
-                    DrawSphere(position, radius, failedColor, duration);
-                }
-            }
-#endif
-            return colliders;
-        }
-
-        #region DrawSphereCastAll
-        public static RaycastHit[] DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask,
-            bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-        {
-            Vector3 direction = start.Direction(end);
-            float distance = Vector3.Distance(start, end);
-
-            if (direction == Vector3.zero)
-            {
-                direction = new Vector3(0, 0, 1f);
-                distance = 0.01f;
-            }
-
-            var hits = Physics.SphereCastAll(start, radius, direction, distance, layermask);
-
-#if UNITY_EDITOR
-            if (useDebug)
-            {
-                Color successColor = hitColor == default ? Color.green : hitColor;
-                Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                if (hits.Length > 0)
-                {
-                    DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
-
-                    DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
-                    DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
-
-                    foreach (var hit in hits)
-                    {
-                        DrawPoint(hit.point, 0.1f, successColor, duration);
-                    }
-                }
-                else
-                {
-                    DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                }
-            }
-#endif
-            return hits;
-        }
-
-        public static List<RaycastHit> DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, List<Transform> ignoreTransform,
-            bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-        {
-            Vector3 direction = start.Direction(end);
-            float distance = Vector3.Distance(start, end);
-
-            if (direction == Vector3.zero)
-            {
-                direction = new Vector3(0, 0, 1f);
-                distance = 0.01f;
-            }
-
-            var hits = Physics.SphereCastAll(start, radius, direction, distance, layermask);
-
-            if (hits.Length == 0)
-            {
 #if UNITY_EDITOR
                 if (useDebug)
                 {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
                     Color failedColor = rayColor == default ? Color.red : rayColor;
 
-                    DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    if (colliders.Length > 0)
+                    {
+                        Debug.DrawSphere(position, radius, successColor, duration);
+
+                        foreach (var collider in colliders)
+                        {
+                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawSphere(position, radius, failedColor, duration);
+                    }
                 }
 #endif
-                return null;
+                return colliders;
             }
-
-            List<RaycastHit> hitList = new();
-            
-            for(int i = hits.Length; i >= 0; i--)
+            public static List<Collider> DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, List<Transform> IgnoreTransform,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
-                if (!ignoreTransform.Contains(hits[i].transform) && !ignoreTransform.Contains(hits[i].transform.root))
+                Collider[] colliders = UnityEngine.Physics.OverlapSphere(position, radius, layerMask);
+
+                List<Collider> hits = new();
+                
+                if (IgnoreTransform.Count > 0)
                 {
-                    hitList.Add(hits[i]);
-                }
-            }
-
-#if UNITY_EDITOR
-            if (useDebug)
-            {
-                Color successColor = hitColor == default ? Color.green : hitColor;
-                Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                if (hitList.Count > 0)
-                {
-                    DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
-
-                    DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
-                    DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
-
-                    foreach (var hit in hits)
+                    foreach (var collider in colliders)
                     {
-                        DrawPoint(hit.point, 0.1f, successColor, duration);
+                        if (!IgnoreTransform.Contains(collider.transform) && !IgnoreTransform.Contains(collider.transform.root))
+                        {
+                            hits.Add(collider);
+                        }
                     }
                 }
                 else
                 {
-                    DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    hits = colliders.ToList();
                 }
-            }
-#endif
-            return hitList;
-        }
-        public static RaycastHit[] DrawSphereCastAll(Vector3 start, float radius, Vector3 direction, float distance, LayerMask layermask,
-            bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-        {
-            var hits = Physics.SphereCastAll(start, radius, direction, distance, layermask);
 
 #if UNITY_EDITOR
-            if (useDebug)
-            {
-                Color successColor = hitColor == default ? Color.green : hitColor;
-                Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                if (hits.Length > 0)
+                if (useDebug)
                 {
-                    DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
 
-                    DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
-                    DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
-
-                    foreach (var hit in hits)
+                    if (hits.Count > 0)
                     {
-                        DrawPoint(hit.point, 0.1f, successColor, duration);
+                        Debug.DrawSphere(position, radius, successColor, duration);
+
+                        foreach (var hit in hits)
+                        {
+                            Debug.DrawPoint(hit.transform.position, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawSphere(position, radius, failedColor, duration);
                     }
                 }
-                else
-                {
-                    DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                }
-            }
 #endif
+                return hits;
+            }
 
-            return hits;
-        }
+            #endregion
 
-        #endregion
-        public static bool DrawSphereCast(Vector3 start, float radius, Vector3 direction, float distance, out RaycastHit hit, LayerMask layermask,
-            bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-        {
-            bool isHit = Physics.SphereCast(start, radius, direction, out hit, distance, layermask);
+            #region DrawSphereCastAll
+            public static RaycastHit[] DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 direction = start.Direction(end);
+                float distance = Vector3.Distance(start, end);
+
+                if (direction == Vector3.zero)
+                {
+                    direction = new Vector3(0, 0, 1f);
+                    distance = 0.01f;
+                }
+
+                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
 
 #if UNITY_EDITOR
-            if (useDebug)
-            {
-                Color successColor = hitColor == default ? Color.green : hitColor;
-                Color failedColor = rayColor == default ? Color.red : rayColor;
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
 
-                if (isHit)
-                {
-                    DrawCapsule(start, start + direction * hit.distance, radius, failedColor, duration);
-                    DrawPoint(hit.point, 0.1f, successColor, duration);
-                    DrawCapsule(start + direction * hit.distance, start + direction * distance, radius, successColor, duration);
-                    
+                    if (hits.Length > 0)
+                    {
+                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
+
+                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
+                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
+
+                        foreach (var hit in hits)
+                        {
+                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
                 }
-                else
-                {
-                    DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                }
-            }
 #endif
+                return hits;
+            }
 
-            return isHit;
-        }
-        public static bool DrawRayCast(Vector3 start, Vector3 direction, float distance, out RaycastHit hit, LayerMask layerMask,
-            bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-        {
-            bool isHit = Physics.Raycast(start, direction, out hit, distance, layerMask);
+            public static List<RaycastHit> DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, List<Transform> ignoreTransform,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 direction = start.Direction(end);
+                float distance = Vector3.Distance(start, end);
+
+                if (direction == Vector3.zero)
+                {
+                    direction = new Vector3(0, 0, 1f);
+                    distance = 0.01f;
+                }
+
+                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
+
+                if (hits.Length == 0)
+                {
+#if UNITY_EDITOR
+                    if (useDebug)
+                    {
+                        Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+#endif
+                    return null;
+                }
+
+                List<RaycastHit> hitList = new();
+
+                for (int i = hits.Length; i >= 0; i--)
+                {
+                    if (!ignoreTransform.Contains(hits[i].transform) && !ignoreTransform.Contains(hits[i].transform.root))
+                    {
+                        hitList.Add(hits[i]);
+                    }
+                }
 
 #if UNITY_EDITOR
-            if (useDebug)
-            {
-                Color successColor = hitColor == default ? Color.green : hitColor;
-                Color failedColor = rayColor == default ? Color.red : rayColor;
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
 
-                if (isHit)
-                {
-                    UnityEngine.Debug.DrawLine(start, hit.point, failedColor, duration);
-                    DrawPoint(hit.point, 0.1f, successColor, duration);
-                    UnityEngine.Debug.DrawLine(hit.point, start + direction * distance, successColor, duration);
+                    if (hitList.Count > 0)
+                    {
+                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
+
+                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
+                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
+
+                        foreach (var hit in hits)
+                        {
+                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
                 }
-                else
-                {
-                    UnityEngine.Debug.DrawLine(start, start + direction * distance, failedColor, duration);
-                    DrawPoint(start + direction * distance, 0.1f, failedColor, duration);
-                }
-            }
 #endif
-            return isHit;
+                return hitList;
+            }
+            public static RaycastHit[] DrawSphereCastAll(Vector3 start, float radius, Vector3 direction, float distance, LayerMask layermask,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
+
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hits.Length > 0)
+                    {
+                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
+
+                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
+                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
+
+                        foreach (var hit in hits)
+                        {
+                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+                }
+#endif
+
+                return hits;
+            }
+
+            #endregion
+            public static bool DrawSphereCast(Vector3 start, float radius, Vector3 direction, float distance, out RaycastHit hit, LayerMask layermask,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                bool isHit = UnityEngine.Physics.SphereCast(start, radius, direction, out hit, distance, layermask);
+
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (isHit)
+                    {
+                        Debug.DrawCapsule(start, start + direction * hit.distance, radius, failedColor, duration);
+                        Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        Debug.DrawCapsule(start + direction * hit.distance, start + direction * distance, radius, successColor, duration);
+
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+                }
+#endif
+
+                return isHit;
+            }
+            public static bool DrawRayCast(Vector3 start, Vector3 direction, float distance, out RaycastHit hit, LayerMask layerMask,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                bool isHit = UnityEngine.Physics.Raycast(start, direction, out hit, distance, layerMask);
+
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (isHit)
+                    {
+                        UnityEngine.Debug.DrawLine(start, hit.point, failedColor, duration);
+                        Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        UnityEngine.Debug.DrawLine(hit.point, start + direction * distance, successColor, duration);
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.DrawLine(start, start + direction * distance, failedColor, duration);
+                        Debug.DrawPoint(start + direction * distance, 0.1f, failedColor, duration);
+                    }
+                }
+#endif
+                return isHit;
+            }
         }
     }
 }

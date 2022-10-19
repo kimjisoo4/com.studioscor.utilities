@@ -28,13 +28,13 @@ namespace KimScor.Utilities
         void Log(object message)
         {
             if(_UseDebug)
-                Utilities.Log("OnTriggerComponent [ " + name + " ] : " + message, this);
+                Utilities.Debug.Log("OnTriggerComponent [ " + name + " ] : " + message, this);
         }
         [Conditional("UNITY_EDITOR")]
         void DrawSphere(Vector3 position, Color color)
         {
             if (_UseDebug)
-                Utilities.DrawSphere(position, 0.1f, color, 1f);
+                Utilities.Debug.DrawSphere(position, 0.1f, color, 1f);
         }
 #endif
 

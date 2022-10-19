@@ -36,7 +36,7 @@ namespace KimScor.Utilities
         public void PlayAction(int actionNumber)
         {
             Log("Player Action -" + actionNumber);
-            
+
             _Animator.ResetTrigger(DO_ACTION);
 
             OnCanceled?.Invoke();
