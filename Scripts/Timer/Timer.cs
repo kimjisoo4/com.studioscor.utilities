@@ -55,6 +55,11 @@
         }
 		public void OnTimer()
         {
+            if (IsPlaying)
+            {
+				OnStopTimer();
+			}
+
 			OnResetTimer();
 
 			_IsPlaying = true;
@@ -80,6 +85,9 @@
 		}
 		public void OnStopTimer()
         {
+			if (!_IsPlaying)
+				return;
+
             if (_RemainTime <= 0f)
             {
 				OnFinisheTimer();

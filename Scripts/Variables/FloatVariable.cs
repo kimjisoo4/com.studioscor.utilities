@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace KimScor.Utilities
 {
-
     [CreateAssetMenu(menuName = "Utilities/Variable/new Float Variable", fileName = "FloatVariable_")]
 	public class FloatVariable : VariableObject<float>
 	{

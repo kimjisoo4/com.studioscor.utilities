@@ -19,6 +19,10 @@ namespace KimScor.Utilities
         {
             return start.Direction(target.position);
         }
+        public static Vector3 Direction(this Vector3 start, Transform target)
+        {
+            return start.Direction(target.position);
+        }
         #endregion
     }
 }

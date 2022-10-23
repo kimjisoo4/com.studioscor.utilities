@@ -33,8 +33,8 @@ namespace KimScor.Utilities
 
 		[Header(" [ Health ] ")]
 		[SerializeField] private ESetup _Setup;
-		[SerializeField] private float _MaxHealth;
-		[SerializeField] private float _Health;
+		[SerializeField] private float _MaxHealth = 100f;
+		[SerializeField] private float _Health = 100f;
 
 		[Header(" [ Regeneration Health ] ")]
 		[SerializeField] private bool _UseRegeneration = true;
@@ -71,7 +71,7 @@ namespace KimScor.Utilities
 		public event HealthRegenStaetHandler OnChangedRegenerationHealthState;
 		public event HealthStateHandler OnFulledHealth;
 		public event HealthStateHandler OnDead;
-
+		public event HealthStateHandler OnResetedHealth;
 
 
 		[System.Serializable]
@@ -175,7 +175,7 @@ namespace KimScor.Utilities
         }
         protected virtual void Update()
         {
-			if (!_UseRegeneration && IsAlive && !Full)
+			if (!_UseRegeneration || IsDie || Full)
 				return;
 
 			float deltaTime = Time.deltaTime;
@@ -207,6 +207,7 @@ namespace KimScor.Utilities
 
 			SetUseRegeneration(useRegeneration);
 
+			OnResetHealth();
 			OnChangeMaxHealth();
 			OnChangeHealth();
 		}
@@ -334,7 +335,23 @@ namespace KimScor.Utilities
 			CheckHealthState();
         }
 
-		
+		public void SetHealth(float newHealth)
+		{
+			if (Health == newHealth)
+				return;
+
+			float prevValue = Health;
+
+			_Health = Mathf.Clamp(newHealth, 0, _MaxHealth);
+
+			OnChangeHealth(prevValue);
+		}
+		public void SetHealthFromPercent(float newHealth)
+		{
+			SetHealth(Health * newHealth);
+		}
+
+
 		public float TakeDamageFromPercent(float percent)
         {
 			return OnTakeDamage(MaxHealth * percent);
@@ -415,12 +432,17 @@ namespace KimScor.Utilities
 
 			OnDead?.Invoke(this);
 		}
+		private void OnResetHealth()
+        {
+			Log("On Reset");
+
+			OnResetedHealth?.Invoke(this);
+        }
 		private void OnFullHealth()
 		{
 			Log("On Fulled Health");
 
 			OnFulledHealth?.Invoke(this);
-			
 		}
 
         

@@ -25,6 +25,7 @@ namespace KimScor.Utilities
             _Timer = new();
 
             _Timer.OnFinishedTimer += Timer_OnFinishedTimer;
+            _Timer.OnCanceledTimer += Timer_OnFinishedTimer;
         }
 
         private void Timer_OnFinishedTimer(Timer timer)
@@ -52,6 +53,11 @@ namespace KimScor.Utilities
             _Timer.OnTimer(duration);
 
             OnStartedStiffen?.Invoke(this);
+        }
+
+        public void EndStiffen()
+        {
+            _Timer.OnStopTimer();
         }
 
         void Update()
