@@ -5,8 +5,76 @@ using System.Diagnostics;
 using KimScor.Utilities;
 using UnityEngine.Events;
 
-namespace KimScor.Utilities
+namespace KimScor.Utilities 
 {
+    public abstract class BaseStateMono : MonoBehaviour, IState
+    {
+        [SerializeField] private bool _UseDebug = false;
+
+        public event UnityAction OnStartedState;
+        public event UnityAction OnFinishedState;
+
+        [Conditional("UNITY_EDITOR")]
+        protected virtual void Log(object massage)
+        {
+#if UNITY_EDITOR
+            if (_UseDebug)
+                Utilities.Debug.Log(this.GetType() + "[ " + transform + " ] :" + massage, this);
+#endif
+        }
+
+#if UNITY_EDITOR
+        protected virtual void Reset()
+        {
+            enabled = false;
+        }
+#endif
+
+        public virtual bool CanEnterState()
+        {
+            return !enabled;
+        }
+
+        public virtual bool CanExitState()
+        {
+            return enabled;
+        }
+
+        public void OnExitState()
+        {
+            OnFinishedState?.Invoke();
+
+            enabled = false;
+        }
+
+        public void OnEnterState()
+        {
+            OnStartedState?.Invoke();
+
+            enabled = true;
+        }
+
+        public bool TryEnterState()
+        {
+            if (!CanEnterState())
+                return false;
+
+            OnEnterState();
+
+            return true;
+        }
+
+        public bool TryExitState()
+        {
+            if (!CanExitState())
+                return false;
+
+            OnExitState();
+
+            return true;
+        }
+    }
+
     public abstract class BaseStateClass : IState
     {       
         public event UnityAction OnStartedState;
@@ -42,7 +110,7 @@ namespace KimScor.Utilities
             if (!CanEnterState())
                 return false;
 
-            OnState();
+            OnEnterState();
 
             return true;
         }
@@ -51,19 +119,19 @@ namespace KimScor.Utilities
             if (!CanExitState())
                 return false;
 
-            EndState();
+            OnExitState();
 
             return true;
         }
         public virtual bool CanEnterState()
         {
-            return true;
+            return !_IsActivate;
         }
         public virtual bool CanExitState()
         {
-            return true;
+            return _IsActivate;
         }
-        public void OnState()
+        public void OnEnterState()
         {
             if (_IsActivate)
                 return;
@@ -74,14 +142,7 @@ namespace KimScor.Utilities
 
             OnStartedState?.Invoke();
         }
-        public void UpdateState(float deltaTime)
-        {
-            if (!_IsActivate)
-                return;
-
-            TickState(deltaTime);
-        }
-        public void EndState()
+        public void OnExitState()
         {
             if (!_IsActivate)
                 return;
@@ -94,7 +155,6 @@ namespace KimScor.Utilities
         }
 
         protected abstract void EnterState();
-        protected abstract void TickState(float deltaTime);
         protected abstract void ExitState();
     }
 }

@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using UnityEngine;
 using System;
-using UnityEngine.Events;
 
 namespace KimScor.Utilities
 {
+
     [CreateAssetMenu(fileName = "Event_", menuName = "Utilities/Event/New Event")]
     public class GameEvent : ScriptableObject, ISerializationCallbackReceiver
     {

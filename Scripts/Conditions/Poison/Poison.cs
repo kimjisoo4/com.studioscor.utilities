@@ -56,7 +56,7 @@ namespace KimScor.Utilities
             _IntervalTimer = null;
         }
 
-        protected override void TickState(float deltaTime)
+        protected virtual void TickState(float deltaTime)
         {
             _DurtaionTimer.UpdateTimer(deltaTime);
 
@@ -109,12 +109,12 @@ namespace KimScor.Utilities
         {
             _PoisonOwner = poisonOwner;
 
-            OnState();
+            OnEnterState();
         }
 
         public void UpdatePoison(float deltaTime)
         {
-            UpdateState(deltaTime);
+            TickState(deltaTime);
         }
     }
 }

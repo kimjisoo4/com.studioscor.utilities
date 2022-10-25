@@ -1,4 +1,6 @@
 ﻿using UnityEngine.Events;
+using UnityEngine;
+using System.Collections;
 
 namespace KimScor.Utilities
 {
@@ -11,8 +13,7 @@ namespace KimScor.Utilities
         public bool TryExitState();
         public bool CanEnterState();
         public bool CanExitState();
-        public void OnState();
-        public void UpdateState(float deltaTime);
-        public void EndState(); 
+        public void OnEnterState();
+        public void OnExitState(); 
     }
 }

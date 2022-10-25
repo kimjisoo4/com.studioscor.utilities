@@ -66,6 +66,13 @@
 
 			OnStartedTimer?.Invoke(this);
 		}
+
+		public void JumpTimer(float time)
+        {
+			_RemainTime -= time;
+			_ElapsedTime = time;
+        }
+
 		public void OnFinisheTimer()
 		{
 			_IsPlaying = false;
