@@ -23,20 +23,25 @@ namespace KimScor.Utilities
 
         private List<Collider> _StayedColliders;
 
-#if UNITY_EDITOR
+
         [Conditional("UNITY_EDITOR")]
         void Log(object message)
         {
-            if(_UseDebug)
+#if UNITY_EDITOR
+            if (_UseDebug)
                 Utilities.Debug.Log("OnTriggerComponent [ " + name + " ] : " + message, this);
+#endif
         }
+
         [Conditional("UNITY_EDITOR")]
         void DrawSphere(Vector3 position, Color color)
         {
+#if UNITY_EDITOR
             if (_UseDebug)
                 Utilities.Debug.DrawSphere(position, 0.1f, color, 1f);
-        }
 #endif
+        }
+
 
         private void Awake()
         {

@@ -7,9 +7,12 @@ namespace KimScor.Utilities
     public class FiniteStateMachineSystemWithKey<TKey, T> : FiniteStateMachineSystem<T> where T : class,IState
     {
         [SerializeField] private TKey _DefaultStateKey;
-
+        
+        private TKey _CurrentStateKey;
+        
         private Dictionary<TKey, T> _States;
-
+        public TKey CurrentStateKey => _CurrentStateKey;
+        
         public FiniteStateMachineSystemWithKey(TKey key, T defaultState) : base(defaultState)
         {
             _States = new();
@@ -31,8 +34,10 @@ namespace KimScor.Utilities
 
         public bool TrySetState(TKey key)
         {
-            if (_States.TryGetValue(key, out T state))
+            if (_States.TryGetValue(key, out T state) && TrySetState(state))
             {
+                _CurrentStateKey = key;
+
                 return TrySetState(state);
             }
 
@@ -42,6 +47,8 @@ namespace KimScor.Utilities
         {
             if (_States.TryGetValue(key, out T state))
             {
+                _CurrentStateKey = key;
+
                 ForceSetState(state);
             }
         }

@@ -31,11 +31,17 @@ namespace KimScor.Utilities
 
         private void OnEnable()
         {
-            float alpha = _CanvasGroup.alpha;
             float fadeTime = SimpleFade.FadeOutTime;
 
             _Timer.OnTimer(fadeTime);
-            _Timer.JumpTimer(fadeTime * (1 - alpha));
+
+            if(!SimpleFade.IsPlayFromStart)
+            {
+                float alpha = _CanvasGroup.alpha;
+
+                _Timer.JumpTimer(fadeTime * (1 - alpha));
+            }
+            
         }
 
         private void Update()

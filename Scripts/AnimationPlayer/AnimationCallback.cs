@@ -27,10 +27,12 @@ namespace KimScor.Utilities
         [Conditional("UNITY_EDITOR")]
         private void Log(string log)
         {
+#if UNITY_EDITOR
             if (!_UseDebug)
                 return;
 
-            UnityEngine.Debug.Log("AnimationCallBack [ " + _AnimationPlayer?.name + " ] : " + log);
+            Utilities.Debug.Log("AnimationCallBack [ " + _AnimationPlayer?.name + " ] : " + log);
+#endif
         }
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

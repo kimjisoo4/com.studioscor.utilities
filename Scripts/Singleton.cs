@@ -17,7 +17,8 @@ namespace KimScor.Utilities
 				{
 					_Instance = FindObjectOfType<T>();
 
-					_Instance.Initialization();
+					if(_Instance)
+						_Instance.Initialization();
 				}
 
 				return _Instance;
@@ -57,7 +58,6 @@ namespace KimScor.Utilities
 				DontDestroyOnLoad(gameObject);
 			}
 				
-
 			_Instance = GetComponent<T>();
 			_Instance.Setup();
 		}

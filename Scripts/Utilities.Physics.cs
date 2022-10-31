@@ -145,6 +145,7 @@ namespace KimScor.Utilities
 
                 if (hits.Length == 0)
                 {
+                    #region DEBUG DRAW
 #if UNITY_EDITOR
                     if (useDebug)
                     {
@@ -153,19 +154,23 @@ namespace KimScor.Utilities
                         Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
                     }
 #endif
+                    #endregion
+
                     return null;
                 }
 
                 List<RaycastHit> hitList = new();
 
-                for (int i = hits.Length; i >= 0; i--)
+
+                foreach (var hit in hits)
                 {
-                    if (!ignoreTransform.Contains(hits[i].transform) && !ignoreTransform.Contains(hits[i].transform.root))
+                    if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
                     {
-                        hitList.Add(hits[i]);
+                        hitList.Add(hit);
                     }
                 }
 
+                #region DEBUG DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -190,6 +195,8 @@ namespace KimScor.Utilities
                     }
                 }
 #endif
+                #endregion
+
                 return hitList;
             }
             public static RaycastHit[] DrawSphereCastAll(Vector3 start, float radius, Vector3 direction, float distance, LayerMask layermask,

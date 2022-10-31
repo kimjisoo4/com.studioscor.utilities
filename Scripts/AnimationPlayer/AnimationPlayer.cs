@@ -10,9 +10,9 @@ namespace KimScor.Utilities
         [SerializeField] private bool _UseDebug = false;
         public Animator Animator => _Animator;
 
-        public Action OnCanceled;
-        public Action OnFinished;
-        public Action OnBlendOut;
+        public event Action OnCanceled;
+        public event Action OnFinished;
+        public event Action OnBlendOut;
 
         private int _CurrentActionNumber;
         private int _Hash;

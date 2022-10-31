@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Pool;
+using System.Diagnostics;
+
 
 namespace KimScor.Utilities
 {
@@ -144,16 +146,16 @@ namespace KimScor.Utilities
         }
 
 
-#if UNITY_EDITOR
 
+
+        [Conditional("UNITY_EDITOR")]
 		private void Log(object message)
 		{
+#if UNITY_EDITOR
 			if (_UseDebug)
 				Utilities.Debug.Log("HealthCompoenent [" + name + " ] : " + message, this);
-		}
 #endif
-
-
+		}
 		protected virtual void OnEnable()
         {
 			if (_Setup.Equals(ESetup.Enable))
@@ -330,6 +332,8 @@ namespace KimScor.Utilities
 
 			_MaxHealth = newMaxHealth;
 
+			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
+
 			OnChangeMaxHealth(prevValue);
 
 			CheckHealthState();
@@ -344,13 +348,15 @@ namespace KimScor.Utilities
 
 			_Health = Mathf.Clamp(newHealth, 0, _MaxHealth);
 
+			_NormalizedHealth = Mathf.Clamp01(_Health / _MaxHealth);
+
 			OnChangeHealth(prevValue);
 		}
+
 		public void SetHealthFromPercent(float newHealth)
 		{
 			SetHealth(Health * newHealth);
 		}
-
 
 		public float TakeDamageFromPercent(float percent)
         {
