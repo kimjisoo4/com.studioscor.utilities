@@ -1,0 +1,17 @@
+{
+    "name": "BodySystem",
+    "rootNamespace": "StudioScor.BodySystem",
+    "references": [
+        "GUID:6b3c62f3c14747d48bbe3fd5bee26b37",
+        "GUID:3df860822b84a844a88f9e35baa77b2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
