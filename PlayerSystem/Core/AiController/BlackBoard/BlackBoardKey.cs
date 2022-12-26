@@ -6,17 +6,19 @@ namespace StudioScor.PlayerSystem
     public class BlackBoardKey : ScriptableObject, ISerializationCallbackReceiver
     {
         [SerializeField] private EBlackBoardKeyType _Type;
-        [SerializeField] private bool _UseParameter = false;
-        [SerializeField] private string _Parameter = "";
+        [SerializeField] private string _HasValueParameter = "Has";
+        [SerializeField] private string _ValueChangeParameter = "Do";
 
-        private int _Hash;
+        private int _HasValueHash;
+        private int _TriggerValueChangeHash;
         public EBlackBoardKeyType Type => _Type;
-        public int Hash => _Hash;
-        public bool UseParameter => _UseParameter;
+        public int HasValueHash => _HasValueHash;
+        public int TriggerValueChangeHash => _TriggerValueChangeHash;
 
         public void OnAfterDeserialize()
         {
-            _Hash = Animator.StringToHash(_Parameter);
+            _HasValueHash = Animator.StringToHash(_HasValueParameter);
+            _TriggerValueChangeHash = Animator.StringToHash(_ValueChangeParameter);
         }
 
         public void OnBeforeSerialize()

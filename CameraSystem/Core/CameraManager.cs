@@ -1,46 +1,54 @@
 ﻿using UnityEngine;
 using Cinemachine;
+using StudioScor.Utilities;
 
 namespace StudioScor.CameraSystem
 {
-    public class CameraManager : MonoBehaviour
+    public class CameraManager : Singleton<CameraManager>
     {
-        private static CameraManager _Instance = null;
-
+        #region Events
+        public delegate void TransitionCamera(CameraManager cameraManager);
+        public delegate void ChangeCameraHandler(CameraManager cameraManager, CameraBase currentCamera, CameraBase prevCamera);
+        #endregion
+        [Header(" [ Camera Manager ] ")]
         [SerializeField] private CameraBase _DefaultCamera;
         [SerializeField] private CameraBase _CurrentCamera;
+        [SerializeField] private CinemachineBrain _CinemachineBrain;
         [SerializeField] private CinemachineImpulseSource _CinemachineImpulseSource;
 
+        private bool _IsTransition = false;
         public CameraBase CurrentCamera => _CurrentCamera;
+
+        public event ChangeCameraHandler OnChangedCamera;
+
+        public event TransitionCamera OnStartedTransitionCamera;
+        public event TransitionCamera OnFinishedTransitionCamera;
 
 #if UNITY_EDITOR
         private void Reset()
         {
-            transform.TryGetComponent(out _CinemachineImpulseSource);
+            if (!_CinemachineImpulseSource)
+                _CinemachineImpulseSource = GetComponent<CinemachineImpulseSource>();
+
+            if(!_CinemachineBrain)
+                _CinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
         }
 #endif
-        public static CameraManager Instance
-        {
-            get
-            {
-                if (_Instance == null)
-                {
-                    _Instance = FindObjectOfType<CameraManager>();
-                }
 
-                return _Instance;
-            }
-        }
-        void Awake()
+        protected override void Setup()
         {
-            if (_Instance == null)
-            {
-                _Instance = this;
-            }
+            base.Setup();
+
+            if (!_CinemachineImpulseSource)
+                _CinemachineImpulseSource = GetComponent<CinemachineImpulseSource>();
+
+            if (!_CinemachineBrain)
+                _CinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
         }
-        private void Start()
+
+        protected virtual void Start()
         {
-            if (_CurrentCamera == null)
+            if (!_CurrentCamera && _DefaultCamera)
             {
                 TransitionCameraState(_DefaultCamera);
             }
@@ -51,14 +59,34 @@ namespace StudioScor.CameraSystem
             if (cameraBase == null || cameraBase == _CurrentCamera)
                 return;
 
+            var prevCaemra = CurrentCamera;
+            
+            bool isTransition = false;
+
             if (_CurrentCamera != null)
             {
-                _CurrentCamera.OnDeactivateCamera();
+                _CurrentCamera.OnInActivateCamera();
+
+                isTransition = true;
             }
 
             _CurrentCamera = cameraBase;
 
-            _CurrentCamera.OnActiveCamera();
+            _CurrentCamera.OnActivateCamera();
+
+            OnChangeCamera(prevCaemra);
+
+            if (isTransition)
+            {
+                if (_IsTransition)
+                {
+                    OnFinishTransitionCamera();
+                }
+
+                _IsTransition = true;
+
+                OnStartTransitionCamera();
+            }
         }
 
         public void DefaultCameraState()
@@ -78,6 +106,39 @@ namespace StudioScor.CameraSystem
 
             _CinemachineImpulseSource.GenerateImpulse(direction * force);
         }
+
+        private void LateUpdate()
+        {
+            if (_IsTransition)
+            {
+                if (!_CinemachineBrain.IsBlending)
+                {
+                    _IsTransition = false;
+
+                    OnFinishTransitionCamera();
+                }
+            }
+        }
+        #region Callback
+        protected void OnChangeCamera(CameraBase prevCamera)
+        {
+            Log(" On Changed Camera - Curret : " + CurrentCamera + " Prev : " + prevCamera);
+
+            OnChangedCamera?.Invoke(this, CurrentCamera, prevCamera);
+        }
+        protected void OnStartTransitionCamera()
+        {
+            Log(" On Started Transition Camera");
+
+            OnStartedTransitionCamera?.Invoke(this);
+        }
+        protected void OnFinishTransitionCamera()
+        {
+            Log(" On Finishied Transition Camera");
+
+            OnFinishedTransitionCamera?.Invoke(this);
+        }
+        #endregion
     }
 
 }

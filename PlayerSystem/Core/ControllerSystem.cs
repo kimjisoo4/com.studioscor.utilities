@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Diagnostics;
+using StudioScor.Utilities;
 
 namespace StudioScor.PlayerSystem
 {
-    public class ControllerSystem : MonoBehaviour
+    public class ControllerSystem : BaseStateMono
     {
         #region Events
         public delegate void OnChangedPawnHandler(ControllerSystem controller, PawnSystem pawn);
@@ -19,6 +20,7 @@ namespace StudioScor.PlayerSystem
         public delegate void LookTargetHandler(ControllerSystem controllerSystem, Transform currentLookTarget, Transform prevLookTarget);
         #endregion
 
+        [Header(" [ Controller System ] ")]
         [Header(" [ Controlled Pawn ] ")]
         [SerializeField] protected PawnSystem _Pawn;
         public PawnSystem Pawn => _Pawn;
@@ -46,10 +48,6 @@ namespace StudioScor.PlayerSystem
         [Header(" [ Look Target ] ")]
         [SerializeField] protected Transform _LookTarget;
         public Transform LookTarget => _LookTarget;
-
-        [Header(" [ Use DebugMode ]")]
-        [SerializeField] protected bool _UseDebugMode = false;
-
 
         private Vector3 _MoveDirection = Vector3.zero;
         public Vector3 MoveDirection => _MoveDirection;
@@ -340,16 +338,9 @@ namespace StudioScor.PlayerSystem
 
         #region EDITOR
 
-        [Conditional("UNITY_EDITOR")]
-        protected void Log(string log)
-        {
-            if (_UseDebugMode)
-                UnityEngine.Debug.Log("Controller [" + gameObject.name + "] :" + log);
-        }
-
         private void OnDrawGizmosSelected()
         {
-            if (!_UseDebugMode)
+            if (!UseDebug)
                 return;
 
             if (_Pawn == null)
@@ -375,7 +366,6 @@ namespace StudioScor.PlayerSystem
         }
 
         #endregion
-
 
         #region Callback
         protected void OnPossessPawn()

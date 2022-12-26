@@ -7,22 +7,12 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities 
 {
-    public abstract class BaseStateMono : MonoBehaviour, IState
+    public abstract class BaseStateMono : BaseMonoBehaviour, IState
     {
-        [SerializeField] protected bool _UseDebug = false;
-
-        public event UnityAction OnEnteredState;
-        public event UnityAction OnExitedState;
+        public event UnityAction<IState> OnEnteredState;
+        public event UnityAction<IState> OnExitedState;
 
         #region EDITOR ONLY
-        [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object massage)
-        {
-#if UNITY_EDITOR
-            if (_UseDebug)
-                Utility.Debug.Log(name + "[ " + GetType().Name + " ] :" + massage, this);
-#endif
-        }
 
 #if UNITY_EDITOR
         protected virtual void Reset()
@@ -80,43 +70,37 @@ namespace StudioScor.Utilities
         {
             Log("Enter State");
 
-            OnEnteredState?.Invoke();
+            OnEnteredState?.Invoke(this);
         }
         private void OnExitState()
         {
             Log("Exit State");
 
-            OnExitedState?.Invoke();
+            OnExitedState?.Invoke(this);
         }
     }
 
     public abstract class BaseStateClass : IState
     {       
-        public event UnityAction OnEnteredState;
-        public event UnityAction OnExitedState;
+        public event UnityAction<IState> OnEnteredState;
+        public event UnityAction<IState> OnExitedState;
 
-        [SerializeField] private bool _UseDebug;
+        protected virtual bool UseDebug { get; } 
 
-        protected Transform _Owner;
         protected bool _IsActivate;
         public bool IsActivate => _IsActivate;
-        public Transform Owner => _Owner;
 
         public BaseStateClass()
         {
 
-        }
-        public BaseStateClass(Transform owner)
-        {
-            _Owner = owner;
         }
 
         [Conditional("UNITY_EDITOR")]
         protected virtual void Log(object massage)
         {
 #if UNITY_EDITOR
-            if (_UseDebug)
-                Utility.Debug.Log(_Owner.name + "[ " + GetType().Name + " ] :" + massage, _Owner);
+            if (UseDebug)
+                Utility.Debug.Log("[ " + GetType().Name + " ] :" + massage);
 #endif
         }
 
@@ -176,13 +160,13 @@ namespace StudioScor.Utilities
         {
             Log("Enter State");
 
-            OnEnteredState?.Invoke();
+            OnEnteredState?.Invoke(this);
         }
         private void OnExitState()
         {
             Log("Exit State");
 
-            OnExitedState?.Invoke();
+            OnExitedState?.Invoke(this);
         }
     }
 }

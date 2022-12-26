@@ -42,7 +42,8 @@ namespace StudioScor.Utilities
         {
             ForceSetState(_DefaultState);
         }
-        public bool TrySetState(T state)
+
+        public bool CanSetState(T state)
         {
             if (state == null)
                 return false;
@@ -66,24 +67,28 @@ namespace StudioScor.Utilities
                 return false;
             }
 
-
-            if (_CurrentState is not null)
-            {
-                _CurrentState.ForceExitState();
-            }
-
-            _PrevState = _CurrentState;
-            _CurrentState = _NextState;
-
-            _CurrentState.ForceEnterState();
-
-            _PrevState = null;
             _NextState = null;
 
             return true;
         }
 
-        public void ForceSetState(T state)
+        public bool TrySetState(T state)
+        {
+            _NextState = state;
+
+            if (!CanSetState(state))
+            {
+                _NextState = null;
+
+                return false;
+            }
+
+            ForceSetState(state);
+
+            return true;
+        }
+
+        public virtual void ForceSetState(T state)
         {
             _NextState = state;
 

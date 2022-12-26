@@ -6,6 +6,7 @@ using System;
 namespace StudioScor.Utilities
 {
 
+
     [CreateAssetMenu(fileName = "Event_", menuName = "Utilities/Event/New Event")]
     public class GameEvent : ScriptableObject, ISerializationCallbackReceiver
     {

@@ -1,99 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using StudioScor.Utilities;
 
 namespace StudioScor.PlayerSystem
 {
-    public class PlayerManager : MonoBehaviour
+    public class PlayerManager : Singleton<PlayerManager>
     {
         #region
         public delegate void SpawnPawnHandler(PlayerManager playerManager, PawnSystem pawn);
         #endregion
 
-        private static PlayerManager _Instance = null;
-
         [Header(" [ Default Player Controller ] ")]
         [SerializeField] private ControllerSystem _DefaultPlayerController;
 
-        [Header(" [ Instance ] ")]
-        [SerializeField] private ControllerSystem _PlayerController;
-        public PawnSystem PlayerCharacter => PlayerController.Pawn;
+        private ControllerSystem _PlayerController;
 
-        [Header(" [ Pawns ] ")]
-        [SerializeField] private List<PawnSystem> _AiPawns;
-
-        public IReadOnlyList<PawnSystem> AiPawns => _AiPawns;
-
-        public event SpawnPawnHandler OnAddedPawn;
-        public event SpawnPawnHandler OnRemovedPawn;
-        public static PlayerManager Instance
-        {
-            get
-            {
-                if (_Instance == null)
-                {
-                    _Instance = FindObjectOfType<PlayerManager>();
-                }
-
-                return _Instance;
-            }
-        }
+        private bool _WasSetup = false;
 
         public ControllerSystem PlayerController
         {
             get
             {
-                if (_PlayerController == null)
-                {
-                    _PlayerController = Instantiate(_DefaultPlayerController);
-                }
+                if (!_WasSetup)
+                    Setup();
 
                 return _PlayerController;
             }
         }
-
-        void Awake()
+        public PawnSystem PlayerCharacter
         {
-            if (_Instance == null)
+            get
             {
-                _Instance = this;
+                if (!_WasSetup)
+                    Setup();
+
+                return _PlayerController.Pawn;
             }
         }
 
-        public void AddPawn(PawnSystem pawnSystem)
+        protected override void Setup()
         {
-            _AiPawns.Add(pawnSystem);
+            if (_WasSetup)
+                return;
 
-            OnAddedPawn?.Invoke(this, pawnSystem);
+            _WasSetup = true;
 
-        }
-        public void RemovePawn(PawnSystem pawnSystem)
-        {
-            _AiPawns.Add(pawnSystem);
-
-            OnRemovedPawn?.Invoke(this, pawnSystem);
-        }
-
-        public void SetPlayerPawn(PawnSystem newPlayerPawn)
-        {
-            if (PlayerCharacter != null)
-            {
-                var pawn = PlayerCharacter;
-
-                pawn.UnPossess(PlayerController);
-
-                if(pawn != null)
-                {
-                    AddPawn(pawn);
-                }
-            }
-
-            if(newPlayerPawn != null)
-            {
-                newPlayerPawn.OnPossess(PlayerController);
-
-                _AiPawns.Remove(newPlayerPawn);
-            }
+            if (!_PlayerController)
+                _PlayerController = Instantiate(_DefaultPlayerController);
         }
     }
 

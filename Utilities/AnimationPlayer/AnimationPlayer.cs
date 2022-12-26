@@ -22,6 +22,7 @@ namespace StudioScor.Utilities
         public int CurrentActionNumber => _CurrentActionNumber;
 
         private readonly int DO_ACTION = Animator.StringToHash("DoAction");
+        private readonly int DO_ENDACTION = Animator.StringToHash("DoEndAction");
         private readonly int ACTION_NUMBER = Animator.StringToHash("ActionNumber");
 
         #region EDITOR ONLY
@@ -43,6 +44,19 @@ namespace StudioScor.Utilities
         }
 #endif
 
+        public void PlayAction(int actionNumber, Action finished = null, Action canceled = null, Action blendOut = null)
+        {
+            PlayAction(actionNumber);
+
+            if (finished is not null)
+                OnFinished += finished;
+
+            if (canceled is not null)
+                OnCanceled += canceled;
+
+            if (blendOut is not null)
+                OnBlendOut += blendOut;
+        }
         public void PlayAction(int actionNumber)
         {
             if (!Animator)
@@ -54,6 +68,7 @@ namespace StudioScor.Utilities
             Log("Play Action -" + actionNumber);
 
             _Animator.ResetTrigger(DO_ACTION);
+            _Animator.ResetTrigger(DO_ENDACTION);
 
             OnCanceled?.Invoke();
 
@@ -97,7 +112,31 @@ namespace StudioScor.Utilities
 
             return true;
         }
+        public void StopAction(int actionNumber)
+        {
+            if (_CurrentActionNumber != actionNumber)
+                return;
 
+            _Animator.ResetTrigger(DO_ACTION);
+            _Animator.ResetTrigger(DO_ENDACTION);
+
+            OnCanceled?.Invoke();
+
+            OnCanceled = null;
+            OnFinished = null;
+
+            _AnimationCallback = null;
+            _CurrentActionNumber = default;
+
+            _Animator.SetTrigger(DO_ENDACTION);
+
+            _Animator.applyRootMotion = false;
+        }
+
+        public bool IsPlayingAction(int actionNumber)
+        {
+            return _CurrentActionNumber == actionNumber;
+        }
         public float GetActionNormalizedTime()
         {
             if (!_AnimationCallback)

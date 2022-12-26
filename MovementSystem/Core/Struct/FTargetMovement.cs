@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 
 namespace StudioScor.MovementSystem
 {
+
     [System.Serializable]
     public struct FSingleTargetMovement
     {

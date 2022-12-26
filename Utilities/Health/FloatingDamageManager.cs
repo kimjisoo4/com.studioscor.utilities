@@ -5,6 +5,7 @@ using UnityEngine.Pool;
 
 namespace StudioScor.Utilities
 {
+
     public class FloatingDamageManager : Singleton<FloatingDamageManager>
     {
         [SerializeField] private Transform _TextContainer;

@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 
+using StudioScor.Utilities;
+
 namespace StudioScor.PlayerSystem
 {
-    public class PawnSystem : MonoBehaviour
+    public class PawnSystem : BaseMonoBehaviour
     {
         #region Events
         public delegate void ChangedControllerHandler(PawnSystem pawn, ControllerSystem controller);
         public delegate void IgnoreInput(PawnSystem pawn, bool ignore);
         #endregion
-
+        [Header(" [ Pawn System ] ")]
         [Header(" [ Use Player Controller ] ")]
         [SerializeField] private bool _IsPlayer = false;
 
@@ -31,9 +33,6 @@ namespace StudioScor.PlayerSystem
         [Header(" [ Ignore Rotate Input ]")]
         [SerializeField] private bool _IgnoreRotateInput = false;
         public bool IgnoreRotateInput => _IgnoreRotateInput;
-
-        [Header(" [ Use DebugMode] ")]
-        [SerializeField] private bool _UseDebugMode = false;
         public bool IsPlayer => _IsPlayer;
         public bool IsPossessed => Controller;
         
@@ -43,18 +42,6 @@ namespace StudioScor.PlayerSystem
         public event IgnoreInput OnChangedIgnoreMovementInput;
         public event IgnoreInput OnChangedIgnoreRotateInput;
 
-        private void Awake()
-        {
-            PlayerManager.Instance.AddPawn(this);
-        }
-        private void OnDestroy()
-        {
-#if UNITY_EDITOR
-            if (!this.gameObject.scene.isLoaded) return;
-#endif
-            PlayerManager.Instance.RemovePawn(this);
-        }
-        
         protected void OnEnable()
         {
             OnInitialization();
@@ -167,35 +154,35 @@ namespace StudioScor.PlayerSystem
         #endregion
 
         #region Getter
-        public Vector3 GetMoveDirection()
+        public Vector3 MoveDirection
         {
-            if (IgnoreMovementInput || !Controller)
-                return Vector3.zero;
+            get
+            {
+                if (IgnoreMovementInput || !Controller)
+                    return Vector3.zero;
 
-            return Controller.MoveDirection;
+                return Controller.MoveDirection;
+            }
         }
-        public float GetMoveStrength()
+        public float MoveStrength
         {
-            if (IgnoreMovementInput || !Controller)
-                return 0;
+            get
+            {
+                if (IgnoreMovementInput || !Controller)
+                    return 0;
 
-            return Controller.MoveStrength;
+                return Controller.MoveStrength;
+            }
         }
-        public Vector3 GetRotateDirection()
+        public Vector3 TurnDirection
         {
-            if (IgnoreRotateInput || !Controller)
-                return Vector3.zero;
+            get
+            {
+                if (IgnoreRotateInput || !Controller)
+                    return Vector3.zero;
 
-            return Controller.TurnDirection;
-        }
-        #endregion
-
-        #region EDITOR
-        [Conditional("UNITY_EDITOR")]
-        private void Log(string log)
-        {
-            if (_UseDebugMode)
-                UnityEngine.Debug.Log("PawnSystem [" + gameObject.name  + "] : " + log, this);
+                return Controller.TurnDirection;
+            }
         }
         #endregion
 

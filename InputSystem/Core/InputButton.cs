@@ -10,7 +10,9 @@ using UnityEngine.InputSystem;
 
 namespace StudioScor.InputSystem
 {
-    [CreateAssetMenu(menuName = "Event/Input/new Input Button Event", fileName = "InputButton_")]
+
+
+    [CreateAssetMenu(menuName = "StudioScor/Input/new Input Button Event", fileName = "InputButton_")]
     public class InputButton : ScriptableObject
     {
         #region Events
@@ -19,29 +21,56 @@ namespace StudioScor.InputSystem
         public delegate void IgnoreInputHandler(InputButton inputButton, bool isIgnore);
         #endregion
 
+        [Header(" [ Input Button ] ")]
+
         [SerializeField] private string _InputName;
         [SerializeField] private bool _IgnoreOnUi = false;
         [SerializeField] private bool _IsIngnoreInput = false;
-        [SerializeField] private bool _UseDebugMode;
+
+        [Header(" [ Use Debug ] ")]
+        [SerializeField] private bool _UseDebug;
 
         public string InputName => _InputName;
 
         private bool _IsPressed = false;
         private bool _PrevPressed = false;
 
+        private PlayerInputSystem _PlayerInputSystem;
+
         private InputAction _InputAction;
         public InputAction InputAction => _InputAction;
         public bool IsIgnoreInput => _IsIngnoreInput;
         public bool IsPressed => _IsPressed;
+        public bool IsCurrentDeviceMouse => _PlayerInputSystem.IsCurrentDeviceMouse;
 
         public event ButtonInputHandler OnPressedInput;
         public event ButtonInputHandler OnReleasedInput;
         public event ButtonStateHandler OnChangedInput;
         public event IgnoreInputHandler OnChangedIgnoreInput;
 
-        public virtual void Setup(PlayerInput playerInput)
+
+        #region EDITOR ONLY
+
+        [Conditional("UNITY_EDITOR")]
+        protected void Log(string log)
         {
-            _InputAction = playerInput.currentActionMap.FindAction(_InputName);
+#if UNITY_EDITOR
+            if (!_UseDebug)
+                return;
+
+            UnityEngine.Debug.Log("Input [ " + name + " ] : " + log);
+#endif
+        }
+        #endregion
+
+
+        public virtual void Setup(PlayerInputSystem playerInputSystem)
+        {
+            ResetInput();
+
+            _PlayerInputSystem = playerInputSystem;
+
+            _InputAction = _PlayerInputSystem.PlayerInput.currentActionMap.FindAction(_InputName);
 
             if (_InputAction is null)
             {
@@ -53,10 +82,15 @@ namespace StudioScor.InputSystem
             _InputAction.canceled += InputAction_canceled;
             _InputAction.performed += InputAction_performed;
             _InputAction.started += InputAction_started;
+
             Log("Success Setup - " + _InputAction);
         }
 
-       
+        public virtual void ResetInput()
+        {
+            _IsPressed = false;
+            _PrevPressed = false;
+        }
 
         public void SetIgnoreInput(bool ignore)
         {
@@ -100,7 +134,7 @@ namespace StudioScor.InputSystem
 
         protected virtual void InputAction_started(InputAction.CallbackContext obj)
         {
-            if (_IgnoreOnUi && IsPointerOverGameObject())
+            if (_IgnoreOnUi && _PlayerInputSystem.InPointerOverGameobject)
                 return;
                 
             CheckPressInput();
@@ -111,7 +145,7 @@ namespace StudioScor.InputSystem
 
         protected virtual void InputAction_canceled(InputAction.CallbackContext obj)
         {
-            if (_IgnoreOnUi && IsPointerOverGameObject())
+            if (_IgnoreOnUi && _PlayerInputSystem.InPointerOverGameobject)
                 return;
 
             CheckReleaseInput();
@@ -149,26 +183,14 @@ namespace StudioScor.InputSystem
                 OnReleaseInput();
             }
         }
-        protected bool IsPointerOverGameObject()
-        {
-            var pointerEventData = new PointerEventData(EventSystem.current)
-            {
-                position = Mouse.current.position.ReadValue()
-            };
-
-            var raycastResultsList = new List<RaycastResult>();
-
-            EventSystem.current.RaycastAll(pointerEventData, raycastResultsList);
-
-            return raycastResultsList.Count > 0;
-        }
+        
 
         #region CallBack
         protected void OnChangeIgnoreInput()
         {
             Log(IsIgnoreInput ? "Is Ignore Input" : "Is Not Ignore Input");
 
-            OnChangedIgnoreInput(this, IsIgnoreInput);
+            OnChangedIgnoreInput?.Invoke(this, IsIgnoreInput);
         }
         protected void OnPressInput()
         {
@@ -184,18 +206,11 @@ namespace StudioScor.InputSystem
             OnReleasedInput?.Invoke(this);
             OnChangedInput?.Invoke(this, false);
         }
+
+        
         #endregion
 
-        #region DEBUG
-        [Conditional("UNITY_EDITOR")]
-        protected void Log(string log)
-        {
-            if (!_UseDebugMode)
-                return;
 
-            UnityEngine.Debug.Log("Input [ "+ name + " ] : " + log);
-        }
-        #endregion
     }
 
 }

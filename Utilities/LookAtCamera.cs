@@ -1,25 +1,37 @@
 ﻿using UnityEngine;
+using UnityEngine.Animations;
 
 namespace StudioScor.Utilities
 {
-    public class LookAtCamera : MonoBehaviour
+    [RequireComponent(typeof(RotationConstraint))]
+    public class LookAtCamera : BaseMonoBehaviour
     {
-        private Transform _Transform;
-        
+        [Header(" [ Look At Camera Component ] ")]
+        [SerializeField] private RotationConstraint _Constraint;
+
+#if UNITY_EDITOR
+        private void Reset()
+        {
+            gameObject.TryGetComponentInParentOrChildren(out _Constraint);
+        }
+#endif
+
         private void Awake()
         {
-            _Transform = Camera.main.transform;
-        }
+            ConstraintSource source = new()
+            {
+                sourceTransform = Camera.main.transform,
+                weight = 1f,
+            };
 
-        private void LateUpdate()
-        {
-            Vector3 direction = _Transform.Direction(transform, false);
-
-            direction.x = 0;
-
-            Quaternion rotation = Quaternion.LookRotation(direction);
-
-            transform.rotation = rotation;
+            if (_Constraint.sourceCount > 0)
+            {
+                _Constraint.SetSource(0, source);
+            }
+            else
+            {
+                _Constraint.AddSource(source);
+            }
         }
     }
 

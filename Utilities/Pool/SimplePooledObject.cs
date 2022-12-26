@@ -14,21 +14,27 @@ namespace StudioScor.Utilities
         public UnityEvent OnCreatedEvent;
         public UnityEvent OnReleaseEvent;
 
-        private SimplePoolContainer _PoolContainer;
+        private SimplePool _Pool;
+
+        private bool _IsActivate = false;
 
         private void OnDisable()
         {
-            if (_ShouldDisableOnRelease)
+#if UNITY_EDITOR
+            if (!gameObject.scene.isLoaded)
+                return;
+#endif
+            if (_ShouldDisableOnRelease && _IsActivate)
                 Release();
         }
 
-        public void Create(SimplePoolContainer poolContainer)
+        public void Create(SimplePool poolContainer)
         {
             Log(" Create ");
 
             if (poolContainer is not null)
             {
-                _PoolContainer = poolContainer;
+                _Pool = poolContainer;
 
                 OnCreatedEvent?.Invoke();
             }
@@ -36,14 +42,26 @@ namespace StudioScor.Utilities
             {
                 Log(" Pool Container Is Null!");
             }
+
+            gameObject.SetActive(false);
+        }
+
+        public void Activate()
+        {
+            _IsActivate = true;
         }
         public void Release()
         {
+            if (!_IsActivate)
+                return;
+
+            _IsActivate = false;
+            
             Log(" Release ");
 
-            if (_PoolContainer is not null)
+            if (_Pool is not null)
             {
-                _PoolContainer.Release(this);
+                _Pool.Released(this);
 
                 OnReleaseEvent?.Invoke();
             }
@@ -52,6 +70,18 @@ namespace StudioScor.Utilities
                 Log(" Pool Container Is Null!");
             }
             
+        }
+        public virtual void SetParent(Transform parent, bool worldPositionStay = true)
+        {
+            transform.SetParent(parent, worldPositionStay);
+
+            if(!worldPositionStay)
+                ResetPositionAndRotation();
+        }
+        public virtual void ResetPositionAndRotation()
+        {
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
         }
         public virtual void SetPositionAndRotation(Vector3 position, Quaternion rotation)
         {

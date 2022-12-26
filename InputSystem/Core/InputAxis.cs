@@ -6,8 +6,7 @@ using UnityEngine.InputSystem;
 
 namespace StudioScor.InputSystem
 {
-
-    [CreateAssetMenu(menuName = "Event/Input/new Input Axis Event", fileName = "InputAxis_")]
+    [CreateAssetMenu(menuName = "StudioScor/Input/new Input Axis Event", fileName = "InputAxis_")]
     public class InputAxis : InputButton
     {
         #region Events
@@ -24,6 +23,17 @@ namespace StudioScor.InputSystem
         public float Strength => _Strength;
 
         public event ValueChangeHandler OnChangedValue;
+
+        public override void ResetInput()
+        {
+            base.ResetInput();
+
+            _Axis = default;
+            _PrevAxis = default;
+            _PrevStrength = default;
+
+            OnChangeValue();
+        }
 
         protected override void OnIgnoreInput()
         {

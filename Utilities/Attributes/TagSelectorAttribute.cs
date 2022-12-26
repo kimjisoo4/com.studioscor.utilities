@@ -8,4 +8,5 @@ namespace StudioScor.Utilities
     {
         public bool UseDefaultTagFieldDrawer = false;
     }
+
 }

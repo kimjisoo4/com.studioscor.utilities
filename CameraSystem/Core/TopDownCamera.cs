@@ -3,12 +3,9 @@ using Cinemachine;
 
 namespace StudioScor.CameraSystem
 {
+
     public class TopDownCamera : CameraBase
     {
-		[Header(" [ Follow Setting ] ")]
-		[SerializeField] private bool _UseFollow = true;
-		[SerializeField] private bool _UseLookAt = false;
-
 		[Header(" [ Zoom Setting ] ")]
 		[SerializeField] private Vector3 _MinDisntace;
 		[SerializeField] private Vector3 _MaxDisntace;
@@ -20,12 +17,21 @@ namespace StudioScor.CameraSystem
         {
             get
             {
-                if (_CinemachineTransposer == null)
+                if (!_WasSetup)
                 {
-					_CinemachineTransposer = CinemachineCamera.GetCinemachineComponent<CinemachineTransposer>();
-				}
+                    Setup();
+                }
 
 				return _CinemachineTransposer;
+            }
+        }
+        protected override void Setup()
+        {
+            base.Setup();
+
+            if (_CinemachineTransposer == null)
+            {
+                _CinemachineTransposer = CinemachineCamera.GetCinemachineComponent<CinemachineTransposer>();
             }
         }
         public override void UpdateDistance()
@@ -33,15 +39,6 @@ namespace StudioScor.CameraSystem
 			Vector3 position = Vector3.Lerp(_MinDisntace, _MaxDisntace, DistanceRange);
 
 			CinemachineTransposer.m_FollowOffset = position;
-		}
-
-        public override void UpdateTarget(Transform followTarget = null)
-		{
-			if (_UseFollow)
-				CinemachineCamera.Follow = followTarget;
-
-			if (_UseLookAt)
-				CinemachineCamera.LookAt = followTarget;
 		}
 	}
 }

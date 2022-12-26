@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace KimScor.BodySystem
+namespace StudioScor.BodySystem
 {
-    [CreateAssetMenu(menuName = "Body/new Body", fileName = "Body_")]
+    [CreateAssetMenu(menuName = "StudioScor/Body/new Body", fileName = "Body_")]
     public class Body : ScriptableObject
     {
         [SerializeField] private string _Name;

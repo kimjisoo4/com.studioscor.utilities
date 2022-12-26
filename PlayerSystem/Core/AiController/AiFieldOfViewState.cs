@@ -68,7 +68,7 @@ namespace StudioScor.PlayerSystem
 
             _RemainInterval = _Interval;
 
-            var hits = Utility.Physics.DrawConeCast(PawnSystem.transform, _Angle, _Distance, _LayerMask, _IgnoreTransforms, _UseDebug, 0.1f);
+            var hits = Utility.Physics.DrawConeCast(PawnSystem.transform, _Angle, _Distance, _LayerMask, _IgnoreTransforms, UseDebug, 0.1f);
 
             if (hits is not null)
             {

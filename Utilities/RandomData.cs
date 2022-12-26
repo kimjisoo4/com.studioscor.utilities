@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace StudioScor.Utilities
 {
+
+
     public class RandomData<T> : ScriptableObject, ISerializationCallbackReceiver
     {
         [System.Serializable]

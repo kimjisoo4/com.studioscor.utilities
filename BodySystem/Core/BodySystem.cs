@@ -2,59 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KimScor.BodySystem
+namespace StudioScor.BodySystem
 {
    
     public class BodySystem : MonoBehaviour
     {
         #region Events
-        public delegate void ChangedBodyPartHandler(BodySystem bodySystem, Body body, BodyPart transform);
+        public delegate void ChangedBodyPartHandler(BodySystem bodySystem, Body body, BodyPartComponent transform);
         #endregion
 
-        [SerializeField] private Dictionary<Body, BodyPart> _BodyParts;
+        [SerializeField] private Dictionary<Body, BodyPartComponent> _BodyParts;
 
-        public IReadOnlyDictionary<Body, BodyPart> BodyParts
+        public IReadOnlyDictionary<Body, BodyPartComponent> BodyParts
         {
             get
             {
                 if (_BodyParts == null)
                 {
-                    _BodyParts = new Dictionary<Body, BodyPart>();
+                    _BodyParts = new Dictionary<Body, BodyPartComponent>();
                 }
 
                 return _BodyParts;
             }
         }
 
-        private bool _IsInitialization = false;
+        private bool _WasSetup = false;
 
         public event ChangedBodyPartHandler OnAddedBodyPart;
         public event ChangedBodyPartHandler OnRemovedBodyPart;
 
         private void Awake()
         {
-            if (!_IsInitialization)
+            if (!_WasSetup)
             {
                 Setup();
             }
         }
         private void Setup()
         {
-            _IsInitialization = true;
+            _WasSetup = true;
 
             if (_BodyParts == null)
             {
-                _BodyParts = new Dictionary<Body, BodyPart>();
+                _BodyParts = new Dictionary<Body, BodyPartComponent>();
             }
         }
 
-        public bool TryGetBodyPart(Body body, out BodyPart bodyPart)
+        public bool TryGetBodyPart(Body body, out BodyPartComponent bodyPart)
         {
             return BodyParts.TryGetValue(body, out bodyPart);
         }
-        public BodyPart TryGetBodyPart(Body body)
+        public BodyPartComponent TryGetBodyPart(Body body)
         {
-            if(BodyParts.TryGetValue(body, out BodyPart bodyPart))
+            if(BodyParts.TryGetValue(body, out BodyPartComponent bodyPart))
             {
                 return bodyPart;
             }
@@ -64,9 +64,9 @@ namespace KimScor.BodySystem
             }
         }
 
-        public bool TryAddBodyPart(Body body, BodyPart transform)
+        public bool TryAddBodyPart(Body body, BodyPartComponent transform)
         {
-            if (!_IsInitialization)
+            if (!_WasSetup)
                 Setup();
 
             if(_BodyParts.TryAdd(body, transform))
@@ -82,10 +82,10 @@ namespace KimScor.BodySystem
         }
         public bool TryRemoveBodyPart(Body body)
         {
-            if (!_IsInitialization)
+            if (!_WasSetup)
                 Setup();
 
-            if (_BodyParts.TryGetValue(body, out BodyPart value))
+            if (_BodyParts.TryGetValue(body, out BodyPartComponent value))
             {
                 _BodyParts.Remove(body);
 
@@ -100,11 +100,11 @@ namespace KimScor.BodySystem
         }
 
         #region Events CallBack
-        public void OnAddBodyPart(Body body, BodyPart transform)
+        public void OnAddBodyPart(Body body, BodyPartComponent transform)
         {
             OnAddedBodyPart?.Invoke(this, body, transform);
         }
-        public void OnRemoveBodyPart(Body body, BodyPart transform)
+        public void OnRemoveBodyPart(Body body, BodyPartComponent transform)
         {
             OnRemovedBodyPart?.Invoke(this, body, transform);
         }

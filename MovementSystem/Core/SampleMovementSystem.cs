@@ -219,6 +219,9 @@ namespace StudioScor.MovementSystem
             if (!_UseGravity)
                 return;
 
+            if (DeltaVelocity.y > 0)
+                return;
+
             _Velocity += _GravityMovement.OnMovement(deltaTime);
         }
 

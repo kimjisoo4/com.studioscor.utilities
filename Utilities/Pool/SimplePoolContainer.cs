@@ -1,52 +1,39 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Pool;
 
 
 namespace StudioScor.Utilities
 {
-    public class SimplePoolContainer
+    [CreateAssetMenu(menuName = "StudioScor/New Simple Pool Container", fileName ="SimplePoolContainer_")]
+    public class SimplePoolContainer : BaseScriptableObject
     {
-        public SimplePoolContainer(SimplePooledObject pooledObject, int maxSize = 5)
+        [Header(" [ Simple Pool Container ] ")]
+        [SerializeField] private SimplePooledObject _SimplePoolObject;
+        [SerializeField] private GameObject _Container;
+        [SerializeField] private int _StartSize = 5;
+        [SerializeField] private int _Capacity = 10;
+        [SerializeField] private int _MaxSize = 20;
+
+        private GameObject _InstContainer;
+        private SimplePool _SimplePool;
+
+        public SimplePooledObject GetItem()
         {
-            _PooledObject = pooledObject;
-            _MaxSize = maxSize;
+            if (!_InstContainer)
+            {
+                if (_Container)
+                {
+                    _InstContainer = Instantiate(_Container);
+                }
+                else
+                {
+                    _InstContainer = new GameObject(name);
+                }
 
-            SetupPool();
-        }
+                _SimplePool = new SimplePool(_SimplePoolObject, _InstContainer.transform, _StartSize, _Capacity, _MaxSize);
+            }
 
-        private SimplePooledObject _PooledObject;
-        private IObjectPool<SimplePooledObject> _Pool;
-        private int _MaxSize;
-
-        public SimplePooledObject PooledObject => _PooledObject;
-        public IObjectPool<SimplePooledObject> Pool => _Pool;
-
-        public void SetupPool()
-        {
-            _Pool = new ObjectPool<SimplePooledObject>(Create, actionOnDestroy : Destroyed, maxSize : _MaxSize);
-        }
-
-        private void Destroyed(SimplePooledObject pooledObject)
-        {
-            UnityEngine.Object.Destroy(pooledObject.gameObject);
-        }
-
-        private SimplePooledObject Create()
-        {
-            var pooledObject = UnityEngine.Object.Instantiate(PooledObject);
-
-            pooledObject.Create(this);
-
-            return pooledObject;
-        }
-        public SimplePooledObject Get()
-        {
-            return Pool.Get();
-        }
-        public void Release(SimplePooledObject pooledObject)
-        {
-            Pool.Release(pooledObject);
+            return _SimplePool.Get();
         }
     }
     

@@ -10,6 +10,132 @@ namespace StudioScor.Utilities
         public static class Physics
         {
             #region ConeCast
+            public static bool DrawConeCast(Vector3 position, Vector3 direction, float angle, float distance, LayerMask layerMask, ref List<Collider> hitResult, List<Transform> ignoreTransform,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Collider[] overlapHit = UnityEngine.Physics.OverlapSphere(position, distance, layerMask);
+
+                if (overlapHit.Length == 0)
+                {
+                    return false;
+                }
+
+                float halfAngle = angle * 0.5f;
+
+                foreach (Collider hit in overlapHit)
+                {
+                    if (ignoreTransform.Count > 0)
+                    {
+                        if (ignoreTransform.Contains(hit.transform) || ignoreTransform.Contains(hit.transform.root))
+                        {
+                            continue;
+                        }
+                    }
+
+                    Vector3 targetDirection = position.Direction(hit.transform.position);
+
+                    float hitAngle = Vector3.Angle(direction, targetDirection);
+
+                    if (hitAngle > 180)
+                        hitAngle -= 360f;
+
+                    if (hitAngle <= halfAngle && hitAngle >= -halfAngle)
+                    {
+                        hitResult.Add(hit);
+                    }
+                }
+
+                #region DEBUG_DRAW
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitResult.Count > 0)
+                    {
+                        Debug.DrawCone(position, direction, distance, angle, successColor, duration);
+
+                        foreach (var collider in hitResult)
+                        {
+                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCone(position, direction, distance, angle, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+
+                return hitResult.Count > 0;
+            }
+
+
+            public static bool DrawConeCast(Transform transform, float angle, float distance, LayerMask layerMask, ref List<Collider> hitResult, List<Transform> ignoreTransform,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Collider[] overlapHit = UnityEngine.Physics.OverlapSphere(transform.position, distance, layerMask);
+
+                if (overlapHit.Length == 0)
+                {
+                    return false;
+                }
+
+                float halfAngle = angle * 0.5f;
+
+                foreach (Collider hit in overlapHit)
+                {
+                    if (ignoreTransform.Count > 0)
+                    {
+                        if (ignoreTransform.Contains(hit.transform) || ignoreTransform.Contains(hit.transform.root))
+                        {
+                            continue;
+                        }
+                    }
+
+                    Vector3 direction = transform.Direction(hit.transform);
+
+                    float hitAngle = Vector3.Angle(transform.forward, direction);
+
+                    if (hitAngle > 180)
+                        hitAngle -= 360f;
+
+                    if (hitAngle <= halfAngle && hitAngle >= -halfAngle)
+                    {
+                        hitResult.Add(hit);
+                    }
+                }
+
+                #region DEBUG_DRAW
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitResult.Count > 0)
+                    {
+                        Debug.DrawCone(transform.position, transform.rotation, distance, angle, successColor, duration);
+
+                        foreach (var collider in hitResult)
+                        {
+                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCone(transform.position, transform.rotation, distance, angle, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+
+                return hitResult.Count > 0;
+            }
+
+
 
             public static List<Collider> DrawConeCast(Transform transform, float angle, float distance, LayerMask layerMask, List<Transform> ignoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
@@ -298,6 +424,61 @@ namespace StudioScor.Utilities
 #endif
                 return colliders;
             }
+
+            public static bool DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, ref List<Collider> hitResults, List<Transform> IgnoreTransform, 
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Collider[] colliders = UnityEngine.Physics.OverlapSphere(position, radius, layerMask);
+
+                if (colliders.Length == 0)
+                {
+#if UNITY_EDITOR
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    Debug.DrawSphere(position, radius, failedColor, duration);
+#endif
+                    return false;
+                }
+
+                if (IgnoreTransform.Count > 0)
+                {
+                    foreach (var collider in colliders)
+                    {
+                        if (!IgnoreTransform.Contains(collider.transform) && !IgnoreTransform.Contains(collider.transform.root))
+                        {
+                            hitResults.Add(collider);
+                        }
+                    }
+                }
+
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitResults.Count > 0)
+                    {
+                        Debug.DrawSphere(position, radius, successColor, duration);
+
+                        foreach (var hit in hitResults)
+                        {
+                            Debug.DrawPoint(hit.transform.position, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawSphere(position, radius, failedColor, duration);
+                    }
+                }
+#endif
+
+                return hitResults.Count > 0;
+            }
+
+            #endregion
+
+
             public static List<Collider> DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, List<Transform> IgnoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
@@ -362,7 +543,7 @@ namespace StudioScor.Utilities
                 }
             }
 
-#endregion
+
 
 #region DrawSphereCastAll
             public static RaycastHit[] DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask,
@@ -409,6 +590,74 @@ namespace StudioScor.Utilities
                 return hits;
             }
 
+            public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults, List<Transform> ignoreTransform,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 direction = start.Direction(end);
+                float distance = Vector3.Distance(start, end);
+
+                if (direction == Vector3.zero)
+                {
+                    direction = new Vector3(0, 0, 1f);
+                    distance = 0.01f;
+                }
+
+                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
+
+                if (hits.Length == 0)
+                {
+                    #region DEBUG DRAW
+#if UNITY_EDITOR
+                    if (useDebug)
+                    {
+                        Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+#endif
+                    #endregion
+
+                    return false;
+                }
+
+
+                foreach (var hit in hits)
+                {
+                    if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
+                    {
+                        hitResults.Add(hit);
+                    }
+                }
+
+                #region DEBUG DRAW
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitResults.Count > 0)
+                    {
+                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
+
+                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
+                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
+
+                        foreach (var hit in hits)
+                        {
+                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+
+                return hitResults.Count > 0;
+            }
             public static List<RaycastHit> DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, List<Transform> ignoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
@@ -479,6 +728,7 @@ namespace StudioScor.Utilities
 
                 return hitList;
             }
+
             public static List<RaycastHit> DrawSphereCastAll(Vector3 start, float radius, Vector3 direction, float distance, LayerMask layermask, List<Transform> ignoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {

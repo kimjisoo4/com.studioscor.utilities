@@ -81,10 +81,8 @@ namespace StudioScor.PlayerSystem
             {
                 _Values[blackBoardKey] = default;
 
-                if (blackBoardKey.UseParameter)
-                {
-                    Animator.SetBool(blackBoardKey.Hash, false);
-                }
+                Animator.SetBool(blackBoardKey.HasValueHash, false);
+                Animator.SetTrigger(blackBoardKey.TriggerValueChangeHash);
 
                 OnChangeBlackBoardValue(blackBoardKey);
             }
@@ -97,15 +95,15 @@ namespace StudioScor.PlayerSystem
                 {
                     _Values[blackBoardKey] = newValue;
 
-                    if (blackBoardKey.UseParameter)
-                    {
-                        Animator.SetBool(blackBoardKey.Hash, true);
-                    }
+                    Animator.SetBool(blackBoardKey.HasValueHash, true);
+                    Animator.SetTrigger(blackBoardKey.TriggerValueChangeHash);
 
                     OnChangeBlackBoardValue(blackBoardKey, newValue);
                 }
             }
         }
+        
+
         public BlackBoardKey GetBlackBoardKey(string name)
         {
             foreach (var key in Values.Keys)
@@ -118,6 +116,50 @@ namespace StudioScor.PlayerSystem
 
             return null;
         }
+
+
+        #region Blackboard type ID
+        public int GetBlackBoardKeyID(string name)
+        {
+            var key = GetBlackBoardKey(name);
+
+            return key.GetInstanceID();
+        }
+        public BlackBoardKey GetBlackBoardKey(int id)
+        {
+            foreach (var key in Values.Keys)
+            {
+                if (key.GetInstanceID() == id)
+                {
+                    return key;
+                }
+            }
+
+            return null;
+        }
+        public bool HasBlackBoardValue(int id)
+        {
+            return HasBlackBoardValue(GetBlackBoardKey(id));
+        }
+        public bool TryGetBlackBoardValue(int id, out object value)
+        {
+            return TryGetBlackBoardValue(GetBlackBoardKey(id), out value);
+        }
+        public void ClearBlackBoardValue(int id)
+        {
+            var key = GetBlackBoardKey(id);
+
+            ClearBlackBoardValue(key);
+        }
+        public void SetBlackBoardValue(int id, object newValue)
+        {
+            var key = GetBlackBoardKey(id);
+
+            SetBlackBoardValue(key, newValue);
+        }
+
+
+        #endregion
         #region Blackboard type String
         public bool HasBlackBoardValue(string keyName)
         {

@@ -72,6 +72,15 @@ namespace StudioScor.GameplayTagSystem
             AddBlockTags(_InitializationTags.Blocks);
         }
 
+        public void ResetGameplayTagComponent()
+        {
+            _OwnedTags.Clear();
+            _BlockTags.Clear();
+
+            AddOwnedTags(_InitializationTags.Owneds);
+            AddBlockTags(_InitializationTags.Blocks);
+        }
+
         #region Trigger Tag
         public void TriggerTag(GameplayTag triggerTag)
         {

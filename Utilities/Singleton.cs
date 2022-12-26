@@ -51,6 +51,7 @@ namespace StudioScor.Utilities
 			}
 				
 			_Instance = GetComponent<T>();
+
 			_Instance.Setup();
 		}
 		protected virtual void Setup() 

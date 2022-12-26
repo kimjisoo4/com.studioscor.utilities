@@ -174,26 +174,6 @@ namespace StudioScor.Utilities
                 {
                     UnityEngine.Debug.DrawLine(position + lines[i], position + lines[i + 1], color, duration);
                 }
-                
-                // Circle //
-                int circleCount = Mathf.RoundToInt(halfAngle / 20f);
-                float tickCicleAngle = halfAngle / circleCount;
-
-                for (int j = 0; j < circleCount; j++)
-                {
-                    List<Vector3> circleLines = new List<Vector3>();
-
-                    for (int i = 0; i < 17; i++)
-                    {
-                        circleLines.Add(Quaternion.Euler(0, 0, 22.5f * i) * (Quaternion.Euler(tickCicleAngle * j, 0, 0) * direction));
-                    }
-
-                    for (int i = 0; i < circleLines.Count - 1; i++)
-                    {
-                        UnityEngine.Debug.DrawLine(circleLines[i], circleLines[i + 1], color, duration);
-                    }
-                }
-
 
                 // Arc //
                 int count = Mathf.RoundToInt(angle / 10f);
@@ -207,12 +187,24 @@ namespace StudioScor.Utilities
                     for (int j = 0; j < 8; j++)
                     {
                         Vector3 startPosition = rotation * (Quaternion.Euler(0, 0, 22.5f * j) * Quaternion.Euler(0, startAngle, 0) * direction);
-                        Vector3 endPosition = rotation *(Quaternion.Euler(0, 0, 22.5f * j) * Quaternion.Euler(0, endAngle, 0) * direction);
+                        Vector3 endPosition = rotation * (Quaternion.Euler(0, 0, 22.5f * j) * Quaternion.Euler(0, endAngle, 0) * direction);
 
                         UnityEngine.Debug.DrawLine(position + startPosition, position + endPosition, color, duration);
                     }
                 }
+
             }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DrawCone(Vector3 position, Vector3 direction, float distance, float angle, Color color, float duration = 0f)
+            {
+                if (!UseDebug)
+                    return;
+
+                DrawCone(position, Quaternion.LookRotation(direction), distance, angle, color, duration);
+            }
+
+
 
             [Conditional("UNITY_EDITOR")]
             public static void DrawCapsule(Vector4 start, Vector4 end, float radius, Color color, float duration = 0f)

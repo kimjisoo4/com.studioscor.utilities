@@ -9,14 +9,25 @@ namespace StudioScor.Utilities
 	{
 		[SerializeField] private TMP_Text _TMP;
 
-        [SerializeField] private IObjectPool<FloatingDamageText> _FloatingDamagePool;
+        private IObjectPool<FloatingDamageText> _FloatingDamagePool;
+
+        private bool _IsRelease = false;
 
         public void Create(IObjectPool<FloatingDamageText> pool)
         {
             _FloatingDamagePool = pool;
         }
+        public void Activate()
+        {
+            _IsRelease = true;
+        }
         public void Release()
         {
+            if (!_IsRelease)
+                return;
+
+            _IsRelease = true;
+
             _FloatingDamagePool.Release(this);
 
             gameObject.SetActive(false);

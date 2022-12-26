@@ -5,7 +5,6 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-
     public class OnTriggerComponent : BaseMonoBehaviour
     {
         [Header(" [ Tags ] ")]
@@ -25,6 +24,7 @@ namespace StudioScor.Utilities
 
         private List<Collider> _StayedColliders;
 
+        #region EDITOR ONLY
         [Conditional("UNITY_EDITOR")]
         private void DrawSphere(Vector3 position, Color color)
         {
@@ -34,6 +34,7 @@ namespace StudioScor.Utilities
 #endif
         }
 
+        #endregion
 
         private void Awake()
         {

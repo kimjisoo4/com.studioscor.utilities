@@ -43,6 +43,7 @@ namespace StudioScor.Utilities
 
 		[Header(" [ Use Floating Text ] ")]
 		[SerializeField] private bool _UseFloatingText;
+		[SerializeField] private FloatingTextContainer _FloatingTextContainer;
 		[SerializeField] private Vector3 _FloatingTextOffset;
 
 		[Header(" [ Unity Events ] ")]
@@ -251,12 +252,7 @@ namespace StudioScor.Utilities
 
 			if (_UseFloatingText)
 			{
-				var manager = FloatingDamageManager.Instance;
-
-				if (manager)
-				{
-					manager.SpawnFloatingDamage(transform.position + _FloatingTextOffset, damage);
-				}
+				_FloatingTextContainer.SpawnFloatingDamage(transform.position + _FloatingTextOffset, damage);
 			}
 
 			return prevValue - _Health;

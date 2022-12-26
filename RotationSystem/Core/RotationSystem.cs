@@ -13,12 +13,12 @@ namespace StudioScor.RotationSystem
         public float TurnSpeed => _TurnSpeed;
 
         [SerializeField] protected Transform _TargetTransform;
-        [SerializeField] protected Transform _CameraTransform;
+        [SerializeField] protected Camera _MainCamera;
         [SerializeField] protected bool _UseRotation = true;
 
         public bool UseRotation => _UseRotation;
         public Transform TargetTransform => _TargetTransform;
-        public Transform CameraTransform => _CameraTransform;
+        public Camera MainCamera => _MainCamera;
 
         [Header(" [ Ignore Input ] ")]
         [SerializeField] private bool _IgnoreInput = false;
@@ -112,7 +112,7 @@ namespace StudioScor.RotationSystem
 
         private void Awake()
         {
-            _CameraTransform = Camera.main.transform;
+            _MainCamera = Camera.main;
         }
 
         public virtual void OnRotation(float deltaTime)
@@ -210,14 +210,14 @@ namespace StudioScor.RotationSystem
 
         public virtual void OnRotationToCamera()
         {
-            if (CameraTransform == null)
+            if (MainCamera == null)
             {
                 _TurnEulerAngles = transform.eulerAngles;
 
                 return;
             }
 
-            Vector3 direction = CameraTransform.forward;
+            Vector3 direction = MainCamera.transform.forward;
 
             Quaternion newRotation = Quaternion.LookRotation(direction);
 

@@ -1,38 +1,41 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
 
 
+
     [RequireComponent(typeof(Rigidbody))]
-    public class Projectile : MonoBehaviour
+    public class Projectile : BaseMonoBehaviour
     {
+        [Header(" [ Projectile ] ")]
         [Header(" [ Reference ] ")]
         [SerializeField] private Rigidbody _RigidBody;
-
         [Header(" [ Direction ] ")]
         [SerializeField] private Transform _Target;
         [SerializeField] private Vector3 _Direction = Vector3.forward;
-
+        [SerializeField] private float _TurnSpeed = 180f;
         [Header(" [ Speed ] ")]
         [SerializeField] private float _StartedSpeed = 10f;
         [SerializeField] private float _TargetSpeed = 5f;
-        
-        [Header(" [ Accel & Decel ] ")]
+        [Space(5f)]
         [SerializeField] private float _Acceleration = 20f;
         [SerializeField] private float _Deceleration = 10f;
-
-        [Header(" [ Use Gravity ] ")]
+        [Header(" [ Gravity ] ")]
         [SerializeField] private bool _UseGravitu = true;
         [SerializeField] private float _Gravity = 9.81f;
+        [Header(" [ Auto Playing ] ")]
+        [SerializeField] private bool _AutoShooting = true;
+        
+        public UnityEvent OnShotProjectile;
 
-        [SerializeField] private float _TurnSpeed = 180f;
 
-        [Header(" [ Use Debug ] ")]
-        [SerializeField] protected bool _UseDebug;
-
+        private bool _WasShot;
         private float _CurrentHorizontalSpeed;
         private float _CurrentVerticalSpeed;
+
+        public bool WasShot => _WasShot;
 
 
 
@@ -48,17 +51,36 @@ namespace StudioScor.Utilities
 
         private void OnEnable()
         {
-            OnProjectile();
+            if(_AutoShooting)
+                OnProjectile();
         }
         private void OnDisable()
         {
-            _Target = null;
+            ResetProjectile();
         }
 
-        private void OnProjectile()
+        public void OnProjectile()
         {
+            if (_WasShot)
+                return;
+
+            _WasShot = true;
+
             _CurrentHorizontalSpeed = _StartedSpeed;
             _CurrentVerticalSpeed = 0f;
+
+            OnShotProjectile?.Invoke();
+        }
+        public void ResetProjectile()
+        {
+            _WasShot = false;
+
+            _CurrentHorizontalSpeed = 0f;
+            _CurrentVerticalSpeed = 0f;
+
+            _RigidBody.velocity = Vector3.zero;
+
+            _Target = null;
         }
 
         public void SetTarget(Transform target)
@@ -104,6 +126,9 @@ namespace StudioScor.Utilities
 
         private void FixedUpdate()
         {
+            if (!_WasShot)
+                return;
+
             float deltaTime = Time.fixedDeltaTime;
 
             LookAtTarget(deltaTime);

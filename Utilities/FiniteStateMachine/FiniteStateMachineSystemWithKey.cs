@@ -11,7 +11,30 @@ namespace StudioScor.Utilities
         private TKey _CurrentStateKey;
         
         private Dictionary<TKey, T> _States;
-        public TKey CurrentStateKey => _CurrentStateKey;
+        public TKey CurrentStateKey
+        {
+            get
+            {
+                if (_NeedUpdateKey)
+                {
+                    foreach (var state in _States)
+                    {
+                        if (state.Value == _CurrentState)
+                        {
+                            _CurrentStateKey = state.Key;
+
+                            _NeedUpdateKey = false;
+
+                            break;
+                        }
+                    }
+                }
+
+                return _CurrentStateKey;
+            }
+        }
+
+        private bool _NeedUpdateKey = false;
         
         public FiniteStateMachineSystemWithKey(TKey key, T defaultState) : base(defaultState)
         {
@@ -41,23 +64,33 @@ namespace StudioScor.Utilities
             return _States.ContainsValue(state);
         }
 
+        public bool CanSetState(TKey key)
+        {
+            return _States.TryGetValue(key, out T state) && CanSetState(state);
+        }
         public bool TrySetState(TKey key)
         {
-            if (_States.TryGetValue(key, out T state) && TrySetState(state))
+            if (!CanSetState(key))
             {
-                _CurrentStateKey = key;
-
-                return true;
+                return false;
             }
 
-            return false;
+            ForceSetState(key);
+
+            return true;
         }
+
+        public override void ForceSetState(T state)
+        {
+            base.ForceSetState(state);
+
+            _NeedUpdateKey = true;
+        }
+
         public void ForceSetState(TKey key)
         {
             if (_States.TryGetValue(key, out T state))
             {
-                _CurrentStateKey = key;
-
                 ForceSetState(state);
             }
         }
