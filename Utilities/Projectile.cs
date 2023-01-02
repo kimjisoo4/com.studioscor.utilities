@@ -3,14 +3,10 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-
-
-
     [RequireComponent(typeof(Rigidbody))]
     public class Projectile : BaseMonoBehaviour
     {
         [Header(" [ Projectile ] ")]
-        [Header(" [ Reference ] ")]
         [SerializeField] private Rigidbody _RigidBody;
         [Header(" [ Direction ] ")]
         [SerializeField] private Transform _Target;

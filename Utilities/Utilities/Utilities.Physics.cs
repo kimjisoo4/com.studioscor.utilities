@@ -829,6 +829,14 @@ namespace StudioScor.Utilities
 #endregion
 
 #region DrawSphereCast
+            public static bool DrawSphereCast(Vector3 start, Vector3 end, float radius, out RaycastHit hit, LayerMask layerMask,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 direction = start.Direction(end, false);
+                float distance = direction.magnitude;
+
+                return DrawSphereCast(start, radius, direction, distance, out hit, layerMask, useDebug, duration, rayColor, hitColor);
+            }
             public static bool DrawSphereCast(Vector3 start, float radius, Vector3 direction, float distance, out RaycastHit hit, LayerMask layermask,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
