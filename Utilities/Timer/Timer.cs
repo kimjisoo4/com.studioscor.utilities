@@ -1,10 +1,14 @@
-﻿namespace StudioScor.Utilities
+﻿using UnityEngine;
+
+namespace StudioScor.Utilities
 {
+    [System.Serializable]
     public class Timer
     {
 		public delegate void TimerHandler(Timer timer);
 
-		private float _Duration;
+		[SerializeField] private float _Duration;
+		
 		private float _RemainTime;
 		private float _ElapsedTime;
 		private float _NormalizedTime;
@@ -67,6 +71,10 @@
 			OnStartedTimer?.Invoke(this);
 		}
 
+		public void SetDuration(float duration)
+        {
+			_Duration = duration;
+        }
 		public void JumpTimer(float time)
         {
 			_RemainTime -= time;
