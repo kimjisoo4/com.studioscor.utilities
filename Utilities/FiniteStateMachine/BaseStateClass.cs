@@ -80,12 +80,10 @@ namespace StudioScor.Utilities
         }
     }
 
-    public abstract class BaseStateClass : IState
+    public abstract class BaseStateClass : BaseClass,IState
     {       
         public event UnityAction<IState> OnEnteredState;
         public event UnityAction<IState> OnExitedState;
-
-        protected virtual bool UseDebug { get; } 
 
         protected bool _IsActivate;
         public bool IsActivate => _IsActivate;
@@ -93,15 +91,6 @@ namespace StudioScor.Utilities
         public BaseStateClass()
         {
 
-        }
-
-        [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object massage)
-        {
-#if UNITY_EDITOR
-            if (UseDebug)
-                Utility.Debug.Log("[ " + GetType().Name + " ] :" + massage);
-#endif
         }
 
         public virtual bool TryEnterState()

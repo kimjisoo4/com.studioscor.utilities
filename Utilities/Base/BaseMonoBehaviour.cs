@@ -5,10 +5,13 @@ namespace StudioScor.Utilities
 {
     public class BaseScriptableObject : ScriptableObject
     {
+#if UNITY_EDITOR
         [Header(" [ Use Debug ] ")]
         [SerializeField] private bool _UseDebug = false;
-
-        protected bool UseDebug => _UseDebug;
+        public bool UseDebug => _UseDebug;
+#else
+        public bool UseDebug = false;
+#endif
 
         [Conditional("UNITY_EDITOR")]
         protected virtual void Log(object log, bool isError = false)
@@ -29,10 +32,14 @@ namespace StudioScor.Utilities
 
     public abstract class BaseClass
     {
+#if UNITY_EDITOR
         public abstract bool UseDebug { get; }
+#else
+        public bool UseDebug = false;
+#endif
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, Object context = null, bool isError = false)
+        protected virtual void Log(object log, bool isError = false, Object context = null)
         {
 #if UNITY_EDITOR
             if (isError)
@@ -50,10 +57,13 @@ namespace StudioScor.Utilities
 
     public class BaseMonoBehaviour : MonoBehaviour
     {
+#if UNITY_EDITOR
         [Header(" [ Use Debug ] ")]
         [SerializeField] private bool _UseDebug = false;
-
-        protected bool UseDebug => _UseDebug;
+        public bool UseDebug => _UseDebug;
+#else
+        public bool UseDebug => false;
+#endif
 
         [Conditional("UNITY_EDITOR")]
         protected virtual void Log(object log, bool isError = false)

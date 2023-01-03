@@ -1,0 +1,23 @@
+{
+    "name": "StudioScor.CameraSystem",
+    "rootNamespace": "StudioScor.CameraSystem",
+    "references": [
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "0.0.0",
+            "define": "ENABLE_CINEMACHINE"
+        }
+    ],
+    "noEngineReferences": false
+}

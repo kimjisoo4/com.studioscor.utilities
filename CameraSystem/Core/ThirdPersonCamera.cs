@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if ENABLE_CINEMACHINE
+using UnityEngine;
 using Cinemachine;
 
 namespace StudioScor.CameraSystem
@@ -26,3 +27,4 @@ namespace StudioScor.CameraSystem
         }
     }
 }
+#endif

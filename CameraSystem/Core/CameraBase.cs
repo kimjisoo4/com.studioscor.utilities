@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+#if ENABLE_CINEMACHINE
 using UnityEngine;
 using Cinemachine;
 
@@ -149,3 +148,4 @@ namespace StudioScor.CameraSystem
 		#endregion
 	}
 }
+#endif

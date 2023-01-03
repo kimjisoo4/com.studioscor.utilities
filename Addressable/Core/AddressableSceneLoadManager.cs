@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿#if ENABLE_ADDRESSABLES
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
@@ -12,9 +14,9 @@ namespace StudioScor.Utilities
 {
     public class AddressableSceneLoadManager : Singleton<AddressableSceneLoadManager>
     {
-        #region
+#region
         public delegate void SceneLoadHandler(AddressableSceneLoadManager sceneLoadManager);
-        #endregion
+#endregion
 
         [Header(" [ Scene Load Manager ] ")]
         [SerializeField] private AssetReference _LoadingScene;
@@ -206,3 +208,5 @@ namespace StudioScor.Utilities
 
     }
 }
+
+#endif

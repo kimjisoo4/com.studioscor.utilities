@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if ENABLE_ADDRESSABLES
+using UnityEngine;
 using StudioScor.Utilities;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -52,3 +53,4 @@ namespace StudioScor.GameplayQueSystem
         }
     }
 }
+#endif

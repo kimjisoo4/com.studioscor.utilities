@@ -42,6 +42,8 @@ namespace StudioScor.AbilitySystem
 
     public class AbilityStateBlockSpec : BaseStateClass
     {
+        public override bool UseDebug => false;
+
         protected override void EnterState()
         {
         }
@@ -64,7 +66,7 @@ namespace StudioScor.AbilitySystem
         protected readonly AbilityStateBlock _AbilityStateBlock;
         protected readonly IAbilityState _AbilityState;
 
-        protected override bool UseDebug => _AbilityStateBlock is not null && _AbilityStateBlock.UseDebug;
+        public override bool UseDebug => _AbilityStateBlock is not null && _AbilityStateBlock.UseDebug;
         protected virtual bool CanCancelState => true;
 
         public AbilityStateBlockBaseSpec(AbilityStateBlock abilityStateBlock, IAbilityState abilityState)
@@ -75,13 +77,9 @@ namespace StudioScor.AbilitySystem
             _GameplayTagComponent = abilityState.AbilitySpec.AbilitySystem.GameplayTagComponent;
         }
 
-
-        protected override void Log(object massage)
+        protected override void Log(object log, bool isError = false, UnityEngine.Object context = null)
         {
-#if UNITY_EDITOR
-            if (UseDebug)
-                Utility.Debug.Log(_AbilityStateBlock.name + " [ " + GetType().Name + " ] :" + massage, _AbilityStateBlock);
-#endif
+            base.Log(log, isError, _AbilityStateBlock);
         }
 
         public override bool CanEnterState()

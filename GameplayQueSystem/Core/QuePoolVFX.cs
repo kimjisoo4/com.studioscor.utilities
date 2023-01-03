@@ -4,8 +4,6 @@ using UnityEngine;
 using StudioScor.Utilities;
 using StudioScor.GameplayQueSystem;
 
-using UnityEngine.ResourceManagement;
-
 namespace StudioScor.GameplayQueSystem
 {
     [CreateAssetMenu(menuName ="StudioScor/GameplayQue/new PoolVFX", fileName = "VFX_")]
