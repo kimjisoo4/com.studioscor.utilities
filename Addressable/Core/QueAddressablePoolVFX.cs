@@ -1,4 +1,4 @@
-﻿#if ENABLE_ADDRESSABLES
+﻿#if ENABLE_ADDRESSABLES && ENABLE_QUESYSTEM
 using UnityEngine;
 using StudioScor.Utilities;
 using UnityEngine.AddressableAssets;

@@ -1,4 +1,4 @@
-﻿#if ENABLE_CINEMACHINE
+﻿#if SCOR_ENABLE_CINEMACHINE
 using UnityEngine;
 using Cinemachine;
 using StudioScor.Utilities;
@@ -35,6 +35,7 @@ namespace StudioScor.CameraSystem
                 _CinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
         }
 #endif
+
 
         protected override void Setup()
         {

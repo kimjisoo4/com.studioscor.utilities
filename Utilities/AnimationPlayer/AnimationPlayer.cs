@@ -6,8 +6,9 @@ namespace StudioScor.Utilities
 {
     public class AnimationPlayer : MonoBehaviour
     {
+        [Header(" [ Animation Player ] ")]
         [SerializeField] private Animator _Animator;
-        [SerializeField] private bool _UseDebug = false;
+
         public Animator Animator => _Animator;
 
         public event Action OnCanceled;
@@ -26,23 +27,36 @@ namespace StudioScor.Utilities
         private readonly int ACTION_NUMBER = Animator.StringToHash("ActionNumber");
 
         #region EDITOR ONLY
+#if UNITY_EDITOR
+        [Header(" [ Use Debug ] ")]
+        [SerializeField] private bool _UseDebug = false;
+
+#endif
+
         [Conditional("UNITY_EDITOR")]
-        private void Log(string log)
+        private void Log(object message, bool isError = false)
         {
 #if UNITY_EDITOR
-            if (!_UseDebug)
-                return;
-
-            UnityEngine.Debug.Log("Animation Player [ " + name + " ] : " + log);
+            if (isError)
+            {
+                Utility.Debug.LogError("Animation Player [ " + name + " ] : " + message, this);
+            }
+            else if(_UseDebug)
+            {
+                Utility.Debug.Log("Animation Player [ " + name + " ] : " + message, this);
+            }
 #endif
         }
-        #endregion
+
 #if UNITY_EDITOR
         private void Reset()
         {
             gameObject.TryGetComponentInParentOrChildren(out _Animator);
         }
 #endif
+
+        #endregion
+
 
         public void PlayAction(int actionNumber, Action finished = null, Action canceled = null, Action blendOut = null)
         {
@@ -61,7 +75,7 @@ namespace StudioScor.Utilities
         {
             if (!Animator)
             {
-                Log("Play Action - Failed! Needs Animator Reference!");
+                Log("Play Action - Failed! Needs Animator Reference!", true);
 
                 return;
             }
@@ -87,7 +101,7 @@ namespace StudioScor.Utilities
         {
             if(!Animator)
             {
-                Log("Play Action - Failed! Needs Animator Reference!");
+                Log("Play Action - Failed! Needs Animator Reference!", true);
 
                 return false;
             }

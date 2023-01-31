@@ -1,4 +1,4 @@
-#if ENABLE_CINEMACHINE
+#if SCOR_ENABLE_CINEMACHINE
 using UnityEngine;
 using Cinemachine;
 

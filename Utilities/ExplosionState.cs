@@ -18,7 +18,6 @@ namespace StudioScor.Utilities
             [SerializeField] private bool _UseDebug;
             public override float Radius => _Radius;
             public override LayerMask LayerMask => _LayerMask;
-            public override bool UseDebug => _UseDebug;
             public override Vector3 Offset => _Offset;
             public override Vector3 AngleOffset => _AngleOffset;
         }

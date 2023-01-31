@@ -5,16 +5,17 @@ namespace StudioScor.Utilities
     public static partial class Utility
     {
         #region GameObject
-        public static T GetComponentInParentOrChildren<T>(this GameObject gameObject) where T : class
+        public static T GetComponentInParentOrChildren<T>(this GameObject gameObject) where T : Component
         {
             var component = gameObject.GetComponentInParent<T>();
-            if (component != null)
+            
+            if (component)
                 return component;
 
             return gameObject.GetComponentInChildren<T>();
         }
 
-        public static bool TryGetComponentInParentOrChildren<T>(this GameObject gameObject, out T componenet) where T : class
+        public static bool TryGetComponentInParentOrChildren<T>(this GameObject gameObject, out T componenet) where T : Component
         {
             componenet = gameObject.GetComponentInParentOrChildren<T>();
 
