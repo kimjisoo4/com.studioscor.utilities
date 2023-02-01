@@ -80,7 +80,7 @@ namespace StudioScor.Utilities
         }
     }
 
-    public abstract class BaseStateClass : BaseClass,IState
+    public abstract class BaseStateClass : BaseClass, IState
     {       
         public event UnityAction<IState> OnEnteredState;
         public event UnityAction<IState> OnExitedState;

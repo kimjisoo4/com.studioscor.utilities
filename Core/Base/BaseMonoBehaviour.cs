@@ -38,20 +38,22 @@ namespace StudioScor.Utilities
 #else
         [HideInInspector] public const bool UseDebug = false;
 #endif
+        [HideInInspector] public Object Context;
+
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, bool isError = false, Object context = null)
+        protected virtual void Log(object log, bool isError = false)
         {
 #if UNITY_EDITOR
             if (isError)
             {
-                Utility.Debug.LogError(GetType().Name + " [ " + context.name + " ] : " + log, context);
+                Utility.Debug.LogError(GetType().Name + " [ " + Context.name + " ] : " + log, Context);
 
                 return;
             }
 
             if (UseDebug)
-                Utility.Debug.Log(GetType().Name + " [ " + context.name + " ] : " + log, context);
+                Utility.Debug.Log(GetType().Name + " [ " + Context.name + " ] : " + log, Context);
 #endif
         }
     }

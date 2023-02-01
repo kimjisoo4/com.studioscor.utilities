@@ -29,6 +29,9 @@ namespace StudioScor.Utilities
         public event ExplosionEventHandler OnUpdatedHits;
         public event ExplosionEventHandler OnFinishedHitResults;
 
+
+        public new Object Context => _Owner;
+
         public Explosion()
         {
             _IgnoreTransforms = new();
