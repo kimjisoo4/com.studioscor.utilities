@@ -5,10 +5,10 @@ using UnityEditor;
 using System.Linq;
 
 
-namespace StudioScor.Editor
+namespace StudioScor.Utilities.Editor
 {
 #if UNITY_EDITOR
-    public static partial class Utility
+    public static class Lables
     {
 
         [MenuItem("Utilities/Reset Labels")]

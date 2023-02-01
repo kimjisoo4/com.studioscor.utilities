@@ -1,0 +1,18 @@
+{
+    "name": "StudioScor.Utilities.Editor",
+    "rootNamespace": "StudioScor.Utilities.Editor",
+    "references": [
+        "GUID:0e56af4e027762c43b7508efc3b00495"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

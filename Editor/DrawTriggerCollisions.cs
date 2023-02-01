@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 
-using StudioScor.Utilities;
-
-namespace StudioScor.Editor
+namespace StudioScor.Utilities.Editor
 {
     public class DrawTriggerCollisions : BaseMonoBehaviour
     {

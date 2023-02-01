@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEditor;
-using StudioScor.Utilities;
 
-namespace StudioScor.Editor
+namespace StudioScor.Utilities.Editor
 {
-#if UNITY_EDITOR
     //Original by DYLAN ENGELMAN http://jupiterlighthousestudio.com/custom-inspectors-unity/
     //Altered by Brecht Lecluyse http://www.brechtos.com
     [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
     public class TagSelectorPropertyDrawer : PropertyDrawer
     {
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (property.propertyType == SerializedPropertyType.String)
@@ -78,5 +74,4 @@ namespace StudioScor.Editor
             }
         }
     }
-#endif
 }
