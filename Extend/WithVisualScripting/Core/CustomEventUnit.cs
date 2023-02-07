@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +6,7 @@ using System;
 
 namespace StudioScor.Utilities.VisualScripting
 {
-
-    public abstract class CustomGameObjectEventUnit<TTarget, TArgs> : EventUnit<TArgs> where TTarget : MonoBehaviour
+    public abstract class CustomEventUnit<TTarget, TArgs> : EventUnit<TArgs> where TTarget : MonoBehaviour
     {
         public abstract Type MessageListenerType { get; }
         protected abstract string HookName { get; }

@@ -9,7 +9,7 @@ namespace StudioScor.Utilities
         [Header(" [ Use Debug ] ")]
         public bool UseDebug;
 #else
-        [HideInInspector]public const bool UseDebug = false;
+        [HideInInspector]public bool UseDebug = false;
 #endif
 
         [Conditional("UNITY_EDITOR")]
@@ -36,7 +36,7 @@ namespace StudioScor.Utilities
         [Header(" [ Use Debug ] ")]
         public bool UseDebug;
 #else
-        [HideInInspector] public const bool UseDebug = false;
+        [HideInInspector] public bool UseDebug = false;
 #endif
         [HideInInspector] public Object Context;
 
@@ -64,7 +64,7 @@ namespace StudioScor.Utilities
         [Header(" [ Use Debug ] ")]
         public bool UseDebug;
 #else
-        [HideInInspector]public const bool UseDebug = false;
+        [HideInInspector]public bool UseDebug = false;
 #endif
 
         [Conditional("UNITY_EDITOR")]

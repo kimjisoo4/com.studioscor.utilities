@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 using UnityEngine.Internal;
 
-
 namespace StudioScor.Utilities
 {
 

@@ -4,6 +4,24 @@ namespace StudioScor.Utilities
 {
     public static partial class Utility
     {
+        //Is Positive
+        public static bool IsPositive(this float value)
+        {
+            return value > 0f;
+        }
+        public static bool IsPositive(this int value)
+        {
+            return value > 0;
+        }
+        // IsNegative
+        public static bool IsNegative(this float value)
+        {
+            return value < 0f;
+        }
+        public static bool IsNegative(this int value)
+        {
+            return value < 0;
+        }
         // In Range
         public static bool InRange(this float value, float min, float max, bool inclusiveMin = true, bool inclusiveMax = true)
         {
@@ -81,7 +99,7 @@ namespace StudioScor.Utilities
             if (value > 360f)
                 value -= 360f;
 
-            return Mathf.Clamp(value, min, max);
+            return UnityEngine.Mathf.Clamp(value, min, max);
         }
     }
 }

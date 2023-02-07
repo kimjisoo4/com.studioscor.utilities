@@ -19,12 +19,9 @@ namespace StudioScor.Utilities
 
         private List<SimpleAmountModifier> _Modifiers;
 
-        private bool _WasSetup;
-
         private void Awake()
         {
-            if (!_WasSetup)
-                Setup();
+            Setup();
         }
 
         private void Setup()
@@ -35,9 +32,6 @@ namespace StudioScor.Utilities
 
         public void AddModifier(SimpleAmountModifier modifier)
         {
-            if (!_WasSetup)
-                Setup();
-
             if(_Modifiers.Contains(modifier))
             {
                 Log("Contains This Modifier - " + modifier);
@@ -47,9 +41,6 @@ namespace StudioScor.Utilities
         }
         public void RemoveModifier(SimpleAmountModifier modifier)
         {
-            if (!_WasSetup)
-                Setup();
-
             if (!_Modifiers.Remove(modifier))
             {
                 Log("Not Contains Thi Modifier - " + modifier);
@@ -86,9 +77,6 @@ namespace StudioScor.Utilities
 
         public void UpdateAmount()
         {
-            if (!_WasSetup)
-                Setup();
-
             foreach (var modifier in _Modifiers)
             {
                 modifier.UpdateValue();

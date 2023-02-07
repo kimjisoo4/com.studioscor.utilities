@@ -28,6 +28,34 @@ namespace StudioScor.Utilities
         }
 
 
+        // Turn Direction From Y
+        public static Vector3 TurnDirectionFromY(Vector2 direction, Transform target)
+        {
+            Vector3 forward = target.forward;
+            Vector3 right = target.right;
+
+            forward.y = 0;
+            right.y = 0;
+
+            forward.Normalize();
+            right.Normalize();
+
+            return forward * direction.y + right * direction.x;
+        }
+        public static Vector3 TurnDirectionFromY(this Vector3 direction, Transform target)
+        {
+            Vector3 forward = target.forward;
+            Vector3 right = target.right;
+
+            forward.y = 0;
+            right.y = 0;
+
+            forward.Normalize();
+            right.Normalize();
+
+            return forward * direction.z + right * direction.x;
+        }
+
         // Direction
         public static Vector3 Direction(this Vector3 start, Vector3 target, bool normalized = true)
         {
