@@ -112,7 +112,7 @@ namespace StudioScor.Utilities.VisualScripting
             {
                 Setup();
 
-                AnimationPlayer.PlayAnimation(AnimationHash, FadeIn, FadeOut, Offset);
+                AnimationPlayer.Play(AnimationHash, FadeIn, FadeOut, Offset);
 
                 AnimationPlayer.OnStarted += OnStarted;
                 AnimationPlayer.OnFailed += OnFailed;
@@ -244,7 +244,7 @@ namespace StudioScor.Utilities.VisualScripting
         {
             var data = flow.stack.GetElementData<Data>(this);
 
-            data.AnimationPlayer.StopAnimation();
+            data.AnimationPlayer.TryStopAnimation(data.AnimationHash);
         }
 
         private void UpdateAnimationEvents(Flow flow, Data data)
