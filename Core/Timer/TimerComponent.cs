@@ -3,10 +3,13 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-    public class TimerComponent : MonoBehaviour
+    public class TimerComponent : BaseMonoBehaviour
     {
+        [Header("[ Timer Component ]")]
 		[SerializeField] private float _Duration = 1f;
+        [SerializeField] private float _Multiply = 1f;
         [SerializeField] private bool _AutoPlaying = false;
+        [SerializeField] private bool _UseManul = false;
         [SerializeField] private EExitAction _ExitAction = EExitAction.Destroy;
 
 		public UnityEvent OnStartedTimer;
@@ -15,9 +18,14 @@ namespace StudioScor.Utilities
 
 		private Timer _Timer;
 
+        public float Duration => _Duration;
+        public float NormalizedTime => _Timer.NormalizedTime;
+        public float RemainTime => _Timer.RemainTime;
+        public float ElaspedTime => _Timer.ElapsedTime;
+
         private void Awake()
         {
-			_Timer = new(_Duration);
+			_Timer = new();
 
             _Timer.OnStartedTimer += Timer_OnStartedTimer;
             _Timer.OnFinishedTimer += Timer_OnFinishedTimer;
@@ -34,12 +42,10 @@ namespace StudioScor.Utilities
             OnStartedTimer?.Invoke();
         }
 
-        private void OnEnable()
+        private void Start()
         {
             if (_AutoPlaying)
-            {
-				_Timer.OnTimer();
-            }
+                OnTimer();
         }
 
         private void Timer_OnFinishedTimer(Timer timer)
@@ -59,10 +65,30 @@ namespace StudioScor.Utilities
             }
         }
 
+        public void SetTimer(float duration)
+        {
+            _Duration = duration;
+        }
+        public void OnTimer()
+        {
+            _Timer.OnTimer(_Duration);
+        }
+        public void StopTimer()
+        {
+            _Timer.OnStopTimer();
+        }
+        public void OnPauseTimer()
+        {
+            _Timer.OnPauseTimer();
+        }
+        public void OnResumeTimer()
+        {
+            _Timer.OnResumeTimer();
+        }
+
         private void Update()
         {
-			if(_Timer.IsPlaying)
-				_Timer.UpdateTimer(Time.deltaTime);
+            _Timer.UpdateTimer(Time.deltaTime * _Multiply);
         }
     }
 

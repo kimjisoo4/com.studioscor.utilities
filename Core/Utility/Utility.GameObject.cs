@@ -2,7 +2,7 @@
 
 namespace StudioScor.Utilities
 {
-    public static partial class Utility
+    public static partial class SUtility
     {
         // GetComponenet
         public static T GetComponentInParentOrChildren<T>(this GameObject gameObject) where T : Component

@@ -98,6 +98,21 @@ namespace StudioScor.Utilities
 
 			OnCanceledTimer?.Invoke(this);
 		}
+		public void OnPauseTimer()
+        {
+			if (!_IsPlaying)
+				return;
+
+			_IsPlaying = false;
+        }
+		public void OnResumeTimer()
+        {
+			if (_IsPlaying)
+				return;
+
+			_IsPlaying = true;
+		}
+
 		public void OnStopTimer()
         {
 			if (!_IsPlaying)

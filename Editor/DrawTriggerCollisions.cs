@@ -1,7 +1,41 @@
 ﻿using UnityEngine;
-
 namespace StudioScor.Utilities.Editor
 {
+
+    public abstract class DictionaryContainerEditor<TKey, TValue> : UnityEditor.Editor
+    {
+        public abstract string KeyName(TKey key);
+        public abstract string ValueName(TValue value);
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (!Application.isPlaying)
+                return;
+
+            GUILayout.Space(5f);
+            SEditorUtility.GUI.DrawLine(4f);
+            GUILayout.Space(5f);
+            var dictionary = target as DictionaryContainer<TKey, TValue>;
+
+            if (dictionary.Container is null)
+                return;
+
+            foreach (var item in dictionary.Container)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(KeyName(item.Key));
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(ValueName(item.Value));
+                GUILayout.Space(5f);
+                GUILayout.EndHorizontal();
+                SEditorUtility.GUI.DrawLine();
+            }
+        }
+    }
+
+
     public class DrawTriggerCollisions : BaseMonoBehaviour
     {
         [Header(" [ Draw Trigger Collisions ] ")]

@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace StudioScor.Utilities
 {
-    public static partial class Utility
+    public static partial class SUtility
     {
         public static List<T> Shuffle<T>(this List<T> list)
         {

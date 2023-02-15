@@ -8,7 +8,7 @@ namespace StudioScor.Utilities
     public class OnTriggerComponent : BaseMonoBehaviour
     {
         [Header(" [ Tags ] ")]
-        [SerializeField][TagSelector] private string[] _Tags;
+        [SerializeField][STagSelector] private string[] _Tags;
         [SerializeField] private bool _IsIgnoreTag;
 
         [Header(" [ Trigger ] ")]
@@ -30,7 +30,7 @@ namespace StudioScor.Utilities
         {
 #if UNITY_EDITOR
             if (UseDebug)
-                Utility.Debug.DrawSphere(position, 0.1f, color, 1f);
+                SUtility.Debug.DrawSphere(position, 0.1f, color, 1f);
 #endif
         }
 
@@ -55,21 +55,40 @@ namespace StudioScor.Utilities
             if (!_UseTriggerEnter && !_UseTriggerStay)
                 return;
 
+            bool trigger = false;
+
             foreach (string tag in _Tags)
             {
                 if (other.CompareTag(tag))
                 {
-                    if(_UseTriggerEnter)
-                        TriggerEnter(other);
+                    if (_IsIgnoreTag)
+                        continue;
 
-                    if (_UseTriggerStay && !_StayedColliders.Contains(other))
-                        _StayedColliders.Add(other);
+                    trigger = true;
+                    
+                    break;
+                }
+                else
+                {
+                    if (!_IsIgnoreTag)
+                        continue;
 
-                    return;
+                    trigger = true;
+
+                    break;
                 }
             }
 
-            DrawSphere(other.bounds.center, Color.red);
+            if(trigger)
+            {
+                if (_UseTriggerEnter)
+                    TriggerEnter(other);
+
+                if (_UseTriggerStay && !_StayedColliders.Contains(other))
+                    _StayedColliders.Add(other);
+
+                DrawSphere(other.bounds.center, Color.red);
+            }
         }
 
         private void OnTriggerExit(Collider other)
@@ -77,21 +96,42 @@ namespace StudioScor.Utilities
             if (!_UseTriggerExit && !_UseTriggerStay)
                 return;
 
+            bool trigger = false;
+
             foreach (string tag in _Tags)
             {
                 if (other.CompareTag(tag))
                 {
-                    if(_UseTriggerExit)
-                        TriggerExit(other);
+                    if (_IsIgnoreTag)
+                        continue;
 
-                    if (_UseTriggerStay && _StayedColliders.Contains(other))
-                        _StayedColliders.Remove(other);
+                    trigger = true;
 
-                    return;
+                    break;
+                }
+                else
+                {
+                    if (!_IsIgnoreTag)
+                        continue;
+
+                    trigger = true;
+
+                    break;
                 }
             }
 
-            DrawSphere(other.bounds.center, Color.red);
+            if(trigger)
+            {
+                if (_UseTriggerExit)
+                    TriggerExit(other);
+
+                if (_UseTriggerStay && _StayedColliders.Contains(other))
+
+                    _StayedColliders.Remove(other);
+
+                DrawSphere(other.bounds.center, Color.red);
+            }
+            
         }
 
         #region Callback

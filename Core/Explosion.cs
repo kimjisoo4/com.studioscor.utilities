@@ -29,8 +29,9 @@ namespace StudioScor.Utilities
         public event ExplosionEventHandler OnUpdatedHits;
         public event ExplosionEventHandler OnFinishedHitResults;
 
-
+#if UNITY_EDITOR
         public new Object Context => _Owner;
+#endif
 
         public Explosion()
         {
@@ -101,7 +102,7 @@ namespace StudioScor.Utilities
             Quaternion traceRotation = rotation * Quaternion.Euler(AngleOffset);
             Vector3 tracePosition = position + (traceRotation * Offset);
 
-            if (Utility.Physics.DrawOverlapSphere(tracePosition, Radius, LayerMask, ref _Hits, _IgnoreTransforms, UseDebug))
+            if (SUtility.Physics.DrawOverlapSphere(tracePosition, Radius, LayerMask, ref _Hits, _IgnoreTransforms, UseDebug))
             {
                 _HitResults.AddRange(Hits);
 

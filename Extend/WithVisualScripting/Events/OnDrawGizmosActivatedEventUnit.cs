@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SCOR_ENABLE_VISUALSCRIPTING
+using System;
 using Unity.VisualScripting;
 
 namespace StudioScor.Utilities.VisualScripting
@@ -31,3 +32,4 @@ namespace StudioScor.Utilities.VisualScripting
         }
     }
 }
+#endif

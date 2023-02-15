@@ -112,7 +112,7 @@ namespace StudioScor.Utilities
         private void Log(string log)
         {
             if (_UseDebug)
-                Utility.Debug.Log("GameEvent :" + log);
+                SUtility.Debug.Log("GameEvent :" + log);
         }
 
         public void OnBeforeSerialize()

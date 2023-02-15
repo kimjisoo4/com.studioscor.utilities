@@ -91,7 +91,7 @@ namespace StudioScor.Utilities
             {
                 _ColliderHits.Clear();
 
-                if (Utility.Physics.DrawOverlapSphere(position, _Radius, _LayerMask, ref _ColliderHits, _IgnoreTransform, UseDebug))
+                if (SUtility.Physics.DrawOverlapSphere(position, _Radius, _LayerMask, ref _ColliderHits, _IgnoreTransform, UseDebug))
                 {
                     OnMoveHit(position);
                 }
@@ -100,7 +100,7 @@ namespace StudioScor.Utilities
             {
                 _RaycastHits.Clear();
 
-                if (Utility.Physics.DrawSphereCastAll(_PrevPosition, position, _Radius, _LayerMask, ref _RaycastHits, _IgnoreTransform, UseDebug))
+                if (SUtility.Physics.DrawSphereCastAll(_PrevPosition, position, _Radius, _LayerMask, ref _RaycastHits, _IgnoreTransform, UseDebug))
                 {
                     OnMoveHit(_RaycastHits[0].point);
                 }

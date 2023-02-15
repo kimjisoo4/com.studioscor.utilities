@@ -2,7 +2,7 @@
 
 namespace StudioScor.Utilities
 {
-    public static partial class Utility
+    public static partial class SUtility
     {
         public static int LayerMaskToLayer(LayerMask layerMask)
         {

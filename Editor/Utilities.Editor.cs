@@ -7,217 +7,218 @@ using System.Linq;
 
 namespace StudioScor.Utilities.Editor
 {
-#if UNITY_EDITOR
-    public static class Lables
+    public static partial class SEditorUtility
     {
-
-        [MenuItem("Utilities/Reset Labels")]
-        private static void ResetLables()
+        public static class Lables
         {
-            var selectObjects = Selection.objects;
 
-            foreach (var select in selectObjects)
+            [MenuItem("Utilities/Reset Labels")]
+            private static void ResetLables()
             {
-                AssetDatabase.ClearLabels(select);
-            }
-        }
+                var selectObjects = Selection.objects;
 
-        [MenuItem("Utilities/Set Labels")]
-        private static void SetLabels()
-        {
-            var selectObjects = Selection.objects;
-
-            foreach (var select in selectObjects)
-            {
-                AssetDatabase.ClearLabels(select);
-
-                List<string> lables = new();
-
-                SetLabelToName(select, ref lables);
-
-                SetLabelToScriptableObject(select, ref lables);
-
-                SetLabelToPrefab(select, ref lables);
-
-                if (LabelsChanged(AssetDatabase.GetLabels(select), lables.ToArray()))
+                foreach (var select in selectObjects)
                 {
-                    AssetDatabase.SetLabels(select, lables.ToArray());
+                    AssetDatabase.ClearLabels(select);
                 }
             }
-        }
 
-        #region SetLabel
-        private static bool LabelsChanged(string[] oldLabels, string[] newLabels)
-        {
-            if (oldLabels.Length == 0)
-                return true;
-
-            if (newLabels.Length == 0)
-                return false;
-
-            foreach (var oldLabel in oldLabels)
+            [MenuItem("Utilities/Set Labels")]
+            private static void SetLabels()
             {
-                bool notEqual = true;
+                var selectObjects = Selection.objects;
 
-                foreach (var newLabel in newLabels)
+                foreach (var select in selectObjects)
                 {
-                    if (oldLabel == newLabel)
-                    {
-                        notEqual = false;
+                    AssetDatabase.ClearLabels(select);
 
-                        break;
+                    List<string> lables = new();
+
+                    SetLabelToName(select, ref lables);
+
+                    SetLabelToScriptableObject(select, ref lables);
+
+                    SetLabelToPrefab(select, ref lables);
+
+                    if (LabelsChanged(AssetDatabase.GetLabels(select), lables.ToArray()))
+                    {
+                        AssetDatabase.SetLabels(select, lables.ToArray());
                     }
                 }
+            }
 
-                if (notEqual)
+            #region SetLabel
+            private static bool LabelsChanged(string[] oldLabels, string[] newLabels)
+            {
+                if (oldLabels.Length == 0)
                     return true;
-            }
 
-            return false;
-        }
-        private static void SetLabelToName(Object obj, ref List<string> labels)
-        {
-            char[] split = { '_', ' ' };
+                if (newLabels.Length == 0)
+                    return false;
 
-            var objNames = obj.name.Split(split);
-
-            foreach (var objName in objNames)
-            {
-                if (!labels.Contains(objName))
+                foreach (var oldLabel in oldLabels)
                 {
-                    labels.Add(objName);
-                }
-            }
-        }
-        private static void SetLabelToScriptableObject(Object obj, ref List<string> labels)
-        {
-            if (obj as ScriptableObject)
-            {
-                char[] split = { '_', ' ' };
+                    bool notEqual = true;
 
-                var currentType = obj.GetType();
-
-                for (int i = 0; i < 10; i++)
-                {
-                    var splitName = currentType.Name.Split(split);
-
-                    foreach (var part in splitName)
+                    foreach (var newLabel in newLabels)
                     {
-                        if (!labels.Contains(part))
+                        if (oldLabel == newLabel)
                         {
-                            labels.Add(part);
+                            notEqual = false;
+
+                            break;
                         }
                     }
 
-                    if (currentType.BaseType is null || currentType.BaseType == typeof(Object))
-                    {
-                        break;
-                    }
-
-                    currentType = currentType.BaseType;
+                    if (notEqual)
+                        return true;
                 }
+
+                return false;
             }
-        }
-        private static void SetLabelToPrefab(Object obj, ref List<string> lables)
-        {
-            if (obj as GameObject)
+            private static void SetLabelToName(Object obj, ref List<string> labels)
             {
                 char[] split = { '_', ' ' };
 
-                GameObject current = obj as GameObject;
+                var objNames = obj.name.Split(split);
 
-                for (int i = 0; i < 10; i++)
+                foreach (var objName in objNames)
                 {
-                    current = PrefabUtility.GetCorrespondingObjectFromSource(current);
-
-                    if (current is null)
+                    if (!labels.Contains(objName))
                     {
-                        break;
-
+                        labels.Add(objName);
                     }
-                    var splitName = current.name.Split(split);
+                }
+            }
+            private static void SetLabelToScriptableObject(Object obj, ref List<string> labels)
+            {
+                if (obj as ScriptableObject)
+                {
+                    char[] split = { '_', ' ' };
 
-                    foreach (var part in splitName)
+                    var currentType = obj.GetType();
+
+                    for (int i = 0; i < 10; i++)
                     {
-                        if (!lables.Contains(part))
+                        var splitName = currentType.Name.Split(split);
+
+                        foreach (var part in splitName)
                         {
-                            lables.Add(part);
+                            if (!labels.Contains(part))
+                            {
+                                labels.Add(part);
+                            }
+                        }
+
+                        if (currentType.BaseType is null || currentType.BaseType == typeof(Object))
+                        {
+                            break;
+                        }
+
+                        currentType = currentType.BaseType;
+                    }
+                }
+            }
+            private static void SetLabelToPrefab(Object obj, ref List<string> lables)
+            {
+                if (obj as GameObject)
+                {
+                    char[] split = { '_', ' ' };
+
+                    GameObject current = obj as GameObject;
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        current = PrefabUtility.GetCorrespondingObjectFromSource(current);
+
+                        if (current is null)
+                        {
+                            break;
+
+                        }
+                        var splitName = current.name.Split(split);
+
+                        foreach (var part in splitName)
+                        {
+                            if (!lables.Contains(part))
+                            {
+                                lables.Add(part);
+                            }
                         }
                     }
                 }
             }
-        }
-        #endregion
+            #endregion
 
-        [MenuItem("Utilities/Set Auto Animation Naming")]
-        private static void OnAutoAnimationNaming()
-        {
-            var selects = Selection.objects;
-
-            foreach (var select in selects)
+            [MenuItem("Utilities/Set Auto Animation Naming")]
+            private static void OnAutoAnimationNaming()
             {
-                var path = AssetDatabase.GetAssetPath(select);
+                var selects = Selection.objects;
 
-                var model = AssetImporter.GetAtPath(path) as ModelImporter;
-
-                if (!model)
-                    continue;
-
-                if (!model.importAnimation)
-                    continue;
-
-                ModelImporterClipAnimation[] clipAnimations = model.defaultClipAnimations;
-
-                if (clipAnimations.Length == 1)
+                foreach (var select in selects)
                 {
-                    clipAnimations[0].name = select.name;
-                }
-                else
-                {
-                    for (int i = 0; i < clipAnimations.Length; i++)
+                    var path = AssetDatabase.GetAssetPath(select);
+
+                    var model = AssetImporter.GetAtPath(path) as ModelImporter;
+
+                    if (!model)
+                        continue;
+
+                    if (!model.importAnimation)
+                        continue;
+
+                    ModelImporterClipAnimation[] clipAnimations = model.defaultClipAnimations;
+
+                    if (clipAnimations.Length == 1)
                     {
-                        clipAnimations[i].name = select.name + "_" + i;
+                        clipAnimations[0].name = select.name;
                     }
-                }
+                    else
+                    {
+                        for (int i = 0; i < clipAnimations.Length; i++)
+                        {
+                            clipAnimations[i].name = select.name + "_" + i;
+                        }
+                    }
 
-                model.clipAnimations = clipAnimations;  
-                model.SaveAndReimport();
+                    model.clipAnimations = clipAnimations;
+                    model.SaveAndReimport();
+                }
             }
-        }
 
-        [MenuItem("Utilities/Set Auto Rename MeshtintStudio Asset")]
-        private static void OnAutoRenameMeshtintStudioAsset()
-        {
-            var selects = Selection.objects;
-
-            foreach (var select in selects)
+            [MenuItem("Utilities/Set Auto Rename MeshtintStudio Asset")]
+            private static void OnAutoRenameMeshtintStudioAsset()
             {
-                var path = AssetDatabase.GetAssetPath(select);
+                var selects = Selection.objects;
 
-                var model = AssetImporter.GetAtPath(path) as ModelImporter;
-
-                if (!model)
-                    continue;
-
-                string name = select.name;
-
-                if (!model.importAnimation)
+                foreach (var select in selects)
                 {
-                    name = "SM_" + name.Replace(" ","");
+                    var path = AssetDatabase.GetAssetPath(select);
+
+                    var model = AssetImporter.GetAtPath(path) as ModelImporter;
+
+                    if (!model)
+                        continue;
+
+                    string name = select.name;
+
+                    if (!model.importAnimation)
+                    {
+                        name = "SM_" + name.Replace(" ", "");
+                    }
+                    else
+                    {
+                        var nameBlocks = name.Split("@");
+
+                        var frontName = nameBlocks[0].Replace(" ", "");
+                        var backName = nameBlocks[1].Replace(" ", "_");
+
+                        name = "AN_" + frontName + "_" + backName;
+                    }
+
+                    AssetDatabase.RenameAsset(path, name + ".FBX");
                 }
-                else
-                {
-                    var nameBlocks = name.Split("@");
-
-                    var frontName = nameBlocks[0].Replace(" ", "");
-                    var backName = nameBlocks[1].Replace(" ", "_");
-
-                    name = "AN_" + frontName + "_" + backName;
-                }
-
-                AssetDatabase.RenameAsset(path, name + ".FBX");
             }
         }
     }
-#endif
 }

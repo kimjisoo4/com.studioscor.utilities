@@ -18,13 +18,13 @@ namespace StudioScor.Utilities
 #if UNITY_EDITOR
             if (isError)
             {
-                Utility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this);
+                SUtility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this);
 
                 return;
             }
 
             if (UseDebug)
-                Utility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this);
+                SUtility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this);
 #endif
         }
     }
@@ -32,14 +32,9 @@ namespace StudioScor.Utilities
     public abstract class BaseClass
     {
 
-#if UNITY_EDITOR
-        [Header(" [ Use Debug ] ")]
-        public bool UseDebug;
-#else
-        [HideInInspector] public bool UseDebug = false;
-#endif
-        [HideInInspector] public Object Context;
-
+        [field: Header(" [ Use Debug ] ")]
+        public virtual bool UseDebug { get; private set; } = false;
+        [HideInInspector] public virtual Object Context { get; private set; } = null;
 
         [Conditional("UNITY_EDITOR")]
         protected virtual void Log(object log, bool isError = false)
@@ -47,13 +42,13 @@ namespace StudioScor.Utilities
 #if UNITY_EDITOR
             if (isError)
             {
-                Utility.Debug.LogError(GetType().Name + " [ " + Context.name + " ] : " + log, Context);
+                SUtility.Debug.LogError(GetType().Name + " [ " + Context.name + " ] : " + log, Context);
 
                 return;
             }
-
+            
             if (UseDebug)
-                Utility.Debug.Log(GetType().Name + " [ " + Context.name + " ] : " + log, Context);
+                SUtility.Debug.Log(GetType().Name + " [ " + Context.name + " ] : " + log, Context);
 #endif
         }
     }
@@ -73,13 +68,13 @@ namespace StudioScor.Utilities
 #if UNITY_EDITOR
             if (isError)
             {
-                Utility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this);
+                SUtility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this);
                 
                 return;
             }
 
             if (UseDebug)
-                Utility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this);
+                SUtility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this);
 #endif
         }
     }

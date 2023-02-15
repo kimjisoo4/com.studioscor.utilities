@@ -14,6 +14,10 @@ namespace StudioScor.Utilities
         private float _PrevDistance = 0f;
         private bool _IsPlaying = false;
 
+        public ReachValueToTime()
+        {
+
+        }
         public ReachValueToTime(float distance, AnimationCurve curve)
         {
             _Distance = distance;
@@ -28,6 +32,15 @@ namespace StudioScor.Utilities
             {
                 _IsPlaying = true;
             }
+        }
+        public void EndMovement()
+        {
+            if (!_IsPlaying)
+                return;
+
+            _IsPlaying = false;
+
+            _PrevDistance = 0f;
         }
         public void OnMovement(float distance)
         {
@@ -59,7 +72,7 @@ namespace StudioScor.Utilities
 
             if (normalizeTime >= 1f)
             {
-                _IsPlaying = false;
+                EndMovement();
             }
 
             return currentDistance;

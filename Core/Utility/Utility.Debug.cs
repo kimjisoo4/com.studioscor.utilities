@@ -8,7 +8,7 @@ using UnityEngine.Internal;
 namespace StudioScor.Utilities
 {
 
-    public static partial class Utility
+    public static partial class SUtility
     {
         public static class Debug
         {

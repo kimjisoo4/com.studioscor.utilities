@@ -2,6 +2,8 @@
 
 namespace StudioScor.Utilities
 {
+
+
     public abstract class VariableObject<T> : ScriptableObject, ISerializationCallbackReceiver
     {
 		#region

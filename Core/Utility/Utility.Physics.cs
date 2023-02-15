@@ -6,7 +6,7 @@ using System.Linq;
 namespace StudioScor.Utilities
 {
 
-    public static partial class Utility
+    public static partial class SUtility
     {
         public static class Physics
         {
@@ -589,7 +589,7 @@ namespace StudioScor.Utilities
                 return hits;
             }
 
-            public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults, List<Transform> ignoreTransform,
+            public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults, List<Transform> ignoreTransform = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Vector3 direction = start.Direction(end);
@@ -619,13 +619,19 @@ namespace StudioScor.Utilities
                     return false;
                 }
 
-
-                foreach (var hit in hits)
+                if(ignoreTransform is not null)
                 {
-                    if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
+                    foreach (var hit in hits)
                     {
-                        hitResults.Add(hit);
+                        if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
+                        {
+                            hitResults.Add(hit);
+                        }
                     }
+                }
+                else
+                {
+                    hitResults.AddRange(hits);
                 }
 
                 #region DEBUG DRAW

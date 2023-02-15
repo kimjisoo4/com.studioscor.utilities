@@ -36,7 +36,7 @@ namespace StudioScor.Utilities
         private void Log(string log)
         {
             if (_UseDebug)
-                Utility.Debug.Log("GameEventListner [" + name + "] :" + log, this);
+                SUtility.Debug.Log("GameEventListner [" + name + "] :" + log, this);
         }
     }
 

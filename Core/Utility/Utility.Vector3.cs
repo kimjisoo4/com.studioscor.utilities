@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
-    public static partial class Utility
+    public static partial class SUtility
     {
         // Distance XZ
         public static float HorizontalDistance(this Vector3 from, Vector3 to)
@@ -14,11 +14,11 @@ namespace StudioScor.Utilities
 
             return Vector3.Distance(from, to);
         }
-        public static float HorizontaDistance(this Vector3 from, Transform to)
+        public static float HorizontalDistance(this Vector3 from, Transform to)
         {
             return HorizontalDistance(from, to.position);
         }
-        public static float HorizontaDistance(this Transform from, Vector3 to)
+        public static float HorizontalDistance(this Transform from, Vector3 to)
         {
             return HorizontalDistance(from.position, to);
         }
