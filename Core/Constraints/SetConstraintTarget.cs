@@ -9,6 +9,16 @@ namespace CuBattle
     {
         [Header(" [ Set Constraints Target] ")]
         [SerializeField] private T _Constraint;
+
+        private void Reset()
+        {
+            gameObject.TryGetComponentInParentOrChildren(out _Constraint);
+        }
+
+        public void SetTarget(Component component)
+        {
+            SetTarget(component.transform);
+        }
         public void SetTarget(GameObject target)
         {
             SetTarget(target.transform);
