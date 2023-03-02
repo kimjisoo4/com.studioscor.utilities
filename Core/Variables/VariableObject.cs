@@ -1,29 +1,23 @@
 ﻿using UnityEngine;
-
 namespace StudioScor.Utilities
 {
-
-
-    public abstract class VariableObject<T> : ScriptableObject, ISerializationCallbackReceiver
+    public abstract class VariableObject<T> : EmptyVariable, ISerializationCallbackReceiver
     {
-		#region
+		#region Events
 		public delegate void ValueHandler(VariableObject<T> variable, T currentValue, T prevValue);
 		#endregion
 
 		[SerializeField] protected T _InitialValue;
-
-		[SerializeField] protected T _RuntimeValue;
+		[SerializeField][SReadOnly] protected T _RuntimeValue;
 
 		public T InitialValue => _InitialValue;
-
 		public T Value => _RuntimeValue;
-
 
 		public event ValueHandler OnChangedValue;
 
-		public void OnAfterDeserialize()
+		public virtual void OnAfterDeserialize()
 		{
-			_RuntimeValue = _InitialValue;
+			OnReset();
 		}
 
 		public void OnBeforeSerialize()
@@ -31,20 +25,27 @@ namespace StudioScor.Utilities
 
 		}
 
-		public void ResetValue()
+		protected override void OnReset()
+        {
+			_RuntimeValue = _InitialValue;
+
+			OnChangedValue = null;
+		}
+
+		public void Clear()
 		{
 			T prevValue = _RuntimeValue;
 
 			_RuntimeValue = _InitialValue;
 
-			OnChangeValue(prevValue);
+			Callback_OnChangeValue(prevValue);
 		}
-		public abstract void AddValue(T value);
-		public abstract void SubtractValue(T value);
+
 		public abstract void SetValue(T value);
 
-		protected void OnChangeValue(T prevValue)
+		protected void Callback_OnChangeValue(T prevValue)
         {
+			Log("On Changed Value - Current Value : " + _RuntimeValue + " PrevValue : " + prevValue);
 			OnChangedValue?.Invoke(this, _RuntimeValue, prevValue);
 		}
 	}

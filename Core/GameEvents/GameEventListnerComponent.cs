@@ -4,22 +4,25 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-    public class GameEventListnerComponent : MonoBehaviour
+    public class GameEventListnerComponent : BaseMonoBehaviour
     {
+        [Header(" [ GameEvent Listner Component ] ")]
         [SerializeField] private GameEvent _GameEvent;
         [SerializeField] private UnityEvent _Event;
-        [SerializeField] private bool _UseDebug = false;
 
         private GameEventListner _GameEventListner;
 
         private void Awake()
         {
             _GameEventListner = new GameEventListner(_GameEvent);
+
             _GameEventListner.OnEvent += GameEventListner_OnEvent;
         }
 
         private void GameEventListner_OnEvent()
         {
+            Log("Invoke");
+
             _Event.Invoke();
         }
 
@@ -30,13 +33,6 @@ namespace StudioScor.Utilities
         private void OnDisable()
         {
             _GameEventListner.Endlistner();
-        }
-
-        [Conditional("UNITY_EDITOR")]
-        private void Log(string log)
-        {
-            if (_UseDebug)
-                SUtility.Debug.Log("GameEventListner [" + name + "] :" + log, this);
         }
     }
 

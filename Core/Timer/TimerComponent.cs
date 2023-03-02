@@ -7,9 +7,7 @@ namespace StudioScor.Utilities
     {
         [Header("[ Timer Component ]")]
 		[SerializeField] private float _Duration = 1f;
-        [SerializeField] private float _Multiply = 1f;
-        [SerializeField] private bool _AutoPlaying = false;
-        [SerializeField] private bool _UseManul = false;
+        [SerializeField] private bool _AutoPlaying = true;
         [SerializeField] private EExitAction _ExitAction = EExitAction.Destroy;
 
 		public UnityEvent OnStartedTimer;
@@ -17,6 +15,8 @@ namespace StudioScor.Utilities
 		public UnityEvent OnCanceledTimer;
 
 		private Timer _Timer;
+        
+        private float _Multiply = 1f;
 
         public float Duration => _Duration;
         public float NormalizedTime => _Timer.NormalizedTime;
@@ -42,7 +42,7 @@ namespace StudioScor.Utilities
             OnStartedTimer?.Invoke();
         }
 
-        private void Start()
+        private void OnEnable()
         {
             if (_AutoPlaying)
                 OnTimer();
@@ -86,6 +86,10 @@ namespace StudioScor.Utilities
             _Timer.OnResumeTimer();
         }
 
+        public void SetSpeedMultiply(float multiply)
+        {
+            _Multiply = multiply;
+        }
         private void Update()
         {
             _Timer.UpdateTimer(Time.deltaTime * _Multiply);

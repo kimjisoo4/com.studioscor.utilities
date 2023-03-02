@@ -1,86 +1,165 @@
 ﻿using UnityEngine;
 using System.Linq;
+using System;
+using System.Collections.Generic;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 
 namespace StudioScor.Utilities
 {
 
 
-    public class RandomData<T> : ScriptableObject, ISerializationCallbackReceiver
+    public class RandomData<T> : BaseScriptableObject, ISerializationCallbackReceiver
     {
         [System.Serializable]
         public struct FRandomData
         {
-#if UNITY_EDITOR
-            [SerializeField] private string _Name;
-#endif
+            public string Name;
             public T Data;
             public float Chance;
+            [SReadOnly] public float Percent;
+            [SReadOnly] public float MinRange;
+            [SReadOnly] public float MaxRange;
 
-            public float ChanceMinRange;
-            public float ChanceMaxRange;
-
-            public float CurrentPercent;
-
-            public bool InRange(float value)
+            public FRandomData(string name, T data, float chance, float percent, float minRange, float maxRange)
             {
-                return value >= ChanceMinRange && value < ChanceMaxRange;
-            }
-            public void SetChanceRange(ref float prevChance)
-            {
-                ChanceMinRange = prevChance;
-
-                prevChance += Chance;
-
-                ChanceMaxRange = prevChance;
-            }
-            public void SetCurrentPercent(float maxChance)
-            {
-                if (maxChance == 0)
-                    return;
-
-                CurrentPercent = Chance / maxChance;
+                Name = name;
+                Data = data;
+                Chance = chance;
+                Percent = percent;
+                MinRange = minRange;
+                MaxRange = maxRange;
             }
         }
 
-        [SerializeField] private FRandomData[] _Datas;
-        private float _MaxChance = 0f;
+        [SerializeField] private FRandomData[] _InitialData;
+        [SerializeField] private List<FRandomData> _RuntimeData;
+        
+        private float _InitialMaxChance = 0f;
+        private float _RuntimeMaxChance = 0f;
 
-        public T GetRandomData()
-        {
-            if (_Datas.Length == 0)
-                return default;
+        public int RemainCount => _RuntimeData.Count;
+        public bool HasData => _RuntimeData.Count > 0;
 
-            float rand = Random.Range(0f, _MaxChance);
-
-            for (int i = 0; i < _Datas.Length - 1; i++)
-            {
-                if (_Datas[i].InRange(rand))
-                {
-                    return _Datas[i].Data;
-                }
-            }
-
-            return _Datas.Last().Data;
-        }
 
         public void OnBeforeSerialize()
         {
         }
         public void OnAfterDeserialize()
         {
+            UpdateData();
+
+            OnReset();
+        }
+
+        [ContextMenu("Update Data")]
+        protected void UpdateData()
+        {
             float chance = 0f;
 
-            for (int i = 0; i < _Datas.Length; i++)
+            for (int i = 0; i < _InitialData.Length; i++)
             {
-                _Datas[i].SetChanceRange(ref chance);
+                var data = _InitialData[i];
+
+                data.MinRange = chance;
+                data.MaxRange = data.MinRange + _InitialData[i].Chance;
+
+                _InitialData[i] = data;
+
+                chance += data.Chance;
             }
 
-            _MaxChance = chance;
+            _InitialMaxChance = chance;
 
-            for (int i = 0; i < _Datas.Length; i++)
+            for (int i = 0; i < _InitialData.Length; i++)
             {
-                _Datas[i].SetCurrentPercent(_MaxChance);
+                var data = _InitialData[i];
+
+                data.Percent = data.Chance.SafeDivide(_InitialMaxChance) * 100f;
+
+                _InitialData[i] = data;
             }
+        }
+
+        protected void UpdateRuntimeData()
+        {
+            Log(" Update Runtime Data ");
+
+            float chance = 0f;
+
+            for (int i = 0; i < _RuntimeData.Count; i++)
+            {
+                var data = _RuntimeData[i];
+
+                data.MinRange = chance;
+                data.MaxRange = data.MinRange + _RuntimeData[i].Chance;
+
+                _RuntimeData[i] = data;
+
+                chance += data.Chance;
+            }
+
+            _RuntimeMaxChance = chance;
+
+            for (int i = 0; i < _RuntimeData.Count; i++)
+            {
+                var data = _RuntimeData[i];
+
+                data.Percent = data.Chance.SafeDivide(_RuntimeMaxChance) * 100f;
+
+                _RuntimeData[i] = data;
+            }
+        }
+
+        protected override void OnReset()
+        {
+            _RuntimeData = _InitialData.ToList();
+            _RuntimeMaxChance = _InitialMaxChance;
+        }
+
+
+        public bool TryGetRandomData(out T data, bool removeData = false)
+        {
+            Log(" Try Get Random Data ");
+
+            bool hasData = false;
+            int count = 0;
+
+            data = default;
+
+            if (HasData)
+            {
+                float rand = UnityEngine.Random.Range(0f, _RuntimeMaxChance);
+                Log($" Rand Value - {rand:N1} ");
+
+                for (int i = 0; i < _RuntimeData.Count; i++)
+                {
+                    Log($" Check Data Chance Value - InRange [{_RuntimeData[i].Name}] ?");
+
+                    if (rand.InRange(_RuntimeData[i].MinRange, _RuntimeData[i].MaxRange, true, false))
+                    {
+                        data = _RuntimeData[i].Data;
+
+                        count = i;
+                        hasData = true;
+
+                        Log($" Find Random Data - {_RuntimeData[i].Name} ");
+                        break;
+                    }
+                }
+            }
+
+            if (hasData && removeData)
+            {
+                _RuntimeData.RemoveAt(count);
+
+                UpdateRuntimeData();
+            }
+            
+            return hasData;
         }
     }
 }

@@ -37,7 +37,7 @@ namespace StudioScor.Utilities
 
             if (!_IsDelay && !_IsUpdate)
             {
-                _CurrentPoint = SimpleAmount.PrevValue / SimpleAmount.MaxValue;
+                _CurrentPoint = SimpleAmount.PrevValue.SafeDivide(SimpleAmount.MaxValue);
             }
             else if (!_IsDelay && _IsUpdate)
             {

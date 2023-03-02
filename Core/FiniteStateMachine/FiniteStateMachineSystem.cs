@@ -90,18 +90,17 @@ namespace StudioScor.Utilities
 
         public virtual void ForceSetState(T state)
         {
-            _NextState = state;
-
-            if (_CurrentState is not null)
-            {
-                _CurrentState.ForceExitState();
-            }
-
             _PrevState = _CurrentState;
-            _CurrentState = _NextState;
-            _NextState = null;
+            _CurrentState = state;
 
-            _CurrentState.ForceEnterState();
+            if (_PrevState is not null)
+            {
+                _PrevState.ForceExitState();
+            }
+            if(_CurrentState is not null)
+            {
+                _CurrentState.ForceEnterState();
+            }
 
             _PrevState = null;
             _NextState = null;

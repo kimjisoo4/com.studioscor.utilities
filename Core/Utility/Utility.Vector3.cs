@@ -6,6 +6,15 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static bool SafeEqauls(this Vector3 lhs, Vector3 rhs, float equaly = 0.0001f)
+        {
+            return Vector3.SqrMagnitude(lhs - rhs) < equaly;
+        }
+
+        public static bool SafeEqauls(this Vector2 lhs, Vector2 rhs, float equaly = 0.0001f)
+        {
+            return Vector2.SqrMagnitude(lhs - rhs) < equaly;
+        }
         // Distance XZ
         public static float HorizontalDistance(this Vector3 from, Vector3 to)
         {
@@ -72,6 +81,28 @@ namespace StudioScor.Utilities
         public static Vector3 Direction(this Vector3 start, Transform target, bool normalized = true)
         {
             return start.Direction(target.position, normalized);
+        }
+
+        // horizontal Direction
+        public static Vector3 HorizontalDirection(this Vector3 start, Vector3 target, bool normalized = true)
+        {
+            Vector3 direction = target - start;
+
+            direction.y = 0;
+
+            return normalized ? direction.normalized : direction;
+        }
+        public static Vector3 HorizontalDirection(this Transform lhs, Transform rhs, bool normalized = true)
+        {
+            return HorizontalDirection(lhs.position, rhs.position);
+        }
+        public static Vector3 HorizontalDirection(this Vector3 lhs, Transform rhs, bool normalized = true)
+        {
+            return HorizontalDirection(lhs, rhs.position);
+        }
+        public static Vector3 HorizontalDirection(this Transform lhs, Vector3 rhs, bool normalized = true)
+        {
+            return HorizontalDirection(lhs.position, rhs);
         }
     }
 }

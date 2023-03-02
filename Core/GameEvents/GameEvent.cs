@@ -5,27 +5,39 @@ using System;
 
 namespace StudioScor.Utilities
 {
-
-
-    [CreateAssetMenu(fileName = "Event_", menuName = "Utilities/Event/New Event")]
-    public class GameEvent : ScriptableObject, ISerializationCallbackReceiver
+    [CreateAssetMenu(fileName = "Event_", menuName = "StudioScor/Utilities/Event/New Event")]
+    public class GameEvent : BaseScriptableObject, ISerializationCallbackReceiver
     {
-        private List<GameEventListner> _EventList = new List<GameEventListner>();
+        [Header(" [ GameEvent ] ")]
+        [SerializeField][SReadOnly] private List<GameEventListner> _EventList = new List<GameEventListner>();
         public event Action Events;
 
-        [SerializeField] private bool _UseDebug = false;
 
 #if UNITY_EDITOR
-        [TextArea]
-        [SerializeField] private string _Explanation;
+        [TextArea]public string Explanation;
 #endif
+
+        public void OnBeforeSerialize()
+        {
+        }
+
+        public void OnAfterDeserialize()
+        {
+            OnReset();
+        }
+
+        protected override void OnReset()
+        {
+            _EventList = new();
+            Events = null;
+        }
 
         public int GetEventListCount()
         {
             return _EventList.Count;
         }
 
-        public void OnGameEvent()
+        public void Invoke()
         {
             Log(" On Game Event ");
 
@@ -41,7 +53,7 @@ namespace StudioScor.Utilities
         {
             if (_EventList.Contains(listner))
             {
-                Log("'" + listner + "' 는 이미 존재하는 이벤트");
+                Log($"{listner}] 는 이미 보유한 이벤트");
             }
             else
             {
@@ -61,26 +73,8 @@ namespace StudioScor.Utilities
             }
             else
             {
-                Log("'"+ listner + "'] 는 이미 존재하지 않는 이벤트");
+                Log($"{listner}] 는 보유하지 않는 이벤트");
             }
         }
-
-        [Conditional("UNITY_EDITOR")]
-        private void Log(string log)
-        {
-            if (_UseDebug)
-                SUtility.Debug.Log("GameEvent [" + name + "] :" + log, this);
-        }
-
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            _EventList = new();
-            Events = null;
-        }
     }
-
 }

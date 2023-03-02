@@ -12,6 +12,9 @@ namespace StudioScor.Utilities
         public event UnityAction<IState> OnEnteredState;
         public event UnityAction<IState> OnExitedState;
 
+        private bool _IsPlaying;
+        public bool IsPlaying => _IsPlaying;
+
         #region EDITOR ONLY
 
 #if UNITY_EDITOR
@@ -22,28 +25,37 @@ namespace StudioScor.Utilities
 #endif
         #endregion
 
+
         public virtual bool CanEnterState()
         {
-            return !enabled;
+            return !IsPlaying;
         }
 
         public virtual bool CanExitState()
         {
-            return enabled;
+            return IsPlaying;
         }
 
         public void ForceExitState()
         {
-            enabled = false;
+            _IsPlaying = false;
 
             OnExitState();
+
+            enabled = false;
+
+            Callbaco_OnExitedState();
         }
 
         public void ForceEnterState()
         {
+            _IsPlaying = true;
+
             enabled = true;
 
             OnEnterState();
+
+            Callback_OnEnteredState();
         }
 
         public bool TryEnterState()
@@ -66,15 +78,24 @@ namespace StudioScor.Utilities
             return true;
         }
 
-        private void OnEnterState()
+        protected virtual void OnEnterState()
         {
-            Log("Enter State");
+
+        }
+        protected virtual void OnExitState()
+        {
+
+        }
+
+        private void Callback_OnEnteredState()
+        {
+            Log("Entered State");
 
             OnEnteredState?.Invoke(this);
         }
-        private void OnExitState()
+        private void Callbaco_OnExitedState()
         {
-            Log("Exit State");
+            Log("Exited State");
 
             OnExitedState?.Invoke(this);
         }

@@ -6,7 +6,7 @@ namespace StudioScor.Utilities
 {
     public class GenericGameEventListnerComponent<T> : MonoBehaviour
     {
-        [SerializeField] private GenericGameEventSO<T> _GameEvent;
+        [SerializeField] private GenericGameEvent<T> _GameEvent;
         [SerializeField] private UnityEvent<T> _Event;
         [SerializeField] private bool _UseDebug = false;
 
@@ -14,7 +14,7 @@ namespace StudioScor.Utilities
 
         private void Awake()
         {
-            _GameEventListner = new GenericGameEventListner<T>(_GameEvent.GameEvent);
+            _GameEventListner = new GenericGameEventListner<T>(_GameEvent);
             _GameEventListner.OnEvent += GameEventListner_OnEvent;
         }
 

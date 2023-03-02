@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 
 
-namespace Portfolio.Abilities
+namespace StudioScor.Utilities
 {
-    public class IgnoreNotHasComponent<T> : IgnoreHitCondition where T : MonoBehaviour
+    public class TraceIgnore_NotHasComponent<T> : TraceIgnore
     {
-        public override void IngnoreHit(Transform tracer, ref List<RaycastHit> hits)
+        public override void Ingnore(Transform tracer, ref List<RaycastHit> hits)
         {
             for(int i = hits.Count - 1; i >= 0; i--)
             {

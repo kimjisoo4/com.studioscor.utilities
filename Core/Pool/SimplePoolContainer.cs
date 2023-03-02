@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
-    [CreateAssetMenu(menuName = "StudioScor/New Simple Pool Container", fileName ="SimplePoolContainer_")]
+    [CreateAssetMenu(menuName = "StudioScor/Utilities/New Simple Pool Container", fileName ="SimplePool_")]
     public class SimplePoolContainer : BaseScriptableObject
     {
         [Header(" [ Simple Pool Container ] ")]
@@ -34,6 +34,12 @@ namespace StudioScor.Utilities
             }
 
             return _SimplePool.Get();
+        }
+
+        protected override void OnReset()
+        {
+            _InstContainer = null;
+            _SimplePool = null;
         }
     }
     

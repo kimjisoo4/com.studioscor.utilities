@@ -663,13 +663,13 @@ namespace StudioScor.Utilities
 
                 return hitResults.Count > 0;
             }
-            public static List<RaycastHit> DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, List<Transform> ignoreTransform,
+            public static List<RaycastHit> DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, List<Transform> ignoreTransform = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Vector3 direction = start.Direction(end);
                 float distance = Vector3.Distance(start, end);
 
-                if (direction == Vector3.zero)
+                if (direction.SafeEqauls(Vector3.zero))
                 {
                     direction = new Vector3(0, 0, 1f);
                     distance = 0.01f;
@@ -695,14 +695,21 @@ namespace StudioScor.Utilities
 
                 List<RaycastHit> hitList = new();
 
-
-                foreach (var hit in hits)
+                if(ignoreTransform is  not null)
                 {
-                    if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
+                    foreach (var hit in hits)
                     {
-                        hitList.Add(hit);
+                        if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
+                        {
+                            hitList.Add(hit);
+                        }
                     }
                 }
+                else
+                {
+                    hitList = hits.ToList();
+                }
+                
 
 #region DEBUG DRAW
 #if UNITY_EDITOR

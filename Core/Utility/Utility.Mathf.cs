@@ -4,6 +4,22 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static bool SafeEquals(this float lhs, float rhs, float equaly = 0.001f)
+        {
+            float value = lhs - rhs;
+
+            return value.IsPositive()? value <= equaly : value >= -equaly;
+        }
+
+        // Safe Divide
+        public static float SafeDivide(this float lhs, float rhs)
+        {
+            if (rhs == 0)
+                return -1f;
+
+            return lhs / rhs;
+        }
+
         //Is Positive
         public static bool IsPositive(this float value)
         {

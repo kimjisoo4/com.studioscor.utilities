@@ -19,8 +19,8 @@ namespace StudioScor.Utilities
         [SerializeField] private float _Acceleration = 20f;
         [SerializeField] private float _Deceleration = 10f;
         [Header(" [ Gravity ] ")]
-        [SerializeField] private bool _UseGravitu = true;
-        [SerializeField] private float _Gravity = 9.81f;
+        [SerializeField] private bool _UseGravity = true;
+        [SerializeField][SCondition(nameof(_UseGravity))] private float _Gravity = 9.81f;
         [Header(" [ Auto Playing ] ")]
         [SerializeField] private bool _AutoShooting = true;
         
@@ -114,7 +114,7 @@ namespace StudioScor.Utilities
                 _CurrentHorizontalSpeed = Mathf.MoveTowards(_CurrentHorizontalSpeed, _TargetSpeed, _Deceleration * deltaTime);
             }
 
-            if (_UseGravitu)
+            if (_UseGravity)
                 _CurrentVerticalSpeed -= _Gravity * deltaTime;
 
             OnMovement(direction * _CurrentHorizontalSpeed + Vector3.up * _CurrentVerticalSpeed);

@@ -8,9 +8,9 @@ namespace StudioScor.Utilities
         [Header(" [ Reach Value To Time] ")]
         [SerializeField] private float _Distance = 5f;
         [SerializeField] private AnimationCurve _Curve;
-
         public float Distance => _Distance;
         public AnimationCurve Curve => _Curve;
+
         private float _PrevDistance = 0f;
         private bool _IsPlaying = false;
 
@@ -22,6 +22,13 @@ namespace StudioScor.Utilities
         {
             _Distance = distance;
             _Curve = curve;
+        }
+
+        public void Copy(ReachValueToTime reachValueToTime)
+        {
+            _Distance = reachValueToTime._Distance;
+            _Curve = reachValueToTime._Curve;
+            _PrevDistance = reachValueToTime._PrevDistance;
         }
 
         public void OnMovement()

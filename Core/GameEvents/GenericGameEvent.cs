@@ -7,121 +7,64 @@ using System;
 
 namespace StudioScor.Utilities
 {
-    public class GenericGameEventSO<T> : ScriptableObject, ISerializationCallbackReceiver
+    public class GenericGameEvent<T> : GameEvent
     {
-        [SerializeField] private GenericGameEvent<T> _GameEvent;
-        [SerializeField] private bool _UseDebug = false;
+        [SerializeField] private List<GenericGameEventListner<T>> _GenericEventList = new List<GenericGameEventListner<T>>();
 
-        public GenericGameEvent<T> GameEvent => _GameEvent;
+        public event UnityAction<T> OnGenericEvent;
 
-#if UNITY_EDITOR
-        [TextArea]
-        [SerializeField] private string _Explanation;
-#endif
-
-
-        public void OnGameEvent(T data)
+        public int GetGenericEventListCount()
         {
-            _GameEvent.OnGameEvent(data);
+            return _GenericEventList.Count;
         }
 
-        public void AddListner(GenericGameEventListner<T> listner)
+        public void Invoke(T data)
         {
-            _GameEvent.AddListner(listner);
-        }
+            Invoke();
 
-        public void RemoveListner(GenericGameEventListner<T> listner)
-        {
-            _GameEvent.RemoveListner(listner);
-        }
+            Log(" On Generic Game Event ");
 
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            _GameEvent = new GenericGameEvent<T>(_UseDebug);
-        }
-    }
-
-    [System.Serializable]
-    public class GenericGameEvent<T>
-    {
-        [SerializeField] private List<GenericGameEventListner<T>> _EventList = new List<GenericGameEventListner<T>>();
-        [SerializeField] private bool _UseDebug = false;
-
-        public event UnityAction<T> GameEvent;
-
-        public GenericGameEvent()
-        {
-
-        }
-        public GenericGameEvent(bool useDebug = false)
-        {
-            _UseDebug = useDebug;
-        }
-
-
-        public int GetEventListCount()
-        {
-            return _EventList.Count;
-        }
-
-        public void OnGameEvent(T data)
-        {
-            Log(" On Game Event ");
-
-            for (int i = 0; _EventList.Count > i; i++)
+            for (int i = 0; _GenericEventList.Count > i; i++)
             {
-                _EventList[i].TryActiveGameEvent(data);
+                _GenericEventList[i].TryActiveGameEvent(data);
             }
 
-            GameEvent?.Invoke(data);
-        }
+            OnGenericEvent?.Invoke(data);
 
+        }
         public void AddListner(GenericGameEventListner<T> listner)
         {
-            if (_EventList.Contains(listner))
+            if (_GenericEventList.Contains(listner))
             {
-                Log("'" + listner + "' 는 이미 존재하는 이벤트");
+                Log($"{listner}] 는 이미 보유한 이벤트");
             }
             else
             {
                 Log(" Add Listner " + listner);
 
-                _EventList.Add(listner);
+                _GenericEventList.Add(listner);
             }
         }
 
         public void RemoveListner(GenericGameEventListner<T> listner)
         {
-            if (_EventList.Contains(listner))
+            if (_GenericEventList.Contains(listner))
             {
                 Log(" Remove Listner " + listner);
 
-                _EventList.Remove(listner);
+                _GenericEventList.Remove(listner);
             }
             else
             {
-                Log("'" + listner + "'] 는 이미 존재하지 않는 이벤트");
+                Log($"{listner}] 는 보유하지 않는 이벤트");
             }
         }
 
-        [Conditional("UNITY_EDITOR")]
-        private void Log(string log)
+        protected override void OnReset()
         {
-            if (_UseDebug)
-                SUtility.Debug.Log("GameEvent :" + log);
-        }
+            base.OnReset();
 
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            _EventList = new();
+            _GenericEventList = new();
         }
     }
 

@@ -55,6 +55,7 @@ namespace StudioScor.Utilities
 
             _SimpleAmount.AddModifier(this);
         }
+
         private void OnRemoveModifier()
         {
             if (!_SimpleAmount && gameObject.TryGetComponentInParentOrChildren(out _SimpleAmount))
