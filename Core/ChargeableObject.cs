@@ -86,7 +86,7 @@ namespace StudioScor.Utilities
 
             _ElapsedTime += deltaTime;
 
-            _Charged = Mathf.Min(1f, _ElapsedTime.SafeDivide(_Duration));
+            _Charged = Mathf.Min(1, _ElapsedTime.SafeDivide(_Duration));
 
             if (_Charged >= 1f)
             {

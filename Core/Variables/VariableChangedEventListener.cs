@@ -7,10 +7,12 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Variable Changed Event Listner ] ")]
         [SerializeField] private VariableObject<T> _Variable;
-        public UnityEvent<T> OnChangedVariable;
+        [SerializeField] private UnityEvent<T> _OnChangedVariable;
+        public event UnityAction<T> OnChangedVariable;
 
         private void OnEnable()
         {
+            _OnChangedVariable?.Invoke(_Variable.Value);
             OnChangedVariable?.Invoke(_Variable.Value);
 
             _Variable.OnChangedValue += Variable_OnChangedValue;
@@ -23,6 +25,7 @@ namespace StudioScor.Utilities
 
         private void Variable_OnChangedValue(VariableObject<T> variable, T currentValue, T prevValue)
         {
+            _OnChangedVariable?.Invoke(currentValue);
             OnChangedVariable?.Invoke(currentValue);
         }
 

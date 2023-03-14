@@ -120,13 +120,53 @@ namespace StudioScor.Utilities
             _RuntimeMaxChance = _InitialMaxChance;
         }
 
+        public void TryReturnData(T returnData)
+        {
+            foreach (var data in _RuntimeData)
+            {
+                if (data.Data.Equals(returnData))
+                {
+                    return;
+                }
+            }
 
-        public bool TryGetRandomData(out T data, bool removeData = false)
+
+            foreach (var data in _InitialData)
+            {
+                if (data.Data.Equals(returnData))
+                {
+                    _RuntimeData.Add(data);
+
+                    UpdateRuntimeData();
+
+                    return;
+                }
+            }
+        }
+
+        public void RemoveData(T removeData)
+        {
+            if (!HasData)
+                return;
+
+            for(int i = _RuntimeData.LastIndex(); i >= 0; i--)
+            {
+                if (_RuntimeData[i].Data.Equals(removeData))
+                {
+                    _RuntimeData.RemoveAt(i);
+
+                    UpdateRuntimeData();
+
+                    return;
+                }
+            }
+        }
+
+        public bool TryGetRandomData(out T data)
         {
             Log(" Try Get Random Data ");
 
             bool hasData = false;
-            int count = 0;
 
             data = default;
 
@@ -143,7 +183,6 @@ namespace StudioScor.Utilities
                     {
                         data = _RuntimeData[i].Data;
 
-                        count = i;
                         hasData = true;
 
                         Log($" Find Random Data - {_RuntimeData[i].Name} ");
@@ -152,13 +191,6 @@ namespace StudioScor.Utilities
                 }
             }
 
-            if (hasData && removeData)
-            {
-                _RuntimeData.RemoveAt(count);
-
-                UpdateRuntimeData();
-            }
-            
             return hasData;
         }
     }

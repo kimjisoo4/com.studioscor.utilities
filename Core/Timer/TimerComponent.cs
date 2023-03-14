@@ -75,7 +75,7 @@ namespace StudioScor.Utilities
         }
         public void StopTimer()
         {
-            _Timer.OnStopTimer();
+            _Timer.EndTimer();
         }
         public void OnPauseTimer()
         {

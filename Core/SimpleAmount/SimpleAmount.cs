@@ -9,10 +9,12 @@ namespace StudioScor.Utilities
 
     public class SimpleAmount : BaseMonoBehaviour
     {
+        [Header(" [ Simple Amount ] ")]
+        [SerializeField] private float _CurrentValue;
+        [SerializeField] private float _MaxValue;
+
         [SerializeField] private List<SimpleAmountModifier> _Modifiers;
 
-        private float _CurrentValue;
-        private float _MaxValue;
         private float _NormalizedValue;
         private float _PrevValue;
 

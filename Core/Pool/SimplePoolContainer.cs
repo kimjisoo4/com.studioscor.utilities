@@ -17,7 +17,7 @@ namespace StudioScor.Utilities
         private GameObject _InstContainer;
         private SimplePool _SimplePool;
 
-        public SimplePooledObject GetItem()
+        public SimplePooledObject Get()
         {
             if (!_InstContainer)
             {
@@ -32,6 +32,7 @@ namespace StudioScor.Utilities
 
                 _SimplePool = new SimplePool(_SimplePoolObject, _InstContainer.transform, _StartSize, _Capacity, _MaxSize);
             }
+
 
             return _SimplePool.Get();
         }

@@ -59,7 +59,7 @@ namespace StudioScor.Utilities
 
         public void EndStiffen()
         {
-            _Timer.OnStopTimer();
+            _Timer.EndTimer();
         }
 
         void Update()

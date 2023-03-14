@@ -68,7 +68,7 @@ namespace StudioScor.Utilities
         // Direction
         public static Vector3 Direction(this Vector3 start, Vector3 target, bool normalized = true)
         {
-            return normalized? (target - start).normalized : target - start;
+            return normalized ? (target - start).normalized : target - start;
         }
         public static Vector3 Direction(this Transform start, Vector3 target, bool normalized = true)
         {
@@ -103,6 +103,100 @@ namespace StudioScor.Utilities
         public static Vector3 HorizontalDirection(this Transform lhs, Vector3 rhs, bool normalized = true)
         {
             return HorizontalDirection(lhs.position, rhs);
+        }
+
+        // Align
+        public static Vector3[] AlignToline(Vector3 position, Quaternion rotation, float space, int count, EAlign align)
+        {
+            Vector3[] positions = new Vector3[count];
+
+            float width = space * (count - 1);
+
+            switch (align)
+            {
+                case EAlign.Center:
+                    width *= -0.5f;
+                    break;
+                case EAlign.Left:
+                    width = 0f;
+                    break;
+                case EAlign.Right:
+                    width = -width;
+                    break;
+                default:
+                    break;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 pos = new Vector3(width + (space * i), 0, 0);
+                pos = rotation * pos;
+
+                positions[i] = position + pos;
+            }
+
+            return positions;
+        }
+
+        public static Vector3[] AlignToCircle(Vector3 position, Quaternion rotation, float radius, float angle, int count, EAlign align, EAxis axis)
+        {
+            Vector3[] positions = new Vector3[count];
+
+            float interval;
+
+            if (angle < 360)
+            {
+                interval = angle / (count - 1);
+            }
+            else
+            {
+                interval = angle / count;
+            }
+
+            Vector3 pos = Vector3.zero;
+            Vector3 eulurAngle = Vector3.zero;
+
+            switch (align)
+            {
+                case EAlign.Center:
+                    angle *= -0.5f;
+                    break;
+                case EAlign.Left:
+                    angle = -angle;
+                    break;
+                case EAlign.Right:
+                    angle = 0;
+                    break;
+                default:
+                    break;
+            }
+
+            switch (axis)
+            {
+                case EAxis.X:
+                    pos.y = radius;
+                    eulurAngle.x = 1f;
+                    break;
+                case EAxis.Y:
+                    pos.z = radius;
+                    eulurAngle.y = 1f;
+                    break;
+                case EAxis.Z:
+                    pos.y = radius;
+                    eulurAngle.z = 1f;
+                    break;
+                default:
+                    break;
+            }
+
+            for(int i = 0; i < count; i++)
+            {
+                Vector3 alingPos = rotation * Quaternion.Euler(eulurAngle * (angle + interval * i)) * pos;
+
+                positions[i] = position + alingPos;
+            }
+
+            return positions;
         }
     }
 }

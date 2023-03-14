@@ -10,29 +10,33 @@ namespace StudioScor.Utilities
         [SerializeField] private GameEvent _GameEvent;
         [SerializeField] private UnityEvent _Event;
 
-        private GameEventListner _GameEventListner;
+        private GameEventListner _GameEventListener;
 
         private void Awake()
         {
-            _GameEventListner = new GameEventListner(_GameEvent);
+            _GameEventListener = new GameEventListner(_GameEvent);
 
-            _GameEventListner.OnEvent += GameEventListner_OnEvent;
+            _GameEventListener.OnEvent += GameEventListner_OnEvent;
         }
 
         private void GameEventListner_OnEvent()
         {
-            Log("Invoke");
+            Log($"Invoke - [ {_GameEvent.name} ]");
 
             _Event.Invoke();
         }
 
         private void OnEnable()
         {
-            _GameEventListner.OnListner();
+            Log($" Add Listen - [ {_GameEvent.name} ] ");
+
+            _GameEventListener.OnListner();
         }
         private void OnDisable()
         {
-            _GameEventListner.Endlistner();
+            Log($" End Listen - [ {_GameEvent.name} ] ");
+
+            _GameEventListener.Endlistner();
         }
     }
 

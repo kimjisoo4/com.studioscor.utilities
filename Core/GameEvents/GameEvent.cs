@@ -9,13 +9,10 @@ namespace StudioScor.Utilities
     public class GameEvent : BaseScriptableObject, ISerializationCallbackReceiver
     {
         [Header(" [ GameEvent ] ")]
+        [SerializeField, TextArea] protected string _Description;
+
         [SerializeField][SReadOnly] private List<GameEventListner> _EventList = new List<GameEventListner>();
         public event Action Events;
-
-
-#if UNITY_EDITOR
-        [TextArea]public string Explanation;
-#endif
 
         public void OnBeforeSerialize()
         {

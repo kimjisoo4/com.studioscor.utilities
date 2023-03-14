@@ -30,9 +30,9 @@ namespace StudioScor.Utilities
 
         private readonly SimplePooledObject _PooledObject;
         private readonly Transform _Container;
-        private readonly IObjectPool<SimplePooledObject> _Pool;
+        private readonly ObjectPool<SimplePooledObject> _Pool;
         public SimplePooledObject PooledObject => _PooledObject;
-        public IObjectPool<SimplePooledObject> Pool => _Pool;
+        public ObjectPool<SimplePooledObject> Pool => _Pool;
 
 
         protected virtual void Destroyed(SimplePooledObject pooledObject)
@@ -42,7 +42,16 @@ namespace StudioScor.Utilities
 
         protected virtual SimplePooledObject Create()
         {
-            var pooledObject = UnityEngine.Object.Instantiate(PooledObject, _Container);
+            SimplePooledObject pooledObject;
+
+            if (_Container)
+            {
+                pooledObject = UnityEngine.Object.Instantiate(PooledObject, _Container);
+            }
+            else
+            {
+                pooledObject = UnityEngine.Object.Instantiate(PooledObject);
+            }
 
             pooledObject.Create(this);
 
@@ -53,13 +62,14 @@ namespace StudioScor.Utilities
         {
             return Pool.Get();
         }
+
         private void Getted(SimplePooledObject pooledObject)
         {
             pooledObject.Activate();
         }
         public void Released(SimplePooledObject pooledObject)
         {
-            if (pooledObject.transform.parent != _Container)
+            if (_Container && pooledObject.transform.parent != _Container)
             {
                 pooledObject.SetParent(_Container, false);
             }

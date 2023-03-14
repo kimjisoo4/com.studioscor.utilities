@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace StudioScor.Utilities
 {
     public abstract class VariableObject<T> : EmptyVariable, ISerializationCallbackReceiver

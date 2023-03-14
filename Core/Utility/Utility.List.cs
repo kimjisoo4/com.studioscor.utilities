@@ -6,6 +6,11 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static int LastIndex<T>(this List<T> list)
+        {
+            return list.Count - 1;
+        }
+
         public static List<T> Shuffle<T>(this List<T> list)
         {
             int random1, random2;

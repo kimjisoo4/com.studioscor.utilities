@@ -61,7 +61,7 @@ namespace StudioScor.Utilities
         {
             if (IsPlaying)
             {
-				OnStopTimer();
+				EndTimer();
 			}
 
 			OnResetTimer();
@@ -113,7 +113,7 @@ namespace StudioScor.Utilities
 			_IsPlaying = true;
 		}
 
-		public void OnStopTimer()
+		public void EndTimer()
         {
 			if (!_IsPlaying)
 				return;

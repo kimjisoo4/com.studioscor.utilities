@@ -8,6 +8,6 @@ namespace StudioScor.Utilities
 
     public abstract class TraceIgnore : BaseScriptableObject
     {
-        public abstract void Ingnore(Transform tracer, ref List<RaycastHit> hits);
+        public abstract void Ignore(Transform tracer, ref List<RaycastHit> hits);
     }
 }

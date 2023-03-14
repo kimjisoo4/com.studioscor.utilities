@@ -14,17 +14,22 @@ namespace CuBattle
         {
             gameObject.TryGetComponentInParentOrChildren(out _Constraint);
         }
-
         public void SetTarget(Component component)
         {
-            SetTarget(component.transform);
+            if (component)
+                SetTarget(component.transform);
+            else
+                SetTarget();
         }
         public void SetTarget(GameObject target)
         {
-            SetTarget(target.transform);
+            if (target)
+                SetTarget(target.transform);
+            else
+                SetTarget();
         }
 
-        public void SetTarget(Transform target)
+        public void SetTarget(Transform target = null)
         {
             int sourceCount = _Constraint.sourceCount;
 

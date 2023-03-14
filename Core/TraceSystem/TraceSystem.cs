@@ -35,7 +35,7 @@ namespace StudioScor.Utilities
 
             foreach (var ignoreHit in _Ignores)
             {
-                ignoreHit.Ingnore(owner, ref hits);
+                ignoreHit.Ignore(owner, ref hits);
             }
         }
         protected void TryActions(Transform owner, ref List<RaycastHit> hits)

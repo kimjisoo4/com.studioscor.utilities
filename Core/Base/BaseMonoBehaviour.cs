@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 using System.Diagnostics;
 
 #if UNITY_EDITOR
@@ -36,7 +37,10 @@ namespace StudioScor.Utilities
 #if UNITY_EDITOR
         private void OnEnable()
         {
+            OnReset();
+
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+
         }
         private void OnDisable()
         {
