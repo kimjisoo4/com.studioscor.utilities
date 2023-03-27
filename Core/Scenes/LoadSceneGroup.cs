@@ -8,52 +8,50 @@ namespace StudioScor.Utilities
     public class LoadSceneGroup : SceneLoader
     {
         [Header(" [ Load Scene Group ] ")]
-        [SerializeField] private SceneData _MainScene;
-        [SerializeField] private SceneData[] _SubScenes;
+        [SerializeField] private SceneLoader _MainScene;
+        [SerializeField] private SceneLoader[] _SubScenes;
+
+        public override Scene GetScene => _MainScene.GetScene;
 
         private int _Count;
-
-        private void OnValidate()
-        {
-#if UNITY_EDITOR
-            _MainScene.OnValidate();
-
-            if(_SubScenes is not null)
-            {
-                foreach (var scene in _SubScenes)
-                {
-                    scene.OnValidate();
-                }
-            }
-#endif
-        }
 
         protected override void OnReset()
         {
             base.OnReset();
-
-#if UNITY_EDITOR
-            _MainScene.OnValidate();
-
-            if (_SubScenes is not null)
-            {
-                foreach (var scene in _SubScenes)
-                {
-                    scene.OnValidate();
-                }
-            }
-#endif
         }
 
 
         public override void LoadScene()
         {
-           var async =  _MainScene.LoadScene();
+            _MainScene.OnFinished += MainScene_OnFinished;
 
-            if (async is null)
-                LoadSubScenes();
-            else
-                async.completed += Async_Completed;
+            _MainScene.LoadScene();
+        }
+
+        private void MainScene_OnFinished(SceneLoader scene)
+        {
+            scene.OnFinished -= MainScene_OnFinished;
+
+            _Count = 0;
+
+            foreach (var subScene in _SubScenes)
+            {
+                _Count++;
+
+                subScene.OnFinished += SubScene_OnFinished;
+
+                subScene.LoadScene();
+            }
+        }
+
+        private void SubScene_OnFinished(SceneLoader scene)
+        {
+            scene.OnFinished -= SubScene_OnFinished;
+
+            _Count--;
+
+            if (_Count <= 0)
+                Callback_OnFinished();
         }
 
         public override void UnLoadScene()
@@ -64,47 +62,6 @@ namespace StudioScor.Utilities
             }
 
             _MainScene.UnLoadScene();
-        }
-
-        private void Async_Completed(AsyncOperation async)
-        {
-            LoadSubScenes();
-        }
-
-        private void LoadSubScenes()
-        {
-            OnLoadSubScenes();
-
-            if (_Count == 0)
-                Callback_OnFinished();
-        }
-
-
-        private void OnLoadSubScenes()
-        {
-            _Count = _SubScenes.Length;
-
-            foreach (var scene in _SubScenes)
-            {
-                var async = scene.LoadScene(LoadSceneMode.Additive);
-
-                if(async is null)
-                {
-                    _Count--;
-                }
-                else
-                {
-                    async.completed += SubSceneAsync_Completed;
-                }
-            }
-        }
-
-        private void SubSceneAsync_Completed(AsyncOperation obj)
-        {
-            _Count--;
-
-            if (_Count == 0)
-                Callback_OnFinished();
         }
     }
 }

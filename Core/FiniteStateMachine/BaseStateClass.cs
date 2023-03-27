@@ -7,8 +7,18 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities 
 {
+    [System.Serializable]
+    public class BaseStateMonoEvent
+    {
+        public UnityEvent<IState> OnEnteredState;
+        public UnityEvent<IState> OnExitedState;
+    }
+
     public abstract class BaseStateMono : BaseMonoBehaviour, IState
     {
+        [Header(" [ State MonoBehaviour ] ")]
+        [SerializeField] protected BaseStateMonoEvent _UnityEvents = new();
+
         public event UnityAction<IState> OnEnteredState;
         public event UnityAction<IState> OnExitedState;
 
@@ -17,12 +27,12 @@ namespace StudioScor.Utilities
 
         #region EDITOR ONLY
 
-#if UNITY_EDITOR
         protected virtual void Reset()
         {
+#if UNITY_EDITOR
             enabled = false;
-        }
 #endif
+        }
         #endregion
 
 
@@ -36,15 +46,15 @@ namespace StudioScor.Utilities
             return IsPlaying;
         }
 
-        public void ForceExitState()
+        private void OnEnable()
         {
-            _IsPlaying = false;
-
-            OnExitState();
-
-            enabled = false;
-
-            Callbaco_OnExitedState();
+            if (!_IsPlaying)
+                ForceEnterState();
+        }
+        private void OnDisable()
+        {
+            if (_IsPlaying)
+                ForceExitState();
         }
 
         public void ForceEnterState()
@@ -53,10 +63,23 @@ namespace StudioScor.Utilities
 
             enabled = true;
 
-            OnEnterState();
+            EnterState();
 
             Callback_OnEnteredState();
         }
+
+        public void ForceExitState()
+        {
+            _IsPlaying = false;
+
+            ExitState();
+
+            enabled = false;
+
+            Callback_OnExitedState();
+        }
+
+        
 
         public bool TryEnterState()
         {
@@ -78,11 +101,11 @@ namespace StudioScor.Utilities
             return true;
         }
 
-        protected virtual void OnEnterState()
+        protected virtual void EnterState()
         {
 
         }
-        protected virtual void OnExitState()
+        protected virtual void ExitState()
         {
 
         }
@@ -91,12 +114,14 @@ namespace StudioScor.Utilities
         {
             Log("Entered State");
 
+            _UnityEvents.OnEnteredState?.Invoke(this);
             OnEnteredState?.Invoke(this);
         }
-        private void Callbaco_OnExitedState()
+        private void Callback_OnExitedState()
         {
             Log("Exited State");
 
+            _UnityEvents.OnExitedState?.Invoke(this);
             OnExitedState?.Invoke(this);
         }
     }

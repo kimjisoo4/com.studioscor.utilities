@@ -10,6 +10,7 @@ namespace StudioScor.Utilities
         [Header(" [ Re Start Scene ]")]
         [SerializeField] private LoadSceneMode _Mode = LoadSceneMode.Single;
 
+        public override Scene GetScene => SceneManager.GetActiveScene();
         public override void LoadScene()
         {
             var async = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name, _Mode);

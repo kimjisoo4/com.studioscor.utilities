@@ -545,8 +545,9 @@ namespace StudioScor.Utilities
             #endregion
 
             #region DrawSphereCastAll
+
             public static RaycastHit[] DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask,
-                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+               bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Vector3 direction = start.Direction(end);
                 float distance = Vector3.Distance(start, end);
@@ -559,7 +560,7 @@ namespace StudioScor.Utilities
 
                 var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
 
-#region DEBUG DRAW
+                #region DEBUG DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -584,12 +585,88 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return hits;
             }
 
-            public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults, List<Transform> ignoreTransform = null,
+
+
+            public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                var hits = DrawSphereCastAll(start, end, radius, layermask, useDebug, duration, rayColor, hitColor);
+
+                if (hits.Length == 0)
+                    return false;
+
+                hitResults.AddRange(hits);
+
+                return true;
+            }
+
+            public static bool DrawSphereCastAll( Vector3 start, Vector3 end, float radius, LayerMask layerMask, ref List<RaycastHit> hitResults, Transform owner, List<Transform> ignoreTransforms = null,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                bool isZero = start.SafeEqauls(end);
+
+                Vector3 direction = isZero ?  Vector3.forward : start.Direction(end);
+                float distance = isZero? 0.01f : Vector3.Distance(start, end);
+
+                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layerMask);
+
+                if (hits.Length == 0)
+                {
+                    #region DEBUG DRAW
+#if UNITY_EDITOR
+                    if (useDebug)
+                    {
+                        Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+#endif
+                    #endregion
+
+                    return false;
+                }
+
+                IgnoreHitResultsTransform(hits, ref hitResults, owner);
+                IgnoreHitResultsTransforms(hits, ref hitResults, ignoreTransforms);
+
+                #region DEBUG DRAW
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitResults.Count > 0)
+                    {
+                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layerMask);
+
+                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
+                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
+
+                        foreach (var hit in hits)
+                        {
+                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+
+                return hitResults.Count > 0;
+            }
+
+            
+
+            public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults, List<Transform> ignoreTransforms = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Vector3 direction = start.Direction(end);
@@ -619,20 +696,7 @@ namespace StudioScor.Utilities
                     return false;
                 }
 
-                if(ignoreTransform is not null)
-                {
-                    foreach (var hit in hits)
-                    {
-                        if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
-                        {
-                            hitResults.Add(hit);
-                        }
-                    }
-                }
-                else
-                {
-                    hitResults.AddRange(hits);
-                }
+                IgnoreHitResultsTransforms(hits, ref hitResults, ignoreTransforms);
 
                 #region DEBUG DRAW
 #if UNITY_EDITOR
@@ -663,180 +727,7 @@ namespace StudioScor.Utilities
 
                 return hitResults.Count > 0;
             }
-            public static List<RaycastHit> DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, List<Transform> ignoreTransform = null,
-                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-            {
-                Vector3 direction = start.Direction(end);
-                float distance = Vector3.Distance(start, end);
 
-                if (direction.SafeEqauls(Vector3.zero))
-                {
-                    direction = new Vector3(0, 0, 1f);
-                    distance = 0.01f;
-                }
-
-                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
-
-                if (hits.Length == 0)
-                {
-#region DEBUG DRAW
-#if UNITY_EDITOR
-                    if (useDebug)
-                    {
-                        Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                    }
-#endif
-#endregion
-
-                    return null;
-                }
-
-                List<RaycastHit> hitList = new();
-
-                if(ignoreTransform is  not null)
-                {
-                    foreach (var hit in hits)
-                    {
-                        if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
-                        {
-                            hitList.Add(hit);
-                        }
-                    }
-                }
-                else
-                {
-                    hitList = hits.ToList();
-                }
-                
-
-#region DEBUG DRAW
-#if UNITY_EDITOR
-                if (useDebug)
-                {
-                    Color successColor = hitColor == default ? Color.green : hitColor;
-                    Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                    if (hitList.Count > 0)
-                    {
-                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
-
-                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
-                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
-
-                        foreach (var hit in hits)
-                        {
-                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
-                        }
-                    }
-                    else
-                    {
-                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                    }
-                }
-#endif
-#endregion
-
-                return hitList;
-            }
-
-            public static List<RaycastHit> DrawSphereCastAll(Vector3 start, float radius, Vector3 direction, float distance, LayerMask layermask, List<Transform> ignoreTransform,
-                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-            {
-                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
-
-                if (hits.Length == 0)
-                {
-#region DEBUG DRAW
-#if UNITY_EDITOR
-                    if (useDebug)
-                    {
-                        Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                    }
-#endif
-#endregion
-
-                    return null;
-                }
-
-                List<RaycastHit> hitList = new();
-
-
-                foreach (var hit in hits)
-                {
-                    if (!ignoreTransform.Contains(hit.transform) && !ignoreTransform.Contains(hit.transform.root))
-                    {
-                        hitList.Add(hit);
-                    }
-                }
-
-#region DEBUG DRAW
-#if UNITY_EDITOR
-                if (useDebug)
-                {
-                    Color successColor = hitColor == default ? Color.green : hitColor;
-                    Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                    if (hitList.Count > 0)
-                    {
-                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
-
-                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
-                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
-
-                        foreach (var hit in hits)
-                        {
-                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
-                        }
-                    }
-                    else
-                    {
-                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                    }
-                }
-#endif
-#endregion
-
-                return hitList;
-            }
-
-            public static RaycastHit[] DrawSphereCastAll(Vector3 start, float radius, Vector3 direction, float distance, LayerMask layermask,
-                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-            {
-                var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
-
-#region DEBUG DRAW
-#if UNITY_EDITOR
-                if (useDebug)
-                {
-                    Color successColor = hitColor == default ? Color.green : hitColor;
-                    Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                    if (hits.Length > 0)
-                    {
-                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layermask);
-
-                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
-                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
-
-                        foreach (var hit in hits)
-                        {
-                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
-                        }
-                    }
-                    else
-                    {
-                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
-                    }
-                }
-#endif
-#endregion
-
-                return hits;
-            }
 
 #endregion
 

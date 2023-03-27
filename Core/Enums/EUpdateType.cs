@@ -8,4 +8,12 @@
         ManualDeltaTime,
         ManualNormalizedTime,
     }
+
+    public enum EUpdateState
+    {
+        Update,
+        Fixed,
+        Late,
+        Manual,
+    }
 }

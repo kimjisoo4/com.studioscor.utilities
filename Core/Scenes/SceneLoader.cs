@@ -1,5 +1,5 @@
 ﻿using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
 
 namespace StudioScor.Utilities
 {
@@ -8,20 +8,21 @@ namespace StudioScor.Utilities
         public abstract void LoadScene();
         public abstract void UnLoadScene();
 
-        public event UnityAction OnStarted;
-        public event UnityAction OnFinished;
+        public event UnityAction<SceneLoader> OnStarted;
+        public event UnityAction<SceneLoader> OnFinished;
+        public abstract Scene GetScene { get; }
 
         protected void Callback_OnStarted()
         {
             Log(" On Started Load Scene");
 
-            OnStarted?.Invoke();
+            OnStarted?.Invoke(this);
         }
         protected void Callback_OnFinished()
         {
             Log(" On Finished Load Scene");
 
-            OnFinished?.Invoke();
+            OnFinished?.Invoke(this);
         }
     }
 }

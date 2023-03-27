@@ -43,12 +43,12 @@ namespace StudioScor.Utilities
             _Scene.LoadScene();
         }
 
-        private void Scene_OnStarted()
+        private void Scene_OnStarted(SceneLoader scene)
         {
             Callback_OnStartedLoad();
         }
 
-        private void Scene_OnFinished()
+        private void Scene_OnFinished(SceneLoader scene)
         {
             Callback_OnFinishedLoad();
         }

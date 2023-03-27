@@ -12,8 +12,9 @@ namespace StudioScor.Utilities
         [Header(" [ Loading Scene ] ")]
         [SerializeField] private SceneData _LoadingScene;
 
-        private int _Count;
+        public override Scene GetScene => _LoadingScene.GetScene();
 
+        private int _Count;
 
         private void OnValidate()
         {
@@ -24,28 +25,33 @@ namespace StudioScor.Utilities
 
         public override void LoadScene()
         {
-            var async = _LoadingScene.LoadScene(LoadSceneMode.Additive);
-
             Callback_OnStarted();
 
-            if(async is not null)
-            {
-                async.completed += LoadingSceneAsync_Completed;
-            }
-            else
+            var async = _LoadingScene.LoadScene(LoadSceneMode.Additive);
+
+            if (async is null)
             {
                 UnLoadOtherScenes();
             }
+            else
+            {
+                async.completed += LoadingScene_completed;
+            }
         }
+
+        private void LoadingScene_completed(AsyncOperation async)
+        {
+            UnLoadOtherScenes();
+        }
+
         public override void UnLoadScene()
         {
             _LoadingScene.UnLoadScene();
         }
 
-
-        private void LoadingSceneAsync_Completed(AsyncOperation async)
+        private void LoadingScene_OnFinished(SceneLoader scene)
         {
-            UnLoadOtherScenes();
+            scene.OnFinished -= LoadingScene_OnFinished;
         }
 
         private void UnLoadOtherScenes()
@@ -57,11 +63,7 @@ namespace StudioScor.Utilities
             OnUnLoadOtherScenes();
 
             if (_Count == 0)
-            {
-                Resources.UnloadUnusedAssets();
-
-                Callback_OnFinished();
-            }
+                OnFinishedUnloadOtherScene();
         }
 
         private void OnUnLoadOtherScenes()
@@ -82,7 +84,7 @@ namespace StudioScor.Utilities
                 {
                     Log($"[ {scene.name} ] is Sub Scene.");
 
-                    var async = SceneManager.UnloadSceneAsync(scene);
+                    var async = SceneManager.UnloadSceneAsync(scene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
 
                     if(async is null)
                     {
@@ -105,11 +107,12 @@ namespace StudioScor.Utilities
             _Count--;
 
             if (_Count == 0)
-            {
-                Resources.UnloadUnusedAssets();
+                OnFinishedUnloadOtherScene();
+        }
 
-                Callback_OnFinished();
-            }
+        private void OnFinishedUnloadOtherScene()
+        {
+            Callback_OnFinished();
         }
     }
 }

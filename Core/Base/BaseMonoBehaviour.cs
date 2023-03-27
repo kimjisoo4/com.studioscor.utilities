@@ -40,7 +40,6 @@ namespace StudioScor.Utilities
             OnReset();
 
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
-
         }
         private void OnDisable()
         {

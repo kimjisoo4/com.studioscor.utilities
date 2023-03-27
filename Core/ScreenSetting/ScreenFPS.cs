@@ -34,7 +34,7 @@ namespace StudioScor.Utilities
                 ForceEnterState();
         }
 
-        protected override void OnEnterState()
+        protected override void EnterState()
         {
             _HighStyle.normal.textColor = Color.green;
             _NormalStyle.normal.textColor = Color.white;

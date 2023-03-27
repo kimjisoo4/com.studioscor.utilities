@@ -13,10 +13,7 @@ namespace StudioScor.Utilities
 
         public bool Trace(Transform owner, TData data, ref List<RaycastHit> hits, List<Transform> ignoreHits, bool useDebug = false)
         {
-            if (_IgnoreSelf)
-                ignoreHits.Add(owner);
-
-            if (OnTrace(owner, data, ref hits, ignoreHits, useDebug))
+            if (OnTrace(owner, data, ref hits, ignoreHits, UseDebug || useDebug))
             {
                 CheckIgnore(owner, ref hits);
                 TryActions(owner, ref hits);

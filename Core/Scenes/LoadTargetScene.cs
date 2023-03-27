@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-
+using System;
+using UnityEngine.SceneManagement;
 
 namespace StudioScor.Utilities
 {
@@ -8,8 +9,9 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Load Target Scene ] ")]
         [SerializeField] private SceneLoader _Target;
+        [SerializeField][SReadOnly]private SceneLoader _RuntimeTarget;
 
-        private SceneLoader _RuntimeTarget;
+        public override Scene GetScene => _RuntimeTarget.GetScene;
 
         public void OnBeforeSerialize()
         {
@@ -42,15 +44,15 @@ namespace StudioScor.Utilities
             _RuntimeTarget.LoadScene();
         }
 
-        private void Target_OnStarted()
+        private void Target_OnStarted(SceneLoader scene)
         {
-            _RuntimeTarget.OnStarted -= Target_OnStarted;
+            scene.OnStarted -= Target_OnStarted;
 
             Callback_OnStarted();
         }
-        private void Target_OnFinished()
+        private void Target_OnFinished(SceneLoader scene)
         {
-            _RuntimeTarget.OnFinished -= Target_OnFinished;
+            scene.OnFinished -= Target_OnFinished;
 
             Callback_OnFinished();
         }
@@ -60,6 +62,5 @@ namespace StudioScor.Utilities
             _RuntimeTarget.UnLoadScene();
         }
 
-        
     }
 }

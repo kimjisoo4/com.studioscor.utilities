@@ -77,7 +77,7 @@ namespace StudioScor.Utilities
                     return default;
             }
         }
-        public AsyncOperation UnLoadScene(UnloadSceneOptions options = UnloadSceneOptions.None)
+        public AsyncOperation UnLoadScene(UnloadSceneOptions options = UnloadSceneOptions.UnloadAllEmbeddedSceneObjects)
         {
             switch (_Type)
             {

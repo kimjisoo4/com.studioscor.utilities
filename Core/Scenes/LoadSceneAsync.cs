@@ -12,6 +12,8 @@ namespace StudioScor.Utilities
         [SerializeField] private SceneData _Scene;
         [SerializeField] private LoadSceneMode _Mode = LoadSceneMode.Single;
 
+        public override Scene GetScene => _Scene.GetScene();
+
         private void OnValidate()
         {
 #if UNITY_EDITOR

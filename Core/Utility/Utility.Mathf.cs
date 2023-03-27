@@ -19,6 +19,18 @@ namespace StudioScor.Utilities
 
             return lhs / rhs;
         }
+        public static float SafeDivide(this int lhs, float rhs)
+        {
+            return SafeDivide((float)lhs, rhs);
+        }
+        public static float SafeDivide(this float lhs, int rhs)
+        {
+            return SafeDivide(lhs, (float)rhs);
+        }
+        public static float SafeDivide(this int lhs, int rhs)
+        {
+            return SafeDivide((float)lhs, (float)rhs);
+        }
 
         //Is Positive
         public static bool IsPositive(this float value)
