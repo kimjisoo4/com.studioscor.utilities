@@ -46,16 +46,6 @@ namespace StudioScor.Utilities
             return IsPlaying;
         }
 
-        private void OnEnable()
-        {
-            if (!_IsPlaying)
-                ForceEnterState();
-        }
-        private void OnDisable()
-        {
-            if (_IsPlaying)
-                ForceExitState();
-        }
 
         public void ForceEnterState()
         {
@@ -78,8 +68,6 @@ namespace StudioScor.Utilities
 
             Callback_OnExitedState();
         }
-
-        
 
         public bool TryEnterState()
         {

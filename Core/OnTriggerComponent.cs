@@ -12,7 +12,7 @@ namespace StudioScor.Utilities
         [SerializeField] private bool _IsIgnoreTag;
 
         [Header(" [ Trigger ] ")]
-        [SerializeField] private bool _UseTriggerEnter;
+        [SerializeField] private bool _UseTriggerEnter = true;
         [SerializeField] private bool _UseTriggerStay;
         [SerializeField] private bool _UseTriggerExit;
 

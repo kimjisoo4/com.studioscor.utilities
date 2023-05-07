@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
-
     public class ScreenFPS : BaseStateMono
     {
         [Header(" [ Screen FPS ] ")]

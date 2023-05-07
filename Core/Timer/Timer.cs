@@ -25,7 +25,7 @@ namespace StudioScor.Utilities
 		public float ElapsedTime => _ElapsedTime;
 		public float NormalizedTime => _NormalizedTime;
 		public bool IsPlaying => _IsPlaying;
-		public bool IsStoped => !_IsPlaying;
+		public bool IsStopped => !_IsPlaying;
 		public bool IsFinished => _IsFinished;
 
 		public Timer()

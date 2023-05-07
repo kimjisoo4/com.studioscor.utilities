@@ -8,19 +8,26 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Look At Camera Component ] ")]
         [SerializeField] private RotationConstraint _Constraint;
+        [SerializeField] private Camera _Camera;
 
 #if UNITY_EDITOR
         private void Reset()
         {
-            gameObject.TryGetComponentInParentOrChildren(out _Constraint);
+            if(gameObject.TryGetComponentInParentOrChildren(out _Constraint))
+            {
+                _Constraint.constraintActive = true;
+            }
         }
 #endif
 
         private void Awake()
         {
+            if (!_Camera)
+                _Camera = Camera.main;
+
             ConstraintSource source = new()
             {
-                sourceTransform = Camera.main.transform,
+                sourceTransform = _Camera.transform,
                 weight = 1f,
             };
 

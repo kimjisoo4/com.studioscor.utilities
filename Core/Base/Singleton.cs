@@ -17,8 +17,12 @@ namespace StudioScor.Utilities
 				{
 					_Instance = FindObjectOfType<T>();
 
-					if(_Instance)
+					if (_Instance)
 						_Instance.Initialization();
+					else
+                    {
+						GameObject gameObject = new GameObject(typeof(T).Name, typeof(T));
+                    }
 				}
 
 				return _Instance;

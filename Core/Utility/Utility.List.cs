@@ -6,8 +6,15 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
-       
-        public static int LastIndex<T>(this IReadOnlyCollection<T> list)
+        public static int LastIndex<T>(this IReadOnlyCollection<T> array)
+        {
+            return array.Count - 1;
+        }
+       public static int LastIndex<T>(this T[] array)
+        {
+            return array.Length - 1;
+        }
+        public static int LastIndex<T>(this IReadOnlyList<T> list)
         {
             return list.Count - 1;
         }

@@ -1,17 +1,11 @@
 ﻿using UnityEngine;
 
-
 namespace StudioScor.Utilities
 {
     public class SphereTraceComponent : TraceComponent
     {
         [Header(" [ Sphere Trace Component ] ")]
         [SerializeField] private float _Radius = 1f;
-
-        public override Vector3 CalcPosition()
-        {
-            return _Transform.TransformPoint(_Offset);
-        }
 
         protected override bool TryTrace()
         {
@@ -25,7 +19,7 @@ namespace StudioScor.Utilities
 
             foreach (var traceIgnore in _TraceIgnores)
             {
-                traceIgnore.Ignore(_Transform, ref _Hits);
+                traceIgnore.Ignore(_Owner, ref _Hits);
 
                 if (_Hits.Count <= 0)
                     return false;

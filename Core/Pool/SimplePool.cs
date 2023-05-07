@@ -13,7 +13,7 @@ namespace StudioScor.Utilities
             _PooledObject = pooledObject;
             _Container = container;
 
-            _Pool = new ObjectPool<SimplePooledObject>(Create, actionOnGet: Getted , actionOnDestroy: Destroyed, defaultCapacity : capacity, maxSize: maxSize);
+            _Pool = new ObjectPool<SimplePooledObject>(Create, actionOnGet: Getted , actionOnRelease : Released, actionOnDestroy: Destroyed, defaultCapacity : capacity, maxSize: maxSize);
 
             var poolObjects = new List<SimplePooledObject>();
 
@@ -31,8 +31,11 @@ namespace StudioScor.Utilities
         private readonly SimplePooledObject _PooledObject;
         private readonly Transform _Container;
         private readonly ObjectPool<SimplePooledObject> _Pool;
+
         public SimplePooledObject PooledObject => _PooledObject;
         public ObjectPool<SimplePooledObject> Pool => _Pool;
+        public Transform Container => _Container;
+
 
 
         protected virtual void Destroyed(SimplePooledObject pooledObject)
@@ -67,14 +70,17 @@ namespace StudioScor.Utilities
         {
             pooledObject.Activate();
         }
+
+        public void Release(SimplePooledObject pooledObject)
+        {
+            Pool.Release(pooledObject);
+        }
         public void Released(SimplePooledObject pooledObject)
         {
             if (_Container && pooledObject.transform.parent != _Container)
             {
                 pooledObject.SetParent(_Container, false);
             }
-
-            Pool.Release(pooledObject);
         }
     }
     

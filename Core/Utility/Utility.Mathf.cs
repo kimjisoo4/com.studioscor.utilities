@@ -12,6 +12,14 @@ namespace StudioScor.Utilities
         }
 
         // Safe Divide
+        public static Vector3 SafeDivide(this Vector3 lhs, float rhs)
+        {
+            if (rhs == 0)
+                return lhs;
+
+            return lhs / rhs;
+        }
+
         public static float SafeDivide(this float lhs, float rhs)
         {
             if (rhs == 0)

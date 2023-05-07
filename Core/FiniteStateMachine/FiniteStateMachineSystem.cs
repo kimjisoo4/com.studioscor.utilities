@@ -2,6 +2,8 @@
 
 namespace StudioScor.Utilities
 {
+    public delegate void OnChangedStateHandler<T>(FiniteStateMachineSystem<T> stateMachine, T currentState, T prevState) where T : class, IState;
+    
     [System.Serializable]
     public class FiniteStateMachineSystem<T> where T : class, IState
     {
@@ -15,6 +17,8 @@ namespace StudioScor.Utilities
         public T CurrentState => _CurrentState;
         public T PrevState => _PrevState;
         public T NextState => _NextState;
+
+        public event OnChangedStateHandler<T> OnChangedState;
 
         public FiniteStateMachineSystem()
         {
@@ -104,6 +108,11 @@ namespace StudioScor.Utilities
 
             _PrevState = null;
             _NextState = null;
+        }
+
+        protected virtual void Callback_OnChangedState(T prevState)
+        {
+            OnChangedState?.Invoke(this, _CurrentState, prevState);
         }
     }
 }

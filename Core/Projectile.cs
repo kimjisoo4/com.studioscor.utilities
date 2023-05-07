@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
+
     [RequireComponent(typeof(Rigidbody))]
     public class Projectile : BaseMonoBehaviour
     {
@@ -21,67 +22,106 @@ namespace StudioScor.Utilities
         [Header(" [ Gravity ] ")]
         [SerializeField] private bool _UseGravity = true;
         [SerializeField][SCondition(nameof(_UseGravity))] private float _Gravity = 9.81f;
+        [Header(" [ Play Speed ] ")]
+        [SerializeField] private float _PlaySpeed = 1f;
         [Header(" [ Auto Playing ] ")]
-        [SerializeField] private bool _AutoShooting = true;
-        
-        public UnityEvent OnShotProjectile;
+        [SerializeField] private bool _AutoPlaying = true;
+
+        private bool _IsPlaying;
+        private float _CurrentSpeed;
+        private float _CurrentGravity;
 
 
-        private bool _WasShot;
-        private float _CurrentHorizontalSpeed;
-        private float _CurrentVerticalSpeed;
+        public Vector3 Direction => _Direction;
+        public bool IsPlaying => _IsPlaying;
+        public bool UseGravity => _UseGravity;
+        public Transform Target => _Target;
+        public bool HasTarget => _Target;
 
-        public bool WasShot => _WasShot;
+        public float CurrentSpeed => _CurrentSpeed;
+        public float CurrentGravity => _CurrentGravity;
 
-
-
-#if UNITY_EDITOR
         private void Reset()
         {
+#if UNITY_EDITOR
             if(TryGetComponent(out _RigidBody))
             {
                 _RigidBody.useGravity = false;
             }
-        }
 #endif
+        }
 
         private void OnEnable()
         {
-            if(_AutoShooting)
+            if (_AutoPlaying)
                 OnProjectile();
         }
         private void OnDisable()
         {
-            ResetProjectile();
+            EndProjectile();
+        }
+        private void FixedUpdate()
+        {
+            float deltaTime = Time.fixedDeltaTime * _PlaySpeed;
+
+            UpdateProjectile(deltaTime);
+        }
+
+        public void SetPlaySpeed(float newSpeed)
+        {
+            _PlaySpeed = newSpeed;
+        }
+
+        public void SetTarget(Component component)
+        {
+            SetTarget(component.transform);
+        }
+        public void SetTarget(GameObject gameObject)
+        {
+            SetTarget(gameObject.transform);
+        }
+        public void SetTarget(Transform target)
+        {
+            _Target = target;
+        }
+
+        public void SetDirection(Vector3 direction)
+        {
+            _Direction = direction;
         }
 
         public void OnProjectile()
         {
-            if (_WasShot)
+            if (_IsPlaying)
                 return;
 
-            _WasShot = true;
+            _IsPlaying = true;
 
-            _CurrentHorizontalSpeed = _StartedSpeed;
-            _CurrentVerticalSpeed = 0f;
-
-            OnShotProjectile?.Invoke();
+            _CurrentSpeed = _StartedSpeed;
+            _CurrentGravity = 0f;
         }
-        public void ResetProjectile()
+        public void EndProjectile()
         {
-            _WasShot = false;
+            if (!_IsPlaying)
+                return;
 
-            _CurrentHorizontalSpeed = 0f;
-            _CurrentVerticalSpeed = 0f;
+            _IsPlaying = false;
+
+            _CurrentSpeed = 0f;
+            _CurrentGravity = 0f;
 
             _RigidBody.velocity = Vector3.zero;
 
             _Target = null;
         }
-
-        public void SetTarget(Transform target)
+        public void UpdateProjectile(float deltaTime)
         {
-            _Target = target;
+            if (!_IsPlaying)
+                return;
+
+            LookAtTarget(deltaTime);
+
+            Movement(deltaTime);
         }
 
         private void LookAtTarget(float deltaTime)
@@ -103,33 +143,24 @@ namespace StudioScor.Utilities
 
         private void Movement(float deltaTime)
         {
-            Vector3 direction = transform.TransformDirection(_Direction);
+            Vector3 direction = _Direction;
 
-            if (_CurrentHorizontalSpeed < _TargetSpeed)
+            if (_CurrentSpeed < _TargetSpeed)
             {
-                _CurrentHorizontalSpeed = Mathf.MoveTowards(_CurrentHorizontalSpeed, _TargetSpeed, _Acceleration * deltaTime);
+                _CurrentSpeed = Mathf.MoveTowards(_CurrentSpeed, _TargetSpeed, _Acceleration * deltaTime);
             }
             else
             {
-                _CurrentHorizontalSpeed = Mathf.MoveTowards(_CurrentHorizontalSpeed, _TargetSpeed, _Deceleration * deltaTime);
+                _CurrentSpeed = Mathf.MoveTowards(_CurrentSpeed, _TargetSpeed, _Deceleration * deltaTime);
             }
 
             if (_UseGravity)
-                _CurrentVerticalSpeed -= _Gravity * deltaTime;
+                _CurrentGravity -= _Gravity * deltaTime;
 
-            OnMovement(direction * _CurrentHorizontalSpeed + Vector3.up * _CurrentVerticalSpeed);
-        }
+            Vector3 velocity = _PlaySpeed * _CurrentSpeed * direction;
+            Vector3 gravity = _PlaySpeed * _CurrentGravity * Vector3.up;
 
-        private void FixedUpdate()
-        {
-            if (!_WasShot)
-                return;
-
-            float deltaTime = Time.fixedDeltaTime;
-
-            LookAtTarget(deltaTime);
-
-            Movement(deltaTime);
+            OnMovement(velocity + gravity);
         }
 
         protected void OnMovement(Vector3 velocity)

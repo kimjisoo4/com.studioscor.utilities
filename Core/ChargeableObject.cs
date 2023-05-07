@@ -3,6 +3,87 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
+    public class ChargeableObject : BaseMonoBehaviour
+    {
+        [Header(" [ Charageable Object ] ")]
+        [SerializeField] private float _Duration = 2f;
+        [SerializeField][SRange(0f, 1f)] private float _Offset = 0f;
+        [SerializeField] private bool _AutoPlaying = true;
+
+        private readonly Chargeable _Chargeable = new();
+
+        public UnityAction OnStartedCharging;
+        public UnityAction OnFinishedCharging;
+        public UnityAction OnReachedCharging;
+
+        [SerializeField] private UnityEvent _OnStartedCharging;
+        [SerializeField] private UnityEvent _OnFinishedCharging;
+        [SerializeField] private UnityEvent _OnReachedCharging;
+
+        public float ChargeStrength => _Chargeable.Charged;
+        public bool IsFulled => _Chargeable.IsFulled;
+
+        private void Awake()
+        {
+            _Chargeable.OnStartedCharging += Chargeable_OnStartedCharging;
+            _Chargeable.OnFinishedCharging += Chargeable_OnFinishedCharging;
+            _Chargeable.OnReachedCharging += Chargeable_OnReachedCharging;
+        }
+
+        private void OnEnable()
+        {
+            if (_AutoPlaying)
+                OnCharging();
+        }
+        private void OnDisable()
+        {
+            EndCharging();
+        }
+
+        private void Update()
+        {
+            float deltaTime = Time.deltaTime;
+
+            UpdateCharging(deltaTime);
+        }
+
+        public void OnCharging()
+        {
+            _Chargeable.OnCharging(_Duration, _Offset);
+        }
+        public void EndCharging()
+        {
+            _Chargeable.EndCharging();
+        }
+        public void UpdateCharging(float deltaTime)
+        {
+            _Chargeable.UpdateCharging(deltaTime);
+        }
+
+        public void ResetChargeable()
+        {
+
+        }
+
+        private void Chargeable_OnStartedCharging(Chargeable chargeable)
+        {
+            _OnStartedCharging?.Invoke();
+            OnStartedCharging?.Invoke();
+        }
+
+        private void Chargeable_OnReachedCharging(Chargeable chargeable)
+        {
+            _OnReachedCharging?.Invoke();
+            OnReachedCharging?.Invoke();
+        }
+
+        private void Chargeable_OnFinishedCharging(Chargeable chargeable)
+        {
+            _OnFinishedCharging?.Invoke();
+            OnFinishedCharging?.Invoke();
+        }
+    }
+
     public class Chargeable : BaseClass
     {
         public delegate void ChargingStateHander(Chargeable chargeable);
@@ -116,45 +197,5 @@ namespace StudioScor.Utilities
         }
     }
 
-    public class ChargeableObject : BaseMonoBehaviour
-    {
-        [Header(" [ Charageable Object ] ")]
-        public UnityEvent<float> OnUpdatedStrength;
-        public UnityEvent OnReacthMaxStrength;
-
-        private float _ChargeStrength;
-        public float ChargeStrength => _ChargeStrength;
-
-        public void ResetChargeable()
-        {
-            _ChargeStrength = 0f;
-        }
-
-        public void SetChargeStrength(float normalizedCharge)
-        {
-            if (_ChargeStrength == normalizedCharge)
-            {
-                return;
-            }
-
-            float chargeSterngth = normalizedCharge;
-
-            if (!chargeSterngth.InRange(0f, 1f))
-            {
-                Mathf.Clamp01(chargeSterngth);
-            }
-
-            if (_ChargeStrength == normalizedCharge)
-                return;
-
-            _ChargeStrength = normalizedCharge;
-
-            OnUpdatedStrength?.Invoke(ChargeStrength);
-
-            if (ChargeStrength >= 1f)
-            {
-                OnReacthMaxStrength?.Invoke();
-            }
-        }
-    }
+    
 }

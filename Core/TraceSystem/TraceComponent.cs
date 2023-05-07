@@ -6,60 +6,129 @@ using System.Collections.Generic;
 
 namespace StudioScor.Utilities
 {
-    public abstract class TraceComponent : BaseStateMono
+    public abstract class TraceComponent : BaseMonoBehaviour
     {
         [Header(" [ Trace Component ] ")]
-        [SerializeField] protected Transform _Transform;
+        [SerializeField] protected Transform _Owner;
+        [SerializeField] protected bool _IgnoreSelf = true;
 
         [SerializeField] protected Vector3 _Offset;
         [SerializeField] protected LayerMask _Layer;
         [SerializeField] protected TraceIgnore[] _TraceIgnores;
 
-        [Header(" [ Evemt ] ")]
+        [Header(" [ Event ] ")]
         [SerializeField] protected UnityEvent<List<RaycastHit>> _OnHits;
         public UnityAction<List<RaycastHit>> OnHits;
 
+        [Header(" [ Auto Playing ] ")]
+        [SerializeField] private bool _AutoPlaying = true;
+
+        protected bool _IsPlaying = false;
         protected Vector3 _PrevPosition;
         protected List<RaycastHit> _Hits = new();
         protected List<Transform> _IgnoreTransforms = new();
 
-        public override bool CanEnterState()
+        public IReadOnlyList<RaycastHit> Hits => _Hits;
+
+        private void Reset()
         {
-            if (!base.CanEnterState())
-                return false;
-
-            if (!_Transform)
-                return false;
-
-            return true;
+#if UNITY_EDITOR
+            _Owner = transform;
+#endif
         }
 
-        public abstract Vector3 CalcPosition();
-
-        protected override void EnterState()
+        private void OnEnable()
         {
-            _PrevPosition = CalcPosition();
-
-            OnTrace();
+            if (_AutoPlaying)
+                OnTrace();
+        }
+        private void OnDisable()
+        {
+            EndTrace();
         }
 
-        protected override void ExitState()
+        public void SetOwner(Component component)
         {
-            _IgnoreTransforms.Clear();
-            _Hits.Clear();
+            SetOwner(component.transform);
         }
+        public void SetOwner(GameObject owner)
+        {
+            SetOwner(owner.transform);
+        }
+        public void SetOwner(Transform transform)
+        {
+            _Owner = transform;
+        }
+
+        public void AddIgnoreTransforms(Transform transform)
+        {
+            _IgnoreTransforms.Add(transform);
+        }
+        public void AddIgnoreTransforms(IEnumerable<Transform> transforms)
+        {
+            _IgnoreTransforms.AddRange(transforms);
+        }
+
+        public void RemoveIgnoreTransforms(Transform transform)
+        {
+            _IgnoreTransforms.Remove(transform);
+        }
+        public void RemoveIgnoreTransforms(IEnumerable<Transform> transforms)
+        {
+            foreach (var remove in transforms)
+            {
+                _IgnoreTransforms.Remove(remove);
+            }
+        }
+
+        public virtual Vector3 CalcPosition()
+        {
+            return _Owner.TransformPoint(_Offset);
+        }
+
 
         private void FixedUpdate()
         {
-            OnTrace();
+            UpdateTrace();
         }
 
         public void OnTrace()
         {
+            if (_IsPlaying)
+                return;
+
+            _IsPlaying = true;
+
+            if (_IgnoreSelf)
+                _IgnoreTransforms.Add(_Owner);
+
+            _PrevPosition = CalcPosition();
+        }
+        public void EndTrace()
+        {
+            if (!_IsPlaying)
+                return;
+
+            _IsPlaying = false;
+
+            _IgnoreTransforms.Clear();
+            _Hits.Clear();
+        }
+
+        public bool UpdateTrace()
+        {
             _Hits.Clear();
 
             if (TryTrace())
+            {
                 Callback_OnHits();
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         protected abstract bool TryTrace();

@@ -2,7 +2,15 @@
     "name": "StudioScor.Utilities.Editor",
     "rootNamespace": "StudioScor.Utilities.Editor",
     "references": [
-        "GUID:0e56af4e027762c43b7508efc3b00495"
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:54cb1906aeb4e4264bc1d2aa3818a43f",
+        "GUID:ea715009a4efd4c6cbc85be3ae097dd3",
+        "GUID:23f3c6063e13e4fd9addce3606ff4e42",
+        "GUID:315d634a9ac6d460a9515f5a56be6311",
+        "GUID:f10496e9d78b943308af5e7e9e4543c8",
+        "GUID:8461334e883c84d819a008a46143a5ad",
+        "GUID:2aa54ddaa48744e1caddee916e39805e"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,6 +21,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.visualscripting",
+            "expression": "0.0.0",
+            "define": "SCOR_ENABLE_VISUALSCRIPTING"
+        }
+    ],
     "noEngineReferences": false
 }

@@ -8,33 +8,40 @@ namespace StudioScor.Utilities
     public class TraceIgnore_SameRigidbody : TraceIgnore
     {
         [Header(" [ Trace Ignore Same Rigidbody ] ")]
+        [SerializeField] private bool _IgnoreSelf = true;
         [SerializeField] private bool _CheckHasRigidbody = true;
 
-        private List<Rigidbody> _Rigidbodys;
+        private List<Transform> _Ignores;
 
         protected override void OnReset()
         {
             base.OnReset();
 
-            _Rigidbodys = null;
+            _Ignores = null;
 
         }
         public override void Ignore(Transform tracer, ref List<RaycastHit> hits)
         {
-            if (_Rigidbodys is null)
-                _Rigidbodys = new();
+            if (_Ignores is null)
+                _Ignores = new();
 
             for(int i = hits.LastIndex(); i >= 0; i--)
             {
-                if(hits[i].rigidbody)
+                Rigidbody rigidbody = hits[i].rigidbody;
+
+                if (rigidbody)
                 {
-                    if (_Rigidbodys.Contains(hits[i].rigidbody))
+                    if (_IgnoreSelf && rigidbody.transform == tracer)
+                    {
+                        hits.RemoveAt(i);
+                    }
+                    else if (_Ignores.Contains(rigidbody.transform))
                     {
                         hits.RemoveAt(i);
                     }
                     else
                     {
-                        _Rigidbodys.Add(hits[i].rigidbody);
+                        _Ignores.Add(rigidbody.transform);
                     }
                 }
                 else
@@ -42,10 +49,9 @@ namespace StudioScor.Utilities
                     if (_CheckHasRigidbody)
                         hits.RemoveAt(i);
                 }
-                
             }
 
-            _Rigidbodys.Clear();
+            _Ignores.Clear();
         }
     }
 }

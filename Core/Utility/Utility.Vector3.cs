@@ -15,6 +15,26 @@ namespace StudioScor.Utilities
         {
             return Vector2.SqrMagnitude(lhs - rhs) < equaly;
         }
+
+        // Sqr Distance
+        public static float SqrDistance(this Vector3 lhs, Vector3 rhs)
+        {
+            return (rhs - lhs).sqrMagnitude;
+        }
+        public static float SqrDistance(this Transform lhs, Transform rhs)
+        {
+            return SqrDistance(lhs.position, rhs.position);
+        }
+        public static float SqrDistance(this Transform lhs, Vector3 rhs)
+        {
+            return SqrDistance(lhs.position, rhs);
+        }
+        public static float SqrDistance(this Vector3 lhs, Transform rhs)
+        {
+            return SqrDistance(lhs, rhs.position);
+        }
+
+
         // Distance XZ
         public static float HorizontalDistance(this Vector3 from, Vector3 to)
         {
@@ -104,6 +124,25 @@ namespace StudioScor.Utilities
         {
             return HorizontalDirection(lhs.position, rhs);
         }
+
+        public static Vector3 HorizontalForward(this Transform lhs)
+        {
+            Vector3 forward = lhs.forward;
+
+            forward.y = 0;
+
+            return forward.normalized;
+        }
+        public static Vector3 HorizontalRight(this Transform lhs)
+        {
+            Vector3 forward = lhs.right;
+
+            forward.y = 0;
+
+            return forward.normalized;
+        }
+
+
 
         // Align
         public static Vector3[] AlignToline(Vector3 position, Quaternion rotation, float space, int count, EAlign align)

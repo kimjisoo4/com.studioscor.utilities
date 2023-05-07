@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static IEnumerable<Transform> ConvertToTransform(this IEnumerable<RaycastHit> hits)
+        {
+            return hits.ToList().ConvertAll(x => x.transform);
+        }
+
         public static bool ContaineTransform(this RaycastHit hit, Transform transform)
         {
             return hit.transform == transform || (hit.rigidbody && hit.rigidbody.transform == transform);
