@@ -27,7 +27,6 @@ namespace StudioScor.Utilities
 
             return false;
         }
-        
 
         public static void IgnoreHitResultsTransforms(RaycastHit[] hits, ref List<RaycastHit> results, List<Transform> transforms)
         {

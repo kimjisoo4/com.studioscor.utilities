@@ -29,8 +29,8 @@ namespace StudioScor.Utilities
         protected override void OnReset()
         {
             _CurrentFPS = 0;
-            _Mode = default;
-            _Resolution = default;
+            _CurrentResolution = default;
+            _CurrentMode = default;
         }
         public void OnScreenSetting()
         {

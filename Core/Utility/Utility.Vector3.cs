@@ -58,7 +58,7 @@ namespace StudioScor.Utilities
 
 
         // Turn Direction From Y
-        public static Vector3 TurnDirectionFromY(Vector2 direction, Transform target)
+        public static Vector3 TurnDirectionFromY(this Vector2 direction, Transform target)
         {
             Vector3 forward = target.forward;
             Vector3 right = target.right;
@@ -114,15 +114,15 @@ namespace StudioScor.Utilities
         }
         public static Vector3 HorizontalDirection(this Transform lhs, Transform rhs, bool normalized = true)
         {
-            return HorizontalDirection(lhs.position, rhs.position);
+            return HorizontalDirection(lhs.position, rhs.position, normalized);
         }
         public static Vector3 HorizontalDirection(this Vector3 lhs, Transform rhs, bool normalized = true)
         {
-            return HorizontalDirection(lhs, rhs.position);
+            return HorizontalDirection(lhs, rhs.position, normalized);
         }
         public static Vector3 HorizontalDirection(this Transform lhs, Vector3 rhs, bool normalized = true)
         {
-            return HorizontalDirection(lhs.position, rhs);
+            return HorizontalDirection(lhs.position, rhs, normalized);
         }
 
         public static Vector3 HorizontalForward(this Transform lhs)

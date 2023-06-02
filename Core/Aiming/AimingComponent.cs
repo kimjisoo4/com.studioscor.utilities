@@ -8,9 +8,18 @@ using System.Linq;
 
 namespace StudioScor.Utilities
 {
+    public interface IAimingSystem
+    {
+        public void OnAiming();
+        public void EndAiming();
+
+        public bool IsPlaying { get; }
+        public Vector3 AimPosition { get; }
+        public ITargeting Target { get; }
+    }
 
     [AddComponentMenu("StudioScor/Utilities/Aiming/Aiming Component", order: 0)]
-    public class AimingComponent : BaseMonoBehaviour
+    public class AimingComponent : BaseMonoBehaviour, IAimingSystem
     {
         public enum EAimingOrigin
         {
@@ -153,7 +162,7 @@ namespace StudioScor.Utilities
                     CalcScreenAiming();
                     break;
                 case EAimingOrigin.Transform:
-                    CalcTransformAiming(); ;
+                    CalcTransformAiming();
                     break;
                 default:
                     break;
