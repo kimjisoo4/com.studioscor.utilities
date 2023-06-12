@@ -659,7 +659,7 @@ namespace StudioScor.Utilities
             public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layerMask, ref List<RaycastHit> hitResults, Transform owner, List<Transform> ignoreTransforms = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
-                bool isZero = start.SafeEqauls(end);
+                bool isZero = start.SafeEquals(end);
 
                 Vector3 direction = isZero ?  Vector3.forward : start.Direction(end);
                 float distance = isZero? 0.01f : Vector3.Distance(start, end);

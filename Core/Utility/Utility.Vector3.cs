@@ -6,7 +6,7 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
-        public static bool SafeEqauls(this Vector3 lhs, Vector3 rhs, float equaly = 0.0001f)
+        public static bool SafeEquals(this Vector3 lhs, Vector3 rhs, float equaly = 0.0001f)
         {
             return Vector3.SqrMagnitude(lhs - rhs) < equaly;
         }

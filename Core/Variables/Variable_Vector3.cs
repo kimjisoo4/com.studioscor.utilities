@@ -7,7 +7,7 @@ namespace StudioScor.Utilities
     {
         public void AddValue(Vector3 value)
         {
-            if (value.SafeEqauls(Vector3.zero))
+            if (value.SafeEquals(Vector3.zero))
                 return;
 
             Vector3 prevValue = _RuntimeValue;
@@ -19,7 +19,7 @@ namespace StudioScor.Utilities
 
         public override void SetValue(Vector3 value)
         {
-            if (value.SafeEqauls(_RuntimeValue))
+            if (value.SafeEquals(_RuntimeValue))
                 return;
 
             Vector3 prevValue = _RuntimeValue;
@@ -31,7 +31,7 @@ namespace StudioScor.Utilities
 
         public void SubtractValue(Vector3 value)
         {
-            if (value.SafeEqauls(Vector3.zero))
+            if (value.SafeEquals(Vector3.zero))
                 return;
 
             Vector3 prevValue = _RuntimeValue;
