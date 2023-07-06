@@ -2,53 +2,57 @@
 
 namespace StudioScor.Utilities
 {
-    public class DamageableComponent : BaseMonoBehaviour, IDamageable
+    public class DamageableComponent : BaseMonoBehaviour, IDamageableSystem
     {
 		[Header(" [ Damageable Component ] ")]
 		[Header(" [ Auto Playing ] ")]
-		[SerializeField] private bool _AutoPlaying = true;
+		[SerializeField] private bool autoPlaying = true;
 
-		private bool _IsPlaying;
+		private FDamageInfo lastDamageInfo;
+		private bool isPlaying;
+
 
 		public event TakeDamageEventHandler TakeAnyDamage;
 		public event TakeDamageEventHandler TakePointDamage;
-		public bool IsPlaying => _IsPlaying;
+		public bool IsPlaying => isPlaying;
+
+		public FDamageInfo LastDamageInfo => lastDamageInfo;
 
         private void OnEnable()
         {
-			if (_AutoPlaying)
+			if (autoPlaying)
 				OnDamageable();
         }
 		private void OnDisable()
 		{
-			if (_AutoPlaying)
+			if (autoPlaying)
 				EndDamageable();
 		}
 
-		private void OnDamageable()
+		public void OnDamageable()
         {
-			if (_IsPlaying)
+			if (isPlaying)
 				return;
 
-			_IsPlaying = true;
+			isPlaying = true;
 		}
 
-		private void EndDamageable()
+		public void EndDamageable()
         {
-			if (!_IsPlaying)
+			if (!isPlaying)
 				return;
 
-			_IsPlaying = false;
+			isPlaying = false;
 
 		}
 		public float ApplyDamage(float damage, DamageType damageType, GameObject damageCauser, GameObject instigator = null)
 		{
-			if (!_IsPlaying)
+			if (!isPlaying)
 				return -1f;
 
-			FDamageInfo damageInfo = new FDamageInfo(damage, damageType, damageCauser, instigator);
+            lastDamageInfo = new FDamageInfo(damage, damageType, damageCauser, instigator);
 
-			Callback_TakeAnyDamage(damageInfo);
+			Callback_TakeAnyDamage();
 
 			return damage;
 		}
@@ -56,28 +60,28 @@ namespace StudioScor.Utilities
 								Vector3 hitPoint, Vector3 hitNormal, Transform hitTransform,
 								Vector3 direction, GameObject damageCauser, GameObject instigator)
         {
-			if (!_IsPlaying)
+			if (!isPlaying)
 				return -1f;
 
-			FDamageInfo damageInfo = new FDamageInfo(damage, damageType, hitPoint, hitNormal, hitTransform, direction, damageCauser, instigator);
+            lastDamageInfo = new FDamageInfo(damage, damageType, hitPoint, hitNormal, hitTransform, direction, damageCauser, instigator);
 
-			Callback_TakeAnyDamage(damageInfo);
-			Callback_TakePointDamage(damageInfo);
+			Callback_TakeAnyDamage();
+			Callback_TakePointDamage();
 
 			return damage;
 		}
 
-		private void Callback_TakeAnyDamage(FDamageInfo damageInfo)
+		private void Callback_TakeAnyDamage()
 		{
-			Log($"Take Any Damage - [ Damage : {damageInfo.Damage} | DamageCauser : {damageInfo.Causer} | Instigator : {damageInfo.Instigator}]");
+			Log($"Take Any Damage - [ Damage : {lastDamageInfo.Damage} | DamageCauser : {lastDamageInfo.Causer} | Instigator : {lastDamageInfo.Instigator}]");
 
-			TakeAnyDamage?.Invoke(this, damageInfo);
+			TakeAnyDamage?.Invoke(this, lastDamageInfo);
 		}
-		private void Callback_TakePointDamage(FDamageInfo damageInfo)
+		private void Callback_TakePointDamage()
         {
-			Log($"Take Point Damage - [ Damage : {damageInfo.Damage} | DamageCauser : {damageInfo.Causer} | Instigator : {damageInfo.Instigator}]");
+			Log($"Take Point Damage - [ Damage : {lastDamageInfo.Damage} | DamageCauser : {lastDamageInfo.Causer} | Instigator : {lastDamageInfo.Instigator}]");
 
-			TakePointDamage?.Invoke(this, damageInfo);
+			TakePointDamage?.Invoke(this, lastDamageInfo);
         }
     }
 

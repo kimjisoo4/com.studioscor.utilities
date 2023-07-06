@@ -6,19 +6,19 @@ namespace StudioScor.Utilities
     public class ReachValueToTime
     {
         [Header(" [ Reach Value To Time] ")]
-        [SerializeField] private float _Distance = 5f;
-        [SerializeField] private AnimationCurve _Curve;
+        [SerializeField] private float distance = 5f;
+        [SerializeField] private AnimationCurve curve;
 
-        private bool _IsPlaying = false;
-        private float _PrevDistance = 0f;
+        private bool isPlaying = false;
+        private float prevDistance = 0f;
 
-        public float Distance => _Distance;
-        public AnimationCurve Curve => _Curve;
-        public bool IsPlaying => _IsPlaying;
+        public float Distance => distance;
+        public AnimationCurve Curve => curve;
+        public bool IsPlaying => isPlaying;
 
-        private bool _NeedUpdate = false;
-        private float _TempDistance;
-        private AnimationCurve _TempCurve;
+        private bool needUpdate = false;
+        private float tempDistance;
+        private AnimationCurve tempCurve;
 
         public ReachValueToTime()
         {
@@ -26,74 +26,74 @@ namespace StudioScor.Utilities
         }
         public ReachValueToTime(float distance, AnimationCurve curve)
         {
-            _Distance = distance;
-            _Curve = curve;
+            this.distance = distance;
+            this.curve = curve;
         }
 
         public void Copy(ReachValueToTime reachValueToTime)
         {
-            _Distance = reachValueToTime._Distance;
-            _Curve = reachValueToTime._Curve;
-            _PrevDistance = reachValueToTime._PrevDistance;
+            distance = reachValueToTime.distance;
+            curve = reachValueToTime.curve;
+            prevDistance = reachValueToTime.prevDistance;
         }
         public void SetDistance(float distance)
         {
             if (IsPlaying)
             {
-                _TempDistance = distance;
+                tempDistance = distance;
 
-                _NeedUpdate = true;
+                needUpdate = true;
             }
             else
             {
-                _Distance = distance;
+                this.distance = distance;
             }
         }
         public void SetCurve(AnimationCurve curve)
         {
             if (IsPlaying)
             {
-                _TempCurve = curve;
+                tempCurve = curve;
 
-                _NeedUpdate = true;
+                needUpdate = true;
             }
             else
             {
-                _Curve = curve;
+                this.curve = curve;
             }
         }
 
 
         public void OnMovement(float distance, AnimationCurve curve)
         {
-            if (_IsPlaying || distance.SafeEquals(0f))
+            if (isPlaying || distance.SafeEquals(0f))
                 return;
 
-            _Distance = distance;
-            _Curve = curve;
-            _PrevDistance = 0f;
+            this.distance = distance;
+            this.curve = curve;
+            prevDistance = 0f;
 
-            _IsPlaying = true;
+            isPlaying = true;
         }
         public void OnMovement(float distance)
         {
-            if (_IsPlaying || distance.SafeEquals(0f))
+            if (isPlaying || distance.SafeEquals(0f))
                 return;
 
-            _Distance = distance; 
-            _PrevDistance = 0f;
+            this.distance = distance; 
+            prevDistance = 0f;
 
-            _IsPlaying = true;
+            isPlaying = true;
         }
 
         public void OnMovement()
         {
-            if (_IsPlaying || _Distance.SafeEquals(0f))
+            if (isPlaying || distance.SafeEquals(0f))
                 return;
 
-            _PrevDistance = 0f;
+            prevDistance = 0f;
 
-            _IsPlaying = true;
+            isPlaying = true;
         }
 
         public void EndMovement()
@@ -101,25 +101,25 @@ namespace StudioScor.Utilities
             if (!IsPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
-            if(_NeedUpdate)
+            if(needUpdate)
             {
-                _Distance = _TempDistance;
-                _Curve = _TempCurve;
+                distance = tempDistance;
+                curve = tempCurve;
             }
         }
 
         public float UpdateMovement(float normalizeTime)
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return 0f;
 
             float distance = Curve.Evaluate(normalizeTime) * Distance;
 
-            float currentDistance = distance - _PrevDistance;
+            float currentDistance = distance - prevDistance;
 
-            _PrevDistance = distance;
+            prevDistance = distance;
 
             if (normalizeTime >= 1f)
             {

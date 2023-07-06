@@ -3,7 +3,7 @@
 
 namespace StudioScor.Utilities
 {
-    public class DilationComponent : BaseMonoBehaviour, IDilation
+    public class DilationComponent : BaseMonoBehaviour, IDilationSystem
     {
         [Header(" [ Dilation Component ] ")]
         [SerializeField] private float speed = 1f;

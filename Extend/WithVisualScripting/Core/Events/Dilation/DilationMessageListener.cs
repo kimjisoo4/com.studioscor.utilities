@@ -9,20 +9,20 @@ namespace StudioScor.Utilities.VisualScripting
 
         private void Awake()
         {
-            if (TryGetComponent(out IDilation dilation))
+            if (TryGetComponent(out IDilationSystem dilation))
             {
                 dilation.OnChangedDilation += Dilation_OnChangedDilation;
             }
         }
         private void OnDestroy()
         {
-            if (TryGetComponent(out IDilation dilation))
+            if (TryGetComponent(out IDilationSystem dilation))
             {
                 dilation.OnChangedDilation -= Dilation_OnChangedDilation;
             }
         }
 
-        private void Dilation_OnChangedDilation(IDilation dilation, float currentDilation, float prevDilation)
+        private void Dilation_OnChangedDilation(IDilationSystem dilation, float currentDilation, float prevDilation)
         {
             _DilationEvent.Current = currentDilation;
             _DilationEvent.Prev = prevDilation;

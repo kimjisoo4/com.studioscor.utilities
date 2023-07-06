@@ -3,15 +3,11 @@ using Unity.VisualScripting;
 using System;
 
 namespace StudioScor.Utilities.VisualScripting
-{
-    [UnitTitle("Custom Update Timer")]
-    [UnitShortTitle("UpdateTimer")]
-    [UnitCategory("Time\\StudioScor\\Timer")]
+{ 
+    [UnitTitle("Task Timer")]
+    [UnitCategory("StudioScor\\Task")]
     public class CustomUpdateTimerUnit : UpdateUnit
     {
-        [DoNotSerialize]
-        public ControlOutput Finished { get; private set; }
-
         [DoNotSerialize]
         [PortLabel("Duration")]
         public ValueInput Duration { get; private set; }
@@ -41,7 +37,6 @@ namespace StudioScor.Utilities.VisualScripting
                 Requirement(Duration, Enter);
             }
             
-            Finished = ControlOutput(nameof(Finished));
             NormalizedTime = ValueOutput<float>(nameof(NormalizedTime));
 
             Succession(Enter, Finished);

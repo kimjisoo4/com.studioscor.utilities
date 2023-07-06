@@ -9,7 +9,7 @@ namespace StudioScor.Utilities.VisualScripting
     [UnitShortTitle("TakeAnyDamage")]
     [UnitSubtitle("Events")]
     [UnitCategory("Events\\StudioScor\\Damageable")]
-    public class TakeAnyDamageEventUnit : CustomInterfaceEventUnit<IDamageable, FDamageInfo>
+    public class TakeAnyDamageEventUnit : CustomInterfaceEventUnit<IDamageableSystem, FDamageInfo>
     {
         public override Type MessageListenerType => typeof(DamageableMessageListener);
         protected override string HookName => DamageableWithVisualScripting.TAKE_ANY_DAMAGE;

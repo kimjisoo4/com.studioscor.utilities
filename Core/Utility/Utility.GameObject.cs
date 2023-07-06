@@ -55,5 +55,17 @@ namespace StudioScor.Utilities
         {
             return target.gameObject.TryGetComponentInRootOrParent(out component);
         }
+
+
+        public static bool TryGetComponentInChildren<T>(this GameObject gameObject, out T component)
+        {
+            component = gameObject.GetComponentInChildren<T>();
+
+            return component is not null;
+        }
+        public static bool TryGetComponentInChildren<T>(this Component target, out T component)
+        {
+            return target.gameObject.TryGetComponentInChildren(out component);
+        }
     }
 }

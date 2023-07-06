@@ -10,7 +10,7 @@ namespace StudioScor.Utilities.VisualScripting
     [UnitShortTitle("OnChangedDilation")]
     [UnitSubtitle("Events")]
     [UnitCategory("Events\\StudioScor\\Dilation")]
-    public class OnChangedDilationEvent : CustomInterfaceEventUnit<IDilation, DilationEvent>
+    public class OnChangedDilationEvent : CustomInterfaceEventUnit<IDilationSystem, DilationEvent>
     {
         public override Type MessageListenerType => typeof(DilationMessageListener);
         protected override string HookName => DilationWithVisualScripting.ON_CHANGED_DILATION;

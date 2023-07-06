@@ -2,6 +2,7 @@
 
 namespace StudioScor.Utilities
 {
+    [System.Serializable]
     public struct FDamageInfo
 	{
 		public float Damage;
