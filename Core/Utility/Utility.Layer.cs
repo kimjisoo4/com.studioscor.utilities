@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine.UI;
 
 namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static bool ContainLayer(this GameObject gameObject, LayerMask layerMask)
+        {
+            return (layerMask & (1 << gameObject.layer)) != 0;
+        }
+
         public static int LayerMaskToLayer(LayerMask layerMask)
         {
             int layerNumber = 0;

@@ -2,19 +2,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using UnityEngine.Events;
+using System.Collections;
+using Codice.Client.BaseCommands;
+using System.Linq;
 
 namespace StudioScor.Utilities
 {
     public class OnTriggerComponent : BaseMonoBehaviour
     {
         [Header(" [ Tags ] ")]
-        [SerializeField][STagSelector] private string[] _Tags;
-        [SerializeField] private bool _IsIgnoreTag;
+        [SerializeField][STagSelector] private string[] tags;
+        [SerializeField] private bool isIgnoreTag = false;
 
-        [Header(" [ Trigger ] ")]
-        [SerializeField] private bool _UseTriggerEnter = true;
-        [SerializeField] private bool _UseTriggerStay;
-        [SerializeField] private bool _UseTriggerExit;
+        [Header(" [ Layers ] ")]
+        [SerializeField] private LayerMask layers;
+        [SerializeField] private bool isIgnoreLayer = true;
+
+        [Header(" [ Trigger Enter & Exit ] ")]
+        [SerializeField] private bool useTriggerEnter = true;
+        [SerializeField] private bool isOnceEnter = false;
+        [SerializeField] private bool useTriggerExit = false;
+        [SerializeField] private bool isOnceExit = false;
+        [Header(" [ Trigger Stay ]")]
+        [SerializeField] private bool useTriggerStay = false;
 
         [Header(" [ Trigger Events ] ")]
         [Space(5f)]
@@ -22,7 +32,10 @@ namespace StudioScor.Utilities
         [SerializeField] private UnityEvent<List<Collider>> OnStayedTrigger;
         [SerializeField] private UnityEvent<Collider> OnExitedTrigger;
 
-        private List<Collider> _StayedColliders;
+        private bool wasEnterTrigger;
+        private bool wasExitTrigger;
+        private Coroutine updateHandler;
+        private List<Collider> stayedColliders;
 
         #region EDITOR ONLY
         [Conditional("UNITY_EDITOR")]
@@ -38,125 +51,119 @@ namespace StudioScor.Utilities
 
         private void Awake()
         {
-            if(_UseTriggerStay)
-                _StayedColliders = new();
+            if(useTriggerStay)
+                stayedColliders = new();
         }
 
-        private void Update()
+        private IEnumerator UpdateTrigger()
         {
-            if (!_UseTriggerStay)
-                return;
+            while (useTriggerStay)
+            {
+                TriggerStay();
 
-            TriggerStay();
+                yield return null;
+            }
+
+            yield break;
         }
 
+        protected bool CheckIgnoreTag(Collider other)
+        {
+            if (tags.Contains(other.tag))
+                return !isIgnoreTag;
+            else
+                return isIgnoreTag;
+        }
+        protected bool CheckIgnoreLayer(Collider other)
+        {
+            if(other.gameObject.ContainLayer(layers))
+                return !isIgnoreLayer;
+            else 
+                return isIgnoreLayer;
+        }
         private void OnTriggerEnter(Collider other)
         {
-            if (!_UseTriggerEnter && !_UseTriggerStay)
+            if ((!useTriggerEnter || (isOnceEnter && wasEnterTrigger)) && !useTriggerStay)
+                return;
+            
+            if (!CheckIgnoreTag(other))
                 return;
 
-            bool trigger = false;
+            if (!CheckIgnoreLayer(other))
+                return;
 
-            foreach (string tag in _Tags)
+            if (useTriggerEnter)
             {
-                if (other.CompareTag(tag))
-                {
-                    if (_IsIgnoreTag)
-                        continue;
+                wasEnterTrigger = true;
 
-                    trigger = true;
-                    
-                    break;
-                }
-                else
-                {
-                    if (!_IsIgnoreTag)
-                        continue;
-
-                    trigger = true;
-
-                    break;
-                }
+                TriggerEnter(other);
             }
 
-            if(trigger)
+            if (useTriggerStay && !stayedColliders.Contains(other))
             {
-                if (_UseTriggerEnter)
-                    TriggerEnter(other);
+                stayedColliders.Add(other);
 
-                if (_UseTriggerStay && !_StayedColliders.Contains(other))
-                    _StayedColliders.Add(other);
+                if (stayedColliders.Count == 1)
+                    updateHandler = StartCoroutine(UpdateTrigger());
 
-                DrawSphere(other.bounds.center, Color.red);
             }
+
+            DrawSphere(other.bounds.center, Color.red);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (!_UseTriggerExit && !_UseTriggerStay)
+            if ((!useTriggerExit || (isOnceExit && wasExitTrigger)) && !useTriggerStay)
                 return;
 
-            bool trigger = false;
+            if (!CheckIgnoreTag(other))
+                return;
 
-            foreach (string tag in _Tags)
+            if (!CheckIgnoreLayer(other))
+                return;
+
+            if (useTriggerExit)
             {
-                if (other.CompareTag(tag))
+                wasExitTrigger = true;
+
+                TriggerExit(other);
+            }
+
+            if (useTriggerStay && stayedColliders.Contains(other))
+            {
+                stayedColliders.Remove(other);
+
+                if (updateHandler is not null)
                 {
-                    if (_IsIgnoreTag)
-                        continue;
-
-                    trigger = true;
-
-                    break;
-                }
-                else
-                {
-                    if (!_IsIgnoreTag)
-                        continue;
-
-                    trigger = true;
-
-                    break;
+                    StopCoroutine(updateHandler);
+                    updateHandler = null;
                 }
             }
 
-            if(trigger)
-            {
-                if (_UseTriggerExit)
-                    TriggerExit(other);
-
-                if (_UseTriggerStay && _StayedColliders.Contains(other))
-
-                    _StayedColliders.Remove(other);
-
-                DrawSphere(other.bounds.center, Color.red);
-            }
-            
+            DrawSphere(other.bounds.center, Color.red);
         }
 
         #region Callback
         private void TriggerEnter(Collider other)
         {
-            Log("On Trigger Enter - " + other);
-            DrawSphere(other.bounds.center, Color.green);
+            Log($"On Trigger Enter - [ {other.name} ]");
 
             OnEnteredTrigger?.Invoke(other);
         }
         private void TriggerExit(Collider other)
         {
-            Log("On Trigger Exit - " + other);
-            DrawSphere(other.bounds.center, Color.green);
+            Log($"On Trigger Exit - [ {other.name} ]");
 
             OnExitedTrigger?.Invoke(other);
         }
         private void TriggerStay()
         {
-            if (_StayedColliders.Count <= 0)
+            if (stayedColliders.Count <= 0)
                 return;
 
-            Log("On Trigger Stay - " + _StayedColliders.Count);
+            Log($"On Trigger Stay - [ {stayedColliders.Count} ]");
 
-            OnStayedTrigger?.Invoke(_StayedColliders);
+            OnStayedTrigger?.Invoke(stayedColliders);
         }
         #endregion
     }

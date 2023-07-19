@@ -10,6 +10,12 @@ namespace StudioScor.Utilities
 
     public static partial class SUtility
     {
+        public const string NAME_COLOR_RED = "red";
+        public const string NAME_COLOR_YELLOW = "yellow";
+        public const string NAME_COLOR_BLUE = "blue";
+        public const string NAME_COLOR_GREEN = "green";
+        public const string NAME_COLOR_GRAY = "gray";
+
         public static class Debug
         {
             public static bool UseDebug = true;
@@ -70,18 +76,18 @@ namespace StudioScor.Utilities
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void Log(object message, Object context = null)
+            public static void Log(object message, Object context = null, string color = NAME_COLOR_GRAY)
             {
                 if (!UseDebug)
                     return;
 
-                UnityEngine.Debug.Log(message, context);
+                UnityEngine.Debug.Log($"<color={color}>{ message}</color>", context);
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void LogError(object message, Object context = null)
+            public static void LogError(object message, Object context = null, string color = NAME_COLOR_GRAY)
             {
-                UnityEngine.Debug.LogError(message, context);
+                UnityEngine.Debug.LogError($"<color={color}>{message}</color>", context);
             }
 
             [Conditional("UNITY_EDITOR")]
@@ -287,6 +293,8 @@ namespace StudioScor.Utilities
 
                 DrawSphere(end, radius, color, duration);
             }
+
+
 
             [Conditional("UNITY_EDITOR")]
             public static void DrawSphere(Vector4 pos, float radius, Color color, float duration = 0f)

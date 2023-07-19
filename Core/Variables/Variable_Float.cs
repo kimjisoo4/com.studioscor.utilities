@@ -5,6 +5,7 @@ using System;
 
 namespace StudioScor.Utilities
 {
+
     [CreateAssetMenu(menuName = "StudioScor/Utilities/Variable/new Float Variable", fileName = "Variable_Float_")]
 	public class Variable_Float : VariableObject<float>
 	{
@@ -26,11 +27,11 @@ namespace StudioScor.Utilities
 
         public override void SetValue(float value)
         {
-			if (value == _RuntimeValue)
+			if (value == runtimeValue)
 				return;
 
-			float prevValue = _RuntimeValue;
-			_RuntimeValue = value;
+			float prevValue = runtimeValue;
+			runtimeValue = value;
 
 			Callback_OnChangeValue(prevValue);
 		}

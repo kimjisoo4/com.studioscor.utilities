@@ -8,39 +8,39 @@ namespace StudioScor.Utilities
     public class SimplePoolContainer : BaseScriptableObject
     {
         [Header(" [ Simple Pool Container ] ")]
-        [SerializeField] private SimplePooledObject _SimplePoolObject;
-        [SerializeField] private GameObject _Container;
-        [SerializeField] private int _StartSize = 5;
-        [SerializeField] private int _Capacity = 10;
-        [SerializeField] private int _MaxSize = 20;
+        [SerializeField] private SimplePooledObject simplePoolObject;
+        [SerializeField] private GameObject container;
+        [SerializeField] private int startSize = 5;
+        [SerializeField] private int capacity = 10;
+        [SerializeField] private int maxSize = 20;
 
-        private GameObject _InstContainer;
-        private SimplePool _SimplePool;
+        private GameObject instContainer;
+        private SimplePool simplePool;
 
         public SimplePooledObject Get()
         {
-            if (!_InstContainer)
+            if (!instContainer)
             {
-                if (_Container)
+                if (container)
                 {
-                    _InstContainer = Instantiate(_Container);
+                    instContainer = Instantiate(container);
                 }
                 else
                 {
-                    _InstContainer = new GameObject(name);
+                    instContainer = new GameObject(name);
                 }
 
-                _SimplePool = new SimplePool(_SimplePoolObject, _InstContainer.transform, _StartSize, _Capacity, _MaxSize);
+                simplePool = new SimplePool(simplePoolObject, instContainer.transform, startSize, capacity, maxSize);
             }
 
 
-            return _SimplePool.Get();
+            return simplePool.Get();
         }
 
         protected override void OnReset()
         {
-            _InstContainer = null;
-            _SimplePool = null;
+            instContainer = null;
+            simplePool = null;
         }
     }
     

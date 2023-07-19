@@ -10,10 +10,10 @@ namespace StudioScor.Utilities
     {
         public SimplePool(SimplePooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 20)
         {
-            _PooledObject = pooledObject;
-            _Container = container;
+            this.pooledObject = pooledObject;
+            this.container = container;
 
-            _Pool = new ObjectPool<SimplePooledObject>(Create, actionOnGet: Getted , actionOnRelease : Released, actionOnDestroy: Destroyed, defaultCapacity : capacity, maxSize: maxSize);
+            pool = new ObjectPool<SimplePooledObject>(Create, actionOnGet: Getted , actionOnRelease : Released, actionOnDestroy: Destroyed, defaultCapacity : capacity, maxSize: maxSize);
 
             var poolObjects = new List<SimplePooledObject>();
 
@@ -28,13 +28,13 @@ namespace StudioScor.Utilities
 
         }
 
-        private readonly SimplePooledObject _PooledObject;
-        private readonly Transform _Container;
-        private readonly ObjectPool<SimplePooledObject> _Pool;
+        private readonly SimplePooledObject pooledObject;
+        private readonly Transform container;
+        private readonly ObjectPool<SimplePooledObject> pool;
 
-        public SimplePooledObject PooledObject => _PooledObject;
-        public ObjectPool<SimplePooledObject> Pool => _Pool;
-        public Transform Container => _Container;
+        public SimplePooledObject PooledObject => pooledObject;
+        public ObjectPool<SimplePooledObject> Pool => pool;
+        public Transform Container => container;
 
 
 
@@ -47,9 +47,9 @@ namespace StudioScor.Utilities
         {
             SimplePooledObject pooledObject;
 
-            if (_Container)
+            if (container)
             {
-                pooledObject = UnityEngine.Object.Instantiate(PooledObject, _Container);
+                pooledObject = UnityEngine.Object.Instantiate(PooledObject, container);
             }
             else
             {
@@ -77,9 +77,9 @@ namespace StudioScor.Utilities
         }
         public void Released(SimplePooledObject pooledObject)
         {
-            if (_Container && pooledObject.transform.parent != _Container)
+            if (container && pooledObject.transform.parent != container)
             {
-                pooledObject.SetParent(_Container, false);
+                pooledObject.SetParent(container, false);
             }
         }
     }

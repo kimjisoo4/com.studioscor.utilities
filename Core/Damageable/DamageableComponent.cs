@@ -12,8 +12,8 @@ namespace StudioScor.Utilities
 		private bool isPlaying;
 
 
-		public event TakeDamageEventHandler TakeAnyDamage;
-		public event TakeDamageEventHandler TakePointDamage;
+		public event TakeDamageEventHandler OnTakeAnyDamage;
+		public event TakeDamageEventHandler OnTakePointDamage;
 		public bool IsPlaying => isPlaying;
 
 		public FDamageInfo LastDamageInfo => lastDamageInfo;
@@ -75,13 +75,13 @@ namespace StudioScor.Utilities
 		{
 			Log($"Take Any Damage - [ Damage : {lastDamageInfo.Damage} | DamageCauser : {lastDamageInfo.Causer} | Instigator : {lastDamageInfo.Instigator}]");
 
-			TakeAnyDamage?.Invoke(this, lastDamageInfo);
+			OnTakeAnyDamage?.Invoke(this, lastDamageInfo);
 		}
 		private void Callback_TakePointDamage()
         {
 			Log($"Take Point Damage - [ Damage : {lastDamageInfo.Damage} | DamageCauser : {lastDamageInfo.Causer} | Instigator : {lastDamageInfo.Instigator}]");
 
-			TakePointDamage?.Invoke(this, lastDamageInfo);
+			OnTakePointDamage?.Invoke(this, lastDamageInfo);
         }
     }
 

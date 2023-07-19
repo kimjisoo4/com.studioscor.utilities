@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
 				return;
 
 			int prevValue = Value;
-			_RuntimeValue = value;
+			runtimeValue = value;
 
 			Callback_OnChangeValue(prevValue);
         }

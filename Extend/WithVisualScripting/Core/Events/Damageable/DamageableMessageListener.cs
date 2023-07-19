@@ -10,16 +10,16 @@ namespace StudioScor.Utilities.VisualScripting
         {
             if (TryGetComponent(out IDamageableSystem damageable))
             {
-                damageable.TakeAnyDamage += Damageable_TakeDamage;
-                damageable.TakePointDamage += Damageable_TakePointDamage;
+                damageable.OnTakeAnyDamage += Damageable_TakeDamage;
+                damageable.OnTakePointDamage += Damageable_TakePointDamage;
             }
         }
         private void OnDestroy()
         {
             if (TryGetComponent(out IDamageableSystem damageable))
             {
-                damageable.TakeAnyDamage -= Damageable_TakeDamage;
-                damageable.TakePointDamage -= Damageable_TakePointDamage;
+                damageable.OnTakeAnyDamage -= Damageable_TakeDamage;
+                damageable.OnTakePointDamage -= Damageable_TakePointDamage;
             }
         }
 

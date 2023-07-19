@@ -7,11 +7,11 @@ namespace StudioScor.Utilities
     {
         public override void SetValue(LayerMask value)
         {
-            if (value.value == _RuntimeValue.value)
+            if (value.value == runtimeValue.value)
                 return;
 
             var prev = value;
-            _RuntimeValue = value;
+            runtimeValue = value;
 
             Callback_OnChangeValue(prev);
         }

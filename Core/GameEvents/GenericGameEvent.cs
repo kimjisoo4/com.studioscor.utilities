@@ -7,15 +7,16 @@ using System;
 
 namespace StudioScor.Utilities
 {
+
     public class GenericGameEvent<T> : GameEvent
     {
-        [SerializeField] private List<GenericGameEventListner<T>> _GenericEventList = new List<GenericGameEventListner<T>>();
+        [SerializeField][SReadOnly] private List<GenericGameEventListner<T>> genericEventList = new List<GenericGameEventListner<T>>();
 
         public event UnityAction<T> OnGenericEvent;
 
         public int GetGenericEventListCount()
         {
-            return _GenericEventList.Count;
+            return genericEventList.Count;
         }
 
         public void Invoke(T data)
@@ -24,9 +25,9 @@ namespace StudioScor.Utilities
 
             Log(" On Generic Game Event ");
 
-            for (int i = 0; _GenericEventList.Count > i; i++)
+            for (int i = 0; genericEventList.Count > i; i++)
             {
-                _GenericEventList[i].TryActiveGameEvent(data);
+                genericEventList[i].TryActiveGameEvent(data);
             }
 
             OnGenericEvent?.Invoke(data);
@@ -34,7 +35,7 @@ namespace StudioScor.Utilities
         }
         public void AddListner(GenericGameEventListner<T> listner)
         {
-            if (_GenericEventList.Contains(listner))
+            if (genericEventList.Contains(listner))
             {
                 Log($"{listner}] 는 이미 보유한 이벤트");
             }
@@ -42,17 +43,17 @@ namespace StudioScor.Utilities
             {
                 Log(" Add Listner " + listner);
 
-                _GenericEventList.Add(listner);
+                genericEventList.Add(listner);
             }
         }
 
         public void RemoveListner(GenericGameEventListner<T> listner)
         {
-            if (_GenericEventList.Contains(listner))
+            if (genericEventList.Contains(listner))
             {
                 Log(" Remove Listner " + listner);
 
-                _GenericEventList.Remove(listner);
+                genericEventList.Remove(listner);
             }
             else
             {
@@ -64,7 +65,7 @@ namespace StudioScor.Utilities
         {
             base.OnReset();
 
-            _GenericEventList = new();
+            genericEventList = new();
         }
     }
 

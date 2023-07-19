@@ -17,13 +17,13 @@ namespace StudioScor.Utilities
     public abstract class BaseStateMono : BaseMonoBehaviour, IState
     {
         [Header(" [ State MonoBehaviour ] ")]
-        [SerializeField] protected BaseStateMonoEvent _UnityEvents = new();
+        [SerializeField] protected BaseStateMonoEvent unityEvents = new();
 
         public event UnityAction<IState> OnEnteredState;
         public event UnityAction<IState> OnExitedState;
 
-        private bool _IsPlaying;
-        public bool IsPlaying => _IsPlaying;
+        private bool isPlaying;
+        public bool IsPlaying => isPlaying;
 
         #region EDITOR ONLY
 
@@ -38,18 +38,18 @@ namespace StudioScor.Utilities
 
         public virtual bool CanEnterState()
         {
-            return !IsPlaying;
+            return true;
         }
 
         public virtual bool CanExitState()
         {
-            return IsPlaying;
+            return true;
         }
 
 
         public void ForceEnterState()
         {
-            _IsPlaying = true;
+            isPlaying = true;
 
             enabled = true;
 
@@ -60,7 +60,7 @@ namespace StudioScor.Utilities
 
         public void ForceExitState()
         {
-            _IsPlaying = false;
+            isPlaying = false;
 
             ExitState();
 
@@ -102,14 +102,14 @@ namespace StudioScor.Utilities
         {
             Log("Entered State");
 
-            _UnityEvents.OnEnteredState?.Invoke(this);
+            unityEvents.OnEnteredState?.Invoke(this);
             OnEnteredState?.Invoke(this);
         }
         private void Callback_OnExitedState()
         {
             Log("Exited State");
 
-            _UnityEvents.OnExitedState?.Invoke(this);
+            unityEvents.OnExitedState?.Invoke(this);
             OnExitedState?.Invoke(this);
         }
     }

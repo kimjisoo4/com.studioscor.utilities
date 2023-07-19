@@ -7,12 +7,12 @@ namespace StudioScor.Utilities
     {
         public override void SetValue(bool value)
         {
-            if (value == _RuntimeValue)
+            if (value == runtimeValue)
                 return;
 
-            _RuntimeValue = value;
+            runtimeValue = value;
 
-            Callback_OnChangeValue(!_RuntimeValue);
+            Callback_OnChangeValue(!runtimeValue);
         }
     }
 }

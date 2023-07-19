@@ -9,9 +9,9 @@ namespace StudioScor.Utilities
     public class GameEvent : BaseScriptableObject, ISerializationCallbackReceiver
     {
         [Header(" [ GameEvent ] ")]
-        [SerializeField, TextArea] protected string _Description;
+        [SerializeField, TextArea] protected string description;
 
-        [SerializeField][SReadOnly] private List<GameEventListner> _EventList = new List<GameEventListner>();
+        [SerializeField][SReadOnly] private List<GameEventListner> eventList = new List<GameEventListner>();
         public event Action Events;
 
         public void OnBeforeSerialize()
@@ -25,22 +25,22 @@ namespace StudioScor.Utilities
 
         protected override void OnReset()
         {
-            _EventList = new();
+            eventList = new();
             Events = null;
         }
 
         public int GetEventListCount()
         {
-            return _EventList.Count;
+            return eventList.Count;
         }
 
         public void Invoke()
         {
             Log(" On Game Event ");
 
-            for (int i = 0; _EventList.Count > i; i++)
+            for (int i = 0; eventList.Count > i; i++)
             {
-                _EventList[i].OnGameEvent();
+                eventList[i].OnGameEvent();
             }
 
             Events?.Invoke();
@@ -48,7 +48,7 @@ namespace StudioScor.Utilities
 
         public void AddListner(GameEventListner listner)
         {
-            if (_EventList.Contains(listner))
+            if (eventList.Contains(listner))
             {
                 Log($"{listner}] 는 이미 보유한 이벤트");
             }
@@ -56,17 +56,17 @@ namespace StudioScor.Utilities
             {
                 Log(" Add Listner " + listner);
 
-                _EventList.Add(listner);
+                eventList.Add(listner);
             }
         }
 
         public void RemoveListner(GameEventListner listner)
         {
-            if (_EventList.Contains(listner))
+            if (eventList.Contains(listner))
             {
                 Log(" Remove Listner " + listner);
 
-                _EventList.Remove(listner);
+                eventList.Remove(listner);
             }
             else
             {

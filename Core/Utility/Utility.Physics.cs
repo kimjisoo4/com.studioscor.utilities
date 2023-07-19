@@ -809,6 +809,7 @@ namespace StudioScor.Utilities
 
                 return DrawSphereCast(start, radius, direction, distance, out hit, layerMask, useDebug, duration, rayColor, hitColor);
             }
+
             public static bool DrawSphereCast(Vector3 start, float radius, Vector3 direction, float distance, out RaycastHit hit, LayerMask layermask,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
@@ -836,6 +837,10 @@ namespace StudioScor.Utilities
 
                 return isHit;
             }
+
+
+
+
             public static bool DrawRayCast(Vector3 start, Vector3 direction, float distance, out RaycastHit hit, LayerMask layerMask,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {

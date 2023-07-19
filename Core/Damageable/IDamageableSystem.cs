@@ -14,8 +14,8 @@ namespace StudioScor.Utilities
 
 		public FDamageInfo LastDamageInfo { get; }
 
-		public event TakeDamageEventHandler TakeAnyDamage;
-		public event TakeDamageEventHandler TakePointDamage;
+		public event TakeDamageEventHandler OnTakeAnyDamage;
+		public event TakeDamageEventHandler OnTakePointDamage;
 	}
 
 }

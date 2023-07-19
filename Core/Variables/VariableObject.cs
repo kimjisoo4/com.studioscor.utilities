@@ -8,11 +8,11 @@ namespace StudioScor.Utilities
 		public delegate void ValueHandler(VariableObject<T> variable, T currentValue, T prevValue);
 		#endregion
 
-		[SerializeField] protected T _InitialValue;
-		[SerializeField][SReadOnly] protected T _RuntimeValue;
+		[SerializeField] protected T initialValue;
+		[SerializeField][SReadOnly] protected T runtimeValue;
 
-		public T InitialValue => _InitialValue;
-		public T Value => _RuntimeValue;
+		public T InitialValue => initialValue;
+		public T Value => runtimeValue;
 
 		public event ValueHandler OnChangedValue;
 
@@ -28,16 +28,16 @@ namespace StudioScor.Utilities
 
 		protected override void OnReset()
         {
-			_RuntimeValue = _InitialValue;
+			runtimeValue = initialValue;
 
 			OnChangedValue = null;
 		}
 
 		public void Clear()
 		{
-			T prevValue = _RuntimeValue;
+			T prevValue = runtimeValue;
 
-			_RuntimeValue = _InitialValue;
+			runtimeValue = initialValue;
 
 			Callback_OnChangeValue(prevValue);
 		}
@@ -46,8 +46,9 @@ namespace StudioScor.Utilities
 
 		protected void Callback_OnChangeValue(T prevValue)
         {
-			Log("On Changed Value - Current Value : " + _RuntimeValue + " PrevValue : " + prevValue);
-			OnChangedValue?.Invoke(this, _RuntimeValue, prevValue);
+			Log("On Changed Value - Current Value : " + runtimeValue + " PrevValue : " + prevValue);
+
+			OnChangedValue?.Invoke(this, runtimeValue, prevValue);
 		}
 	}
 

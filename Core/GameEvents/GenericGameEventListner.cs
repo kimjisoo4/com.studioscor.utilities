@@ -5,21 +5,21 @@ namespace StudioScor.Utilities
 {
     public class GenericGameEventListner<T>
     {
-        [SerializeField] private GenericGameEvent<T> _GameEvent;
+        [SerializeField] private GenericGameEvent<T> gameEvent;
         public event UnityAction<T> OnEvent;
 
         public GenericGameEventListner(GenericGameEvent<T> gameEvent)
         {
-            _GameEvent = gameEvent;
+            this.gameEvent = gameEvent;
         }
 
         public void OnListner()
         {
-            _GameEvent.AddListner(this);
+            gameEvent.AddListner(this);
         }
         public void EndListner()
         {
-            _GameEvent.RemoveListner(this);
+            gameEvent.RemoveListner(this);
         }
 
         public void TryActiveGameEvent(T data)
