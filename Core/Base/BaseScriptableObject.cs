@@ -18,18 +18,18 @@ namespace StudioScor.Utilities
 #endif
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, bool isError = false)
+        protected virtual void Log(object log, bool isError = false, string color = "gray")
         {
 #if UNITY_EDITOR
             if (isError)
             {
-                SUtility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this);
+                SUtility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this, color);
 
                 return;
             }
 
             if (UseDebug)
-                SUtility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this);
+                SUtility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this, color);
 #endif
         }
 

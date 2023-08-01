@@ -5,8 +5,9 @@ using System.Diagnostics;
 using StudioScor.Utilities;
 using UnityEngine.Events;
 
-namespace StudioScor.Utilities 
+namespace StudioScor.Utilities
 {
+
     [System.Serializable]
     public class BaseStateMonoEvent
     {

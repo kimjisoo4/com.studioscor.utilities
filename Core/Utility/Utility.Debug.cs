@@ -320,7 +320,7 @@ namespace StudioScor.Utilities
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void DrawPoint(Vector4 pos, float scale, Color color, float duration = 0f)
+            public static void DrawPoint(Vector4 pos, Color color, float scale = 1f, float duration = 1f)
             {
                 if (!UseDebug)
                     return;
@@ -335,6 +335,23 @@ namespace StudioScor.Utilities
                 UnityEngine.Debug.DrawLine(sX, eX, color);
                 UnityEngine.Debug.DrawLine(sY, eY, color);
                 UnityEngine.Debug.DrawLine(sZ, eZ, color);
+            }
+            [Conditional("UNITY_EDITOR")]
+            public static void DrawPoint(Vector4 pos, float scale = 1f, float duration = 1f)
+            {
+                if (!UseDebug)
+                    return;
+
+                var sX = pos + new Vector4(+scale, 0, 0);
+                var eX = pos + new Vector4(-scale, 0, 0);
+                var sY = pos + new Vector4(0, +scale, 0);
+                var eY = pos + new Vector4(0, -scale, 0);
+                var sZ = pos + new Vector4(0, 0, +scale);
+                var eZ = pos + new Vector4(0, 0, -scale);
+
+                UnityEngine.Debug.DrawLine(sX, eX, Color.red);
+                UnityEngine.Debug.DrawLine(sY, eY, Color.red);
+                UnityEngine.Debug.DrawLine(sZ, eZ, Color.red);
             }
         }
     }

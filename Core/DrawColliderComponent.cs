@@ -28,6 +28,20 @@ namespace StudioScor.Utilities
 
             foreach (var collider in colliders)
             {
+                switch (drawType)
+                {
+                    case EColliderType.Collider:
+                        if (collider.isTrigger)
+                            continue;
+                        break;
+                    case EColliderType.Trigger:
+                        if (!collider.isTrigger)
+                            continue;
+                        break;
+                    default:
+                        break;
+                }
+
                 Matrix4x4 matrix = new();
 
                 matrix.SetTRS(collider.transform.position, collider.transform.rotation, collider.transform.localScale);

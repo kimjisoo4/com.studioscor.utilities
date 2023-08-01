@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 
 
@@ -17,20 +18,21 @@ namespace StudioScor.Utilities
         private GameObject instContainer;
         private SimplePool simplePool;
 
+        public void SetContainer(GameObject newContainer)
+        {
+            instContainer = newContainer;
+
+            simplePool = new SimplePool(simplePoolObject, instContainer.transform, startSize, capacity, maxSize);
+        }
+
         public SimplePooledObject Get()
         {
             if (!instContainer)
             {
                 if (container)
-                {
-                    instContainer = Instantiate(container);
-                }
+                    SetContainer(Instantiate(container));
                 else
-                {
-                    instContainer = new GameObject(name);
-                }
-
-                simplePool = new SimplePool(simplePoolObject, instContainer.transform, startSize, capacity, maxSize);
+                    SetContainer(new GameObject(name));
             }
 
 

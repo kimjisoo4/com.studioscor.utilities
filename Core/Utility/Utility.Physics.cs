@@ -67,7 +67,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hitResult)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position,successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -138,7 +138,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hitResult)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position,  successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -212,7 +212,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in colliders)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position,  successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -276,7 +276,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in colliders)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -348,7 +348,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hits)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -412,7 +412,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hits)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position,  successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -446,7 +446,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in colliders)
                         {
-                            Debug.DrawPoint(collider.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -496,7 +496,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hitResults)
                         {
-                            Debug.DrawPoint(hit.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(hit.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -555,7 +555,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hits)
                         {
-                            Debug.DrawPoint(hit.transform.position, 0.1f, successColor, duration);
+                            Debug.DrawPoint(hit.transform.position,  successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -608,7 +608,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hits)
                         {
-                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                            Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -701,7 +701,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hitResults)
                         {
-                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                            Debug.DrawPoint(hit.point,  successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -774,7 +774,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hitResults)
                         {
-                            Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                            Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -824,7 +824,7 @@ namespace StudioScor.Utilities
                     if (isHit)
                     {
                         Debug.DrawCapsule(start, start + direction * hit.distance, radius, failedColor, duration);
-                        Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
                         Debug.DrawCapsule(start + direction * hit.distance, start + direction * distance, radius, successColor, duration);
 
                     }
@@ -855,13 +855,13 @@ namespace StudioScor.Utilities
                     if (isHit)
                     {
                         UnityEngine.Debug.DrawLine(start, hit.point, failedColor, duration);
-                        Debug.DrawPoint(hit.point, 0.1f, successColor, duration);
+                        Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
                         UnityEngine.Debug.DrawLine(hit.point, start + direction * distance, successColor, duration);
                     }
                     else
                     {
                         UnityEngine.Debug.DrawLine(start, start + direction * distance, failedColor, duration);
-                        Debug.DrawPoint(start + direction * distance, 0.1f, failedColor, duration);
+                        Debug.DrawPoint(start + direction * distance, failedColor, 0.1f, duration);
                     }
                 }
 #endif

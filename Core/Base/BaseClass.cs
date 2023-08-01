@@ -14,7 +14,7 @@ namespace StudioScor.Utilities
         [HideInInspector] public virtual Object Context { get; private set; } = null;
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, bool isError = false)
+        protected virtual void Log(object log, bool isError = false, string color = "red")
         {
 #if UNITY_EDITOR
             if (isError)

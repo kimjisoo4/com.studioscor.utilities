@@ -40,6 +40,20 @@ namespace StudioScor.Utilities
             return SafeDivide((float)lhs, (float)rhs);
         }
 
+        // Set Negative
+        public static float Inverse(this ref float value)
+        {
+            return -value;
+        }
+        public static float Positive(this ref float value)
+        {
+            return value > 0 ? value : -value;
+        }
+        public static float Negative(this ref float value)
+        {
+            return value < 0 ? value : -value;
+        }
+
         //Is Positive
         public static bool IsPositive(this float value)
         {
