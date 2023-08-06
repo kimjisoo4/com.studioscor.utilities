@@ -42,7 +42,8 @@ namespace StudioScor.Utilities
 #if SCOR_ENABLE_UNIVERSAL_RENDER
             var cameraData = mainCamera.GetUniversalAdditionalCameraData();
 
-            cameraData.cameraStack.Add(targetCamera);
+            if(!cameraData.cameraStack.Contains(targetCamera))
+                cameraData.cameraStack.Add(targetCamera);
 #endif
 
             if(isChildTransform)

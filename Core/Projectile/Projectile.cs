@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
+using static Sirenix.OdinInspector.Editor.Internal.FastDeepCopier;
+
 namespace StudioScor.Utilities
 {
+
     [System.Serializable]
     public class Projectile
     {
         [Header(" [ Projectile ] ")]
-        [SerializeField]private Transform projectileTarget;
+        [SerializeField] private Transform projectileTarget;
 
         [Header(" [ Direction ] ")]
         [SerializeField] private Transform target;
@@ -19,14 +22,9 @@ namespace StudioScor.Utilities
         [SerializeField] private float acceleration = 20f;
         [SerializeField] private float deceleration = 10f;
 
-        [Header(" [ Gravity ] ")]
-        [SerializeField] private bool useGravity = true;
-        [SerializeField][SCondition(nameof(useGravity))] private float gravity = 9.81f;
-
         
         private bool isPlaying;
         private float currentSpeed;
-        private float currentGravity;
 
         private Vector3 moveVelocity;
         private Vector3 turnRotation;
@@ -35,12 +33,10 @@ namespace StudioScor.Utilities
         public Transform ProjectileTarget => projectileTarget;
         public Vector3 Direction => direction;
         public bool IsPlaying => isPlaying;
-        public bool UseGravity => useGravity;
         public Transform Target => target;
         public bool HasTarget => target;
 
         public float CurrentSpeed => currentSpeed;
-        public float CurrentGravity => currentGravity;
 
         public Vector3 MoveVelocity => moveVelocity;
         public Vector3 TurnRotation => turnRotation;
@@ -71,7 +67,6 @@ namespace StudioScor.Utilities
             isPlaying = true;
 
             currentSpeed = startedSpeed;
-            currentGravity = 0f;
         }
         public void OnProjectile(Transform target)
         {
@@ -100,7 +95,6 @@ namespace StudioScor.Utilities
             isPlaying = false;
 
             currentSpeed = 0f;
-            currentGravity = 0f;
 
             target = null;
         }
@@ -144,16 +138,7 @@ namespace StudioScor.Utilities
                 currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, deceleration * deltaTime);
             }
 
-            Vector3 velocity = currentSpeed * direction;
-
-            if (useGravity)
-            {
-                currentGravity -= this.gravity * deltaTime;
-
-                velocity += currentGravity * Vector3.up;
-            }
-
-            moveVelocity = velocity;
+            moveVelocity = currentSpeed * direction;
         }
     }
 }
