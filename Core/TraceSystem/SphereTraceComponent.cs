@@ -5,23 +5,23 @@ namespace StudioScor.Utilities
     public class SphereTraceComponent : TraceComponent
     {
         [Header(" [ Sphere Trace Component ] ")]
-        [SerializeField] private float _Radius = 1f;
+        [SerializeField] private float radius = 1f;
 
         protected override bool TryTrace()
         {
             var startPosition = CalcPosition();
-            var endPosition = _PrevPosition;
+            var endPosition = prevPosition;
 
-            _PrevPosition = startPosition;
+            prevPosition = startPosition;
 
-            if (!SUtility.Physics.DrawSphereCastAll(startPosition, endPosition, _Radius, _Layer, ref _Hits, _IgnoreTransforms, UseDebug))
+            if (!SUtility.Physics.DrawSphereCastAll(startPosition, endPosition, radius, layer, ref hits, ignoreTransforms, UseDebug))
                 return false;
 
-            foreach (var traceIgnore in _TraceIgnores)
+            foreach (var traceIgnore in traceIgnores)
             {
-                traceIgnore.Ignore(_Owner, ref _Hits);
+                traceIgnore.Ignore(owner, ref hits);
 
-                if (_Hits.Count <= 0)
+                if (hits.Count <= 0)
                     return false;
             }
 

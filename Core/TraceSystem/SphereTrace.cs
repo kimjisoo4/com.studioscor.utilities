@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
     {
         protected override bool OnTrace(Transform owner, FSphereTrace sphereTrace, ref List<RaycastHit> hits, List<Transform> ignoreHits = null, bool useDebug = false)
         {
-            if(_IgnoreSelf)
+            if(ignoreSelf)
             {
                 return SUtility.Physics.DrawSphereCastAll(sphereTrace.Start, sphereTrace.End, sphereTrace.Radius, sphereTrace.LayerMask, ref hits, owner, ignoreHits, useDebug);
             }

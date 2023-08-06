@@ -26,7 +26,7 @@ namespace StudioScor.Utilities
         [SerializeField] private float distance = 10f;
         [SerializeField] private float radius = 1f;
         [SerializeField] private LayerMask layer;
-        [SerializeField] private TraceIgnore[] ignoreTraces;
+        [SerializeField] private IgnoreTrace[] ignoreTraces;
 
         [Header(" [ Auto Playing ] ")]
         [SerializeField] private bool autoPlaying = true;
@@ -159,6 +159,7 @@ namespace StudioScor.Utilities
                     break;
             }
         }
+
         #region Set Aiming Origin
         public void SetAimingOrigin(GameObject origin)
         {

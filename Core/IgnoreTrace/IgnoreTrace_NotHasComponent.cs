@@ -4,13 +4,14 @@ using System.Collections.Generic;
 
 namespace StudioScor.Utilities
 {
-    public class TraceIgnore_NotHasComponent<T> : TraceIgnore
+    public class IgnoreTrace_NotHasComponent<T> : IgnoreTrace
     {
-        [SerializeField] private bool _UseRigidbody = true;
-        [SerializeField][SCondition(nameof(_UseRigidbody))] private bool _CheckHasRigidbody = true;
+        [Header(" [ Not Has Component ] ")]
+        [SerializeField] private bool useRigidbody = true;
+        [SerializeField][SCondition(nameof(useRigidbody))] private bool checkHasRigidbody = true;
         public override void Ignore(Transform tracer, ref List<RaycastHit> hits)
         {
-            if(_UseRigidbody)
+            if(useRigidbody)
             {
                 for (int i = hits.Count - 1; i >= 0; i--)
                 {
@@ -21,7 +22,7 @@ namespace StudioScor.Utilities
                     }
                     else
                     {
-                        if (_CheckHasRigidbody)
+                        if (checkHasRigidbody)
                             hits.RemoveAt(i);
                     }
                 }

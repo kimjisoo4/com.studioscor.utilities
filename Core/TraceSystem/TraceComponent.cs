@@ -9,37 +9,38 @@ namespace StudioScor.Utilities
     public abstract class TraceComponent : BaseMonoBehaviour
     {
         [Header(" [ Trace Component ] ")]
-        [SerializeField] protected Transform _Owner;
-        [SerializeField] protected bool _IgnoreSelf = true;
+        [SerializeField] protected Transform owner;
+        [SerializeField] protected bool ignoreSelf = true;
 
-        [SerializeField] protected Vector3 _Offset;
-        [SerializeField] protected LayerMask _Layer;
-        [SerializeField] protected TraceIgnore[] _TraceIgnores;
+        [SerializeField] protected Vector3 offset;
+        [SerializeField] protected LayerMask layer;
+        [SerializeField] protected IgnoreTrace[] traceIgnores;
 
         [Header(" [ Event ] ")]
-        [SerializeField] protected UnityEvent<List<RaycastHit>> _OnHits;
-        public UnityAction<List<RaycastHit>> OnHits;
+        [SerializeField] protected UnityEvent<List<RaycastHit>> onHits;
+        
+        public event UnityAction<List<RaycastHit>> OnHits;
 
         [Header(" [ Auto Playing ] ")]
-        [SerializeField] private bool _AutoPlaying = true;
+        [SerializeField] private bool isAutoPlaying = true;
 
-        protected bool _IsPlaying = false;
-        protected Vector3 _PrevPosition;
-        protected List<RaycastHit> _Hits = new();
-        protected List<Transform> _IgnoreTransforms = new();
+        protected bool isPlaying = false;
+        protected Vector3 prevPosition;
+        protected List<RaycastHit> hits = new();
+        protected List<Transform> ignoreTransforms = new();
 
-        public IReadOnlyList<RaycastHit> Hits => _Hits;
+        public IReadOnlyList<RaycastHit> Hits => hits;
 
         private void Reset()
         {
 #if UNITY_EDITOR
-            _Owner = transform;
+            owner = transform;
 #endif
         }
 
         private void OnEnable()
         {
-            if (_AutoPlaying)
+            if (isAutoPlaying)
                 OnTrace();
         }
         private void OnDisable()
@@ -57,33 +58,33 @@ namespace StudioScor.Utilities
         }
         public void SetOwner(Transform transform)
         {
-            _Owner = transform;
+            owner = transform;
         }
 
         public void AddIgnoreTransforms(Transform transform)
         {
-            _IgnoreTransforms.Add(transform);
+            ignoreTransforms.Add(transform);
         }
         public void AddIgnoreTransforms(IEnumerable<Transform> transforms)
         {
-            _IgnoreTransforms.AddRange(transforms);
+            ignoreTransforms.AddRange(transforms);
         }
 
         public void RemoveIgnoreTransforms(Transform transform)
         {
-            _IgnoreTransforms.Remove(transform);
+            ignoreTransforms.Remove(transform);
         }
         public void RemoveIgnoreTransforms(IEnumerable<Transform> transforms)
         {
             foreach (var remove in transforms)
             {
-                _IgnoreTransforms.Remove(remove);
+                ignoreTransforms.Remove(remove);
             }
         }
 
         public virtual Vector3 CalcPosition()
         {
-            return _Owner.TransformPoint(_Offset);
+            return owner.TransformPoint(offset);
         }
 
 
@@ -94,30 +95,30 @@ namespace StudioScor.Utilities
 
         public void OnTrace()
         {
-            if (_IsPlaying)
+            if (isPlaying)
                 return;
 
-            _IsPlaying = true;
+            isPlaying = true;
 
-            if (_IgnoreSelf)
-                _IgnoreTransforms.Add(_Owner);
+            if (ignoreSelf)
+                ignoreTransforms.Add(owner);
 
-            _PrevPosition = CalcPosition();
+            prevPosition = CalcPosition();
         }
         public void EndTrace()
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
-            _IgnoreTransforms.Clear();
-            _Hits.Clear();
+            ignoreTransforms.Clear();
+            hits.Clear();
         }
 
         public bool UpdateTrace()
         {
-            _Hits.Clear();
+            hits.Clear();
 
             if (TryTrace())
             {
@@ -137,8 +138,8 @@ namespace StudioScor.Utilities
         {
             Log(" On Hits ");
 
-            _OnHits?.Invoke(_Hits);
-            OnHits?.Invoke(_Hits);
+            onHits?.Invoke(hits);
+            OnHits?.Invoke(hits);
         }
     }
 }
