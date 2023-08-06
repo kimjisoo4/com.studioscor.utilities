@@ -1,104 +1,59 @@
-﻿using UnityEngine;
-using StudioScor.Utilities;
+﻿using StudioScor.Utilities;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace StudioScor.InputSystem
 {
-
     public class LookAxisComponent : BaseMonoBehaviour
     {
-        [Header(" [ Look Axis ] ")]
-        [SerializeField] private float threshold = 0.01f;
+        [Header(" [ Target ] ")]
+        [SerializeField] private Transform axisTarget;
+        
+        [Header(" [ Look Axis] ")]
+        [SerializeField] private LookAxis lookAxis;
 
-        [Space(5f)]
-        [SerializeField] private float speed = 1f;
-        [SerializeField] private float pitchSpeed = 1f;
-        [SerializeField] private float yawSpeed = 1f;
-
-        [Space(5f)]
-        [SerializeField, Range(-89f, 89f)] private float upClamp = 80f;
-        [SerializeField, Range(-89f, 89f)] private float downClamp = -80f;
-        [Space(5f)]
-        [SerializeField] private bool ignorePitch = false;
-        [SerializeField] private bool ignoreYaw = false;
-        [Space(5f)]
-        [SerializeField] private bool inversePicth = false;
-        [SerializeField] private bool inverseYaw = false;
-
-        [SerializeField][SReadOnly] private float picth;
-        [SerializeField][SReadOnly] private float yaw;
-
-        public float Speed => speed;
-        public float PitchSpeed => pitchSpeed;
-        public float YawSpeed => yawSpeed;
-        public float UpClamp => upClamp;
-        public float DownClamp => downClamp;
-        public bool IgnorePitch => ignorePitch;
-        public bool IgnoreYaw => ignoreYaw;
-        public bool InversePicth => inversePicth;
-        public bool InverseYaw => inverseYaw;
-        public float Yaw => yaw;
-        public float Pitch => picth;
+        public LookAxis LookAxis => lookAxis;
 
 
-        public void SetIgnoreYaw(bool isIgnore)
+#if UNITY_EDITOR
+        [Header(" [ Draw Gizmos ] ")]
+        [SerializeField] private bool isAlwaysDraw = false;
+        [SerializeField] private Color gizmosColor = new Color(1f, 0f, 0f, 1f);
+#endif
+
+        private void Reset()
         {
-            ignoreYaw = isIgnore;
-        }
-        public void SetIgnorePitch(bool isIgnore)
-        {
-            ignorePitch = isIgnore;
+#if UNITY_EDITOR
+            axisTarget = transform;
+#endif
         }
 
-        public void SetLookAxis(float newPicth, float newYaw)
+        private void OnDrawGizmos()
         {
-            if(!IgnorePitch)
-                picth = newPicth;
-
-            if(!ignoreYaw)
-                yaw = newYaw;
+#if UNITY_EDITOR
+            if (isAlwaysDraw)
+                DrawGizmos();
+#endif
+        }
+        private void OnDrawGizmosSelected()
+        {
+#if UNITY_EDITOR
+            if (!isAlwaysDraw)
+                DrawGizmos();
+#endif
         }
 
-        public void SetLookAxis(Transform transform)
+        [Conditional("UNITY_EDITOR")]
+        protected virtual void DrawGizmos()
         {
-            Vector3 eulerAngles = transform.eulerAngles;
-
-            float picth = eulerAngles.x;
-            float yaw = eulerAngles.y;
-
-
-            picth = SUtility.ClampAngle(picth, DownClamp, UpClamp);
-            yaw = SUtility.ClampAngle(yaw, float.MinValue, float.MaxValue);
-
-            Log($"Picth : {picth:N2} || Yaw : {yaw:N2}");
-
-            SetLookAxis(picth, yaw);
+#if UNITY_EDITOR
+            SUtility.SGizmos.DrawArrow(axisTarget.position, axisTarget.forward, gizmosColor);
+#endif
         }
 
-        public void InputLookAxis(Vector2 deltaAxis, float multiplie = 1f)
+        private void LateUpdate()
         {
-            if (deltaAxis.sqrMagnitude < threshold)
-                return;
-
-            float picth = this.picth;
-            float yaw = this.yaw;
-
-            if (!IgnorePitch)
-            {
-                float inversePicth = InversePicth ? -1f : 1f;
-
-                picth += deltaAxis.y * multiplie * Speed * PitchSpeed * inversePicth;
-                picth = SUtility.ClampAngle(picth, DownClamp, UpClamp);
-            }
-
-            if (!IgnoreYaw)
-            {
-                float inverseYaw = InverseYaw ? -1f : 1f;
-
-                yaw += deltaAxis.x * multiplie * Speed * YawSpeed * inverseYaw;
-                yaw = SUtility.ClampAngle(yaw, float.MinValue, float.MaxValue);
-            }
-
-            SetLookAxis(picth, yaw);
+            axisTarget.eulerAngles = new Vector3(LookAxis.Pitch, LookAxis.Yaw);
         }
     }
 }

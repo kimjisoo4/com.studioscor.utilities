@@ -45,7 +45,7 @@ namespace StudioScor.Utilities
             EndFollow();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             float deltaTime = Time.deltaTime;
 

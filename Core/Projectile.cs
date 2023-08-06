@@ -1,73 +1,49 @@
 ﻿using UnityEngine;
 namespace StudioScor.Utilities
 {
-    [RequireComponent(typeof(Rigidbody))]
-    public class Projectile : BaseMonoBehaviour
+    [System.Serializable]
+    public class Projectile
     {
         [Header(" [ Projectile ] ")]
-        [SerializeField] private Rigidbody _RigidBody;
+        [SerializeField]private Transform projectileTarget;
+
         [Header(" [ Direction ] ")]
-        [SerializeField] private Transform _Target;
-        [SerializeField] private Vector3 _Direction = Vector3.forward;
-        [SerializeField] private float _TurnSpeed = 180f;
+        [SerializeField] private Transform target;
+        [SerializeField] private Vector3 direction = Vector3.forward;
+        [SerializeField] private float turnSpeed = 180f;
+
         [Header(" [ Speed ] ")]
-        [SerializeField] private float _StartedSpeed = 10f;
-        [SerializeField] private float _TargetSpeed = 5f;
+        [SerializeField] private float startedSpeed = 10f;
+        [SerializeField] private float targetSpeed = 5f;
         [Space(5f)]
-        [SerializeField] private float _Acceleration = 20f;
-        [SerializeField] private float _Deceleration = 10f;
+        [SerializeField] private float acceleration = 20f;
+        [SerializeField] private float deceleration = 10f;
+
         [Header(" [ Gravity ] ")]
-        [SerializeField] private bool _UseGravity = true;
-        [SerializeField][SCondition(nameof(_UseGravity))] private float _Gravity = 9.81f;
-        [Header(" [ Play Speed ] ")]
-        [SerializeField] private float _PlaySpeed = 1f;
-        [Header(" [ Auto Playing ] ")]
-        [SerializeField] private bool _AutoPlaying = true;
+        [SerializeField] private bool useGravity = true;
+        [SerializeField][SCondition(nameof(useGravity))] private float gravity = 9.81f;
 
-        private bool _IsPlaying;
-        private float _CurrentSpeed;
-        private float _CurrentGravity;
+        
+        private bool isPlaying;
+        private float currentSpeed;
+        private float currentGravity;
+
+        private Vector3 moveVelocity;
+        private Vector3 turnRotation;
 
 
-        public Vector3 Direction => _Direction;
-        public bool IsPlaying => _IsPlaying;
-        public bool UseGravity => _UseGravity;
-        public Transform Target => _Target;
-        public bool HasTarget => _Target;
+        public Transform ProjectileTarget => projectileTarget;
+        public Vector3 Direction => direction;
+        public bool IsPlaying => isPlaying;
+        public bool UseGravity => useGravity;
+        public Transform Target => target;
+        public bool HasTarget => target;
 
-        public float CurrentSpeed => _CurrentSpeed;
-        public float CurrentGravity => _CurrentGravity;
+        public float CurrentSpeed => currentSpeed;
+        public float CurrentGravity => currentGravity;
 
-        private void Reset()
-        {
-#if UNITY_EDITOR
-            if(TryGetComponent(out _RigidBody))
-            {
-                _RigidBody.useGravity = false;
-            }
-#endif
-        }
-
-        private void OnEnable()
-        {
-            if (_AutoPlaying)
-                OnProjectile();
-        }
-        private void OnDisable()
-        {
-            EndProjectile();
-        }
-        private void FixedUpdate()
-        {
-            float deltaTime = Time.fixedDeltaTime * _PlaySpeed;
-
-            UpdateProjectile(deltaTime);
-        }
-
-        public void SetPlaySpeed(float newSpeed)
-        {
-            _PlaySpeed = newSpeed;
-        }
+        public Vector3 MoveVelocity => moveVelocity;
+        public Vector3 TurnRotation => turnRotation;
 
         public void SetTarget(Component component)
         {
@@ -79,90 +55,105 @@ namespace StudioScor.Utilities
         }
         public void SetTarget(Transform target)
         {
-            _Target = target;
+            this.target = target;
         }
 
         public void SetDirection(Vector3 direction)
         {
-            _Direction = direction;
+            this.direction = direction;
         }
 
         public void OnProjectile()
         {
-            if (_IsPlaying)
+            if (isPlaying)
                 return;
 
-            _IsPlaying = true;
+            isPlaying = true;
 
-            _CurrentSpeed = _StartedSpeed;
-            _CurrentGravity = 0f;
+            currentSpeed = startedSpeed;
+            currentGravity = 0f;
         }
+        public void OnProjectile(Transform target)
+        {
+            if (isPlaying)
+                return;
+
+            SetTarget(target);
+
+            OnProjectile();
+        }
+        public void OnProjectile(Vector3 direction)
+        {
+            if (isPlaying)
+                return;
+
+            SetDirection(direction);
+
+            OnProjectile();
+        }
+
         public void EndProjectile()
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
-            _CurrentSpeed = 0f;
-            _CurrentGravity = 0f;
+            currentSpeed = 0f;
+            currentGravity = 0f;
 
-            _RigidBody.velocity = Vector3.zero;
-
-            _Target = null;
+            target = null;
         }
         public void UpdateProjectile(float deltaTime)
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
-            LookAtTarget(deltaTime);
-
-            Movement(deltaTime);
+            UpdateRotation(deltaTime);
+            UpdateMovement(deltaTime);
         }
 
-        private void LookAtTarget(float deltaTime)
+        private void UpdateRotation(float deltaTime)
         {
-            if (_Target)
-            {
-                Vector3 direction = transform.Direction(_Target);
+            if (!target)
+                return;
+            
+            Vector3 direction = projectileTarget.Direction(target);
 
-                Vector3 rotation = transform.eulerAngles;
-                Vector3 newRotation = Quaternion.LookRotation(direction).eulerAngles;
+            Vector3 rotation = projectileTarget.eulerAngles;
+            Vector3 newRotation = Quaternion.LookRotation(direction).eulerAngles;
 
-                float angle = Mathf.MoveTowardsAngle(rotation.y, newRotation.y, deltaTime * _TurnSpeed);
+            float angle = Mathf.MoveTowardsAngle(rotation.y, newRotation.y, deltaTime * turnSpeed);
 
-                rotation.y = angle;
+            rotation.y = angle;
 
-                transform.eulerAngles = rotation;
-            }
+            turnRotation = rotation;
         }
+        
 
-        private void Movement(float deltaTime)
+        private void UpdateMovement(float deltaTime)
         {
-            Vector3 direction = _Direction;
+            Vector3 direction = this.direction;
 
-            if (_CurrentSpeed < _TargetSpeed)
+            if (currentSpeed < targetSpeed)
             {
-                _CurrentSpeed = Mathf.MoveTowards(_CurrentSpeed, _TargetSpeed, _Acceleration * deltaTime);
+                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * deltaTime);
             }
             else
             {
-                _CurrentSpeed = Mathf.MoveTowards(_CurrentSpeed, _TargetSpeed, _Deceleration * deltaTime);
+                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, deceleration * deltaTime);
             }
 
-            if (_UseGravity)
-                _CurrentGravity -= _Gravity * deltaTime;
+            Vector3 velocity = currentSpeed * direction;
 
-            Vector3 velocity = _PlaySpeed * _CurrentSpeed * direction;
-            Vector3 gravity = _PlaySpeed * _CurrentGravity * Vector3.up;
+            if (useGravity)
+            {
+                currentGravity -= this.gravity * deltaTime;
 
-            OnMovement(velocity + gravity);
-        }
+                velocity += currentGravity * Vector3.up;
+            }
 
-        protected void OnMovement(Vector3 velocity)
-        {
-            _RigidBody.velocity = velocity;
+            moveVelocity = velocity;
         }
     }
 }

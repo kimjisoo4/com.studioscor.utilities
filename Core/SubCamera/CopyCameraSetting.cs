@@ -33,6 +33,9 @@ namespace StudioScor.Utilities
         private void OnDisable()
         {
 #if SCOR_ENABLE_CINEMACHINE
+            if (!gameObject.scene.isLoaded)
+                return;
+
             CinemachineCore.CameraUpdatedEvent.RemoveListener(CameraUpdate);
 #endif
         }
