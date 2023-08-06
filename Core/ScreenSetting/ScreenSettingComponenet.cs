@@ -8,28 +8,28 @@ namespace StudioScor.Utilities
     public class ScreenSettingComponenet : BaseMonoBehaviour
     {
         [Header(" [ Screen Setting Component ]")]
-        [SerializeField] private ScreenSetting _ScreenSetting;
+        [SerializeField] private ScreenSetting screenSetting;
 
-        [SerializeField] private bool _UseOverrideSetting = false;
-        [SerializeField][SCondition(nameof(_UseOverrideSetting))] private int _FPS = 60;
-        [SerializeField][SCondition(nameof(_UseOverrideSetting))] private Vector2 _Resolution = new Vector3(1920, 1080);
-        [SerializeField][SCondition(nameof(_UseOverrideSetting))] private FullScreenMode _Mode = FullScreenMode.ExclusiveFullScreen;
+        [SerializeField] private bool useOverrideSetting = false;
+        [SerializeField][SCondition(nameof(useOverrideSetting))] private int fps = 60;
+        [SerializeField][SCondition(nameof(useOverrideSetting))] private Vector2 resolution = new Vector3(1920, 1080);
+        [SerializeField][SCondition(nameof(useOverrideSetting))] private FullScreenMode screenMode = FullScreenMode.ExclusiveFullScreen;
 
         private void Awake()
         {
-            if (_ScreenSetting)
+            if (screenSetting)
             {
-                if (_UseOverrideSetting)
+                if (useOverrideSetting)
                 {
                     Log("Override Screen Setting.");
 
-                    _ScreenSetting.Setup(_FPS, _Resolution, _Mode);
+                    screenSetting.Setup(fps, resolution, screenMode);
                 }
                 else
                 {
                     Log("On Screen Setting.");
 
-                    _ScreenSetting.OnScreenSetting();
+                    screenSetting.OnScreenSetting();
                 }
             }
         }

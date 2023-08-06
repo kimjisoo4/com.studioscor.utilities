@@ -7,37 +7,37 @@ namespace StudioScor.Utilities
     public class LookAtCamera : BaseMonoBehaviour
     {
         [Header(" [ Look At Camera Component ] ")]
-        [SerializeField] private RotationConstraint _Constraint;
-        [SerializeField] private Camera _Camera;
+        [SerializeField] private RotationConstraint constraint;
+        [SerializeField] private Camera targetCamera;
 
-#if UNITY_EDITOR
         private void Reset()
         {
-            if(gameObject.TryGetComponentInParentOrChildren(out _Constraint))
+#if UNITY_EDITOR
+            if(gameObject.TryGetComponentInParentOrChildren(out constraint))
             {
-                _Constraint.constraintActive = true;
+                constraint.constraintActive = true;
             }
-        }
 #endif
+        }
 
         private void Awake()
         {
-            if (!_Camera)
-                _Camera = Camera.main;
+            if (!targetCamera)
+                targetCamera = Camera.main;
 
             ConstraintSource source = new()
             {
-                sourceTransform = _Camera.transform,
+                sourceTransform = targetCamera.transform,
                 weight = 1f,
             };
 
-            if (_Constraint.sourceCount > 0)
+            if (constraint.sourceCount > 0)
             {
-                _Constraint.SetSource(0, source);
+                constraint.SetSource(0, source);
             }
             else
             {
-                _Constraint.AddSource(source);
+                constraint.AddSource(source);
             }
         }
     }

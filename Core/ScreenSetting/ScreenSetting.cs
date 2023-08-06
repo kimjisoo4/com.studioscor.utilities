@@ -14,13 +14,13 @@ namespace StudioScor.Utilities
         #endregion
 
         [Header(" [ Screen Setting ] ")]
-        [SerializeField] private int _FPS = 60;
-        [SerializeField] private Vector2 _Resolution = new Vector2(1920, 1080);
-        [SerializeField] private FullScreenMode _Mode = FullScreenMode.ExclusiveFullScreen;
+        [SerializeField] private int fps = 60;
+        [SerializeField] private Vector2 resolution = new Vector2(1920, 1080);
+        [SerializeField] private FullScreenMode screenMode = FullScreenMode.ExclusiveFullScreen;
 
-        private int _CurrentFPS;
-        private Vector2 _CurrentResolution;
-        private FullScreenMode _CurrentMode;
+        private int currentFPS;
+        private Vector2 currentResolution;
+        private FullScreenMode currentMode;
 
         public event ChangeFPSHandler OnChangedFPS;
         public event ChangeResolutionHandler OnChangedResolution;
@@ -28,15 +28,15 @@ namespace StudioScor.Utilities
 
         protected override void OnReset()
         {
-            _CurrentFPS = 0;
-            _CurrentResolution = default;
-            _CurrentMode = default;
+            currentFPS = 0;
+            currentResolution = default;
+            currentMode = default;
         }
         public void OnScreenSetting()
         {
-            SetFPS(_FPS);
-            SetUseFullScreen(_Mode);
-            SetResolution(_Resolution);
+            SetFPS(fps);
+            SetUseFullScreen(screenMode);
+            SetResolution(resolution);
         }
 
         public void Setup(int fps, Vector2 resolution, FullScreenMode mode)
@@ -48,30 +48,30 @@ namespace StudioScor.Utilities
 
         public void SetFPS(int newFPS)
         {
-            var prevFPS = _CurrentFPS;
-            _CurrentFPS = newFPS;
+            var prevFPS = currentFPS;
+            currentFPS = newFPS;
 
-            Application.targetFrameRate = _CurrentFPS;
+            Application.targetFrameRate = currentFPS;
 
             Callback_OnChangedFPS(prevFPS);
         }
 
         public void SetUseFullScreen(FullScreenMode newMode)
         {
-            var prevMode = _CurrentMode;
-            _CurrentMode = newMode;
+            var prevMode = currentMode;
+            currentMode = newMode;
 
-            Screen.fullScreenMode = _CurrentMode;
+            Screen.fullScreenMode = currentMode;
 
             Callback_OnChangedUseFullScreen(prevMode);
         }
 
         public void SetResolution(Vector2 newResolution) 
         {
-            var prevResolution = _CurrentResolution;
-            _CurrentResolution = newResolution;
+            var prevResolution = currentResolution;
+            currentResolution = newResolution;
 
-            Screen.SetResolution((int)_CurrentResolution.x, (int)_CurrentResolution.y, _CurrentMode);
+            Screen.SetResolution((int)currentResolution.x, (int)currentResolution.y, currentMode);
 
             Callback_OnChangedResolution(prevResolution);
         }
@@ -79,22 +79,22 @@ namespace StudioScor.Utilities
         #region Callback
         private void Callback_OnChangedUseFullScreen(FullScreenMode prevMode)
         {
-            Log($"On Changed Use FullScreen - CurrentMode : {_CurrentMode} PrevMode : {prevMode}");
+            Log($"On Changed Use FullScreen - CurrentMode : {currentMode} PrevMode : {prevMode}");
 
-            OnChangedFullScreen?.Invoke(this, _CurrentMode, prevMode);
+            OnChangedFullScreen?.Invoke(this, currentMode, prevMode);
         }
 
         private void Callback_OnChangedFPS(int prevFPS)
         {
-            Log($"On Changed FSP - CurrentFPS : {_CurrentFPS} PrevFPS : {prevFPS}");
+            Log($"On Changed FSP - CurrentFPS : {currentFPS} PrevFPS : {prevFPS}");
 
-            OnChangedFPS?.Invoke(this, _CurrentFPS, prevFPS);
+            OnChangedFPS?.Invoke(this, currentFPS, prevFPS);
         }
         private void Callback_OnChangedResolution(Vector2 prevResolution)
         {
-            Log($"On Changed Resolution - CurrentResolution : X {_CurrentResolution.x } /  Y {_CurrentResolution.y} PrevResolution : X {_CurrentResolution.x} /  Y {_CurrentResolution.y}");
+            Log($"On Changed Resolution - CurrentResolution : X {currentResolution.x } /  Y {currentResolution.y} PrevResolution : X {currentResolution.x} /  Y {currentResolution.y}");
 
-            OnChangedResolution?.Invoke(this, _CurrentResolution, prevResolution);
+            OnChangedResolution?.Invoke(this, currentResolution, prevResolution);
         }
         #endregion
     }

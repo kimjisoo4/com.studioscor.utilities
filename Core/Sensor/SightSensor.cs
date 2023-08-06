@@ -13,21 +13,21 @@ namespace StudioScor.Utilities
     public class SightSensor : BaseMonoBehaviour, ISight
     {
         [Header(" [ Ai Sight Sensor ] ")]
-        [SerializeField] private Transform _Owner;
-        [SerializeField] private bool _UseRigidbody = true;
-        [SerializeField] private float _Interval = 0.1f;
-        [SerializeField] private float _Distance;
-        [SerializeField, Range(0f, 360f)] private float _Angle;
-        [SerializeField] private LayerMask _LayerMask;
+        [SerializeField] private Transform owner;
+        [SerializeField] private bool useRigidbody = true;
+        [SerializeField] private float interval = 0.1f;
+        [SerializeField] private float distance = 10f;
+        [SerializeField, Range(0f, 360f)] private float angle = 90f;
+        [SerializeField] private LayerMask layerMask;
 
         [Header(" [ Auto Playing ] ")]
-        [SerializeField] private bool _AutoPlaying = true;
+        [SerializeField] private bool isAutoPlaying = true;
 
-        private List<Collider> _HitResults = new();
-        private readonly List<Collider> _Sights = new();
-        private readonly List<Transform> _IgnoreTransforms = new();
-        private bool _IsPlaying = false;
-        private float _RemainTime;
+        private List<Collider> hitResults = new();
+        private readonly List<Collider> sights = new();
+        private readonly List<Transform> ignoreTransforms = new();
+        private bool isPlaying = false;
+        private float remainTime;
 
         public event AiSensorEventHandler OnFoundSight;
         public event AiSensorEventHandler OnLostedSight;
@@ -35,12 +35,22 @@ namespace StudioScor.Utilities
         private void Reset()
         {
 #if UNITY_EDITOR
-            _Owner = transform;
+            owner = transform;
 #endif
         }
+        private void OnDrawGizmosSelected()
+        {
+#if UNITY_EDITOR
+            if (!UseDebug || isPlaying)
+                return;
+
+            SUtility.Debug.DrawCone(owner.position, owner.rotation, distance, angle, Color.red);
+#endif
+        }
+
         private void OnEnable()
         {
-            if (_AutoPlaying)
+            if (isAutoPlaying)
                 OnSight();
         }
 
@@ -60,28 +70,28 @@ namespace StudioScor.Utilities
         }
         public void SetOwner(Transform target)
         {
-            if (target == _Owner)
+            if (target == owner)
                 return;
 
-            _Owner = target;
+            owner = target;
 
-            if(!_Owner)
+            if(!owner)
             {
-                _Owner = transform;
+                owner = transform;
             }
         }
 
         public void AddIgnoreTransform(Transform add)
         {
-            _IgnoreTransforms.Add(add);
+            ignoreTransforms.Add(add);
         }
         public void AddIgnoreTransforms(IEnumerable<Transform> adds)
         {
-            _IgnoreTransforms.AddRange(adds);
+            ignoreTransforms.AddRange(adds);
         }
         public void RemoveIgnoreTransform(Transform remove)
         {
-            _IgnoreTransforms.Remove(remove);
+            ignoreTransforms.Remove(remove);
         }
         public void RemoveIgnoreTransforms(IEnumerable<Transform> removes)
         {
@@ -94,30 +104,30 @@ namespace StudioScor.Utilities
 
         public void OnSight()
         {
-            if (_IsPlaying)
+            if (isPlaying)
                 return;
 
-            _IsPlaying = true;
+            isPlaying = true;
 
-            _HitResults.Clear();
-            _Sights.Clear();
-            _IgnoreTransforms.Clear();
+            hitResults.Clear();
+            sights.Clear();
+            ignoreTransforms.Clear();
 
-            _IgnoreTransforms.Add(_Owner);
+            ignoreTransforms.Add(owner);
 
-            _RemainTime = 0f;
+            remainTime = 0f;
         }
         public void EndSight()
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
         }
 
         private void FixedUpdate()
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
             float deltaTime = Time.fixedDeltaTime;
@@ -127,73 +137,67 @@ namespace StudioScor.Utilities
 
         public virtual void UpdateSight(float deltaTime)
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
-            _RemainTime -= deltaTime;
+            remainTime -= deltaTime;
 
-            if (_RemainTime > 0f)
+            if (remainTime > 0f)
                 return;
 
-            _RemainTime = _Interval;
+            remainTime = interval;
 
             Sight();
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            if (!UseDebug || _IsPlaying)
-                return;
-
-            SUtility.Debug.DrawCone(_Owner.position, _Owner.rotation, _Distance, _Angle, Color.red);
-        }
+        
         private void Sight()
         {
-            _HitResults.Clear();
+            hitResults.Clear();
 
-            if(!SUtility.Physics.DrawConeCast(_Owner, _Angle, _Distance, _LayerMask, ref _HitResults, _IgnoreTransforms, UseDebug, 0.1f))
+            if(!SUtility.Physics.DrawConeCast(owner, angle, distance, layerMask, ref hitResults, ignoreTransforms, UseDebug, 0.1f))
             {
-                if(_Sights.Count > 0)
+                if(sights.Count > 0)
                 {
-                    foreach (var sight in _Sights)
+                    foreach (var sight in sights)
                     {
                         Callback_OnLostedSight(sight);
                     }
 
-                    _Sights.Clear();
+                    sights.Clear();
                 }
 
                 return;
             }
 
-            if(_UseRigidbody)
+            if(useRigidbody)
             {
-                for(int i = _HitResults.LastIndex(); i >= 0; i--)
+                for(int i = hitResults.LastIndex(); i >= 0; i--)
                 {
-                    if (!_HitResults[i].attachedRigidbody)
+                    if (!hitResults[i].attachedRigidbody)
                     {
-                        _HitResults.RemoveAt(i);
+                        hitResults.RemoveAt(i);
                     }
                 }
             }
 
-            for (int i = _Sights.LastIndex(); i >= 0; i--)
+            for (int i = sights.LastIndex(); i >= 0; i--)
             {
-                var sight = _Sights[i];
+                var sight = sights[i];
 
-                if (!_HitResults.Contains(sight))
+                if (!hitResults.Contains(sight))
                 {
-                    _Sights.RemoveAt(i);
+                    sights.RemoveAt(i);
 
                     Callback_OnLostedSight(sight);
                 }
             }
 
-            foreach (var hit in _HitResults)
+            foreach (var hit in hitResults)
             {
-                if (!_Sights.Contains(hit))
+                if (!sights.Contains(hit))
                 {
-                    _Sights.Add(hit);
+                    sights.Add(hit);
 
                     Callback_OnFoundSight(hit);
                 }
@@ -201,13 +205,13 @@ namespace StudioScor.Utilities
         }
         
 
-        protected void Callback_OnFoundSight(Collider collider)
+        protected virtual void Callback_OnFoundSight(Collider collider)
         {
             Log($"On Found Sight - [ {collider.name} ]");
 
             OnFoundSight?.Invoke(this, collider);
         }
-        protected void Callback_OnLostedSight(Collider collider)
+        protected virtual void Callback_OnLostedSight(Collider collider)
         {
             Log($"On Losted Sight - [ {collider.name} ]");
 

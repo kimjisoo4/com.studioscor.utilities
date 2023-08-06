@@ -8,10 +8,10 @@ namespace StudioScor.Utilities
     public class LoadTargetScene : SceneLoader, ISerializationCallbackReceiver
     {
         [Header(" [ Load Target Scene ] ")]
-        [SerializeField] private SceneLoader _Target;
-        [SerializeField][SReadOnly]private SceneLoader _RuntimeTarget;
+        [SerializeField] private SceneLoader target;
+        [SerializeField][SReadOnly]private SceneLoader runtimeTarget;
 
-        public override Scene GetScene => _RuntimeTarget.GetScene;
+        public override Scene GetScene => runtimeTarget.GetScene;
 
         public void OnBeforeSerialize()
         {
@@ -26,22 +26,22 @@ namespace StudioScor.Utilities
         {
             base.OnReset();
 
-            _RuntimeTarget = _Target;
+            runtimeTarget = target;
         }
         
 
 
         public void SetTarget(SceneLoader target)
         {
-            _RuntimeTarget = target;
+            runtimeTarget = target;
         }
 
         public override void LoadScene()
         {
-            _RuntimeTarget.OnStarted += Target_OnStarted;
-            _RuntimeTarget.OnFinished += Target_OnFinished;
+            runtimeTarget.OnStarted += Target_OnStarted;
+            runtimeTarget.OnFinished += Target_OnFinished;
 
-            _RuntimeTarget.LoadScene();
+            runtimeTarget.LoadScene();
         }
 
         private void Target_OnStarted(SceneLoader scene)
@@ -59,7 +59,7 @@ namespace StudioScor.Utilities
 
         public override void UnLoadScene()
         {
-            _RuntimeTarget.UnLoadScene();
+            runtimeTarget.UnLoadScene();
         }
 
     }

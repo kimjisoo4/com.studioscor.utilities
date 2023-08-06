@@ -5,39 +5,39 @@ namespace StudioScor.Utilities
     public class SimpleFollow : BaseMonoBehaviour
     {
         [Header(" [ Simple Follow ] ")]
-        [SerializeField] private Transform _Target;
-        [SerializeField] private float _Speed = 5f;
+        [SerializeField] private Transform target;
+        [SerializeField] private float speed = 5f;
 
         [Header(" [ Following Condition ] ")]
-        [SerializeField] private bool _UseCondition = true;
-        [SerializeField][SCondition(nameof(_UseCondition))] private float _IgnoreDistance = 1f;
-        [SerializeField][SCondition(nameof(_UseCondition))] private float _ReachDistance = 0.01f;
+        [SerializeField] private bool useCondition = true;
+        [SerializeField][SCondition(nameof(useCondition))] private float ignoreDistance = 1f;
+        [SerializeField][SCondition(nameof(useCondition))] private float reachDistance = 0.01f;
 
         [Header(" [ Following Limit ] ")]
-        [SerializeField] private bool _UseLimit = true;
-        [SerializeField][SCondition(nameof(_UseLimit))] private float _MaxDistance = 2f;
+        [SerializeField] private bool useLimit = true;
+        [SerializeField][SCondition(nameof(useLimit))] private float maxDistance = 2f;
 
         [Header(" [ Auto Playing ] ")]
-        [SerializeField] private bool _AutoPlaying = true;
+        [SerializeField] private bool isAutoPlaying = true;
 
-        private bool _IsPlaying;
-        private bool _ShouldFollow;
-        private Vector3 _Position;
+        private bool isPlaying;
+        private bool shouldFollow;
+        private Vector3 position;
 
-        private bool _HasTarget;
-        public bool IsPlaying => _IsPlaying;
+        private bool hasTarget;
+        public bool IsPlaying => isPlaying;
 
         public Vector3 FollowPosition
         {
             get
             {
-                return _HasTarget ? _Target.position : _Position;
+                return hasTarget ? target.position : position;
             }
         }
 
         private void OnEnable()
         {
-            if (_AutoPlaying)
+            if (isAutoPlaying)
                 OnFollow();
         }
         private void OnDisable()
@@ -63,7 +63,7 @@ namespace StudioScor.Utilities
         }
         public void SetPosition(Vector3 position)
         {
-            _Position = position;
+            this.position = position;
         }
 
         public void SetTarget(GameObject gameObject)
@@ -76,35 +76,35 @@ namespace StudioScor.Utilities
         }
         public void SetTarget(Transform target = null)
         {
-            _Target = target;
+            this.target = target;
 
-            _HasTarget = _Target;
+            hasTarget = this.target;
         }
 
         public void OnFollow()
         {
-            if (_IsPlaying)
+            if (isPlaying)
                 return;
 
-            _IsPlaying = true;
+            isPlaying = true;
 
-            _HasTarget = _Target;
+            hasTarget = target;
         }
 
         public void EndFollow()
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
         }
 
         public void UpdateFollow(float deltaTime)
         {
-            if(_UseCondition)
+            if(useCondition)
                 CheckFollow();
 
-            if(!_UseCondition || _ShouldFollow)
+            if(!useCondition || shouldFollow)
                 FollowMove(deltaTime);
         }
 
@@ -113,18 +113,18 @@ namespace StudioScor.Utilities
             Vector3 targetPosition = FollowPosition;
             float distance = transform.SqrDistance(targetPosition);
 
-            if (!_ShouldFollow)
+            if (!shouldFollow)
             {
-                if (distance > _IgnoreDistance)
+                if (distance > ignoreDistance)
                 {
-                    _ShouldFollow = true;
+                    shouldFollow = true;
                 }
             }
             else
             {
-                if (distance < _ReachDistance)
+                if (distance < reachDistance)
                 {
-                    _ShouldFollow = false;
+                    shouldFollow = false;
                 }
             }
         }
@@ -132,21 +132,21 @@ namespace StudioScor.Utilities
         {
             Vector3 targetPosition = FollowPosition;
 
-            if (!_UseLimit)
+            if (!useLimit)
             {
-                transform.position = Vector3.Lerp(transform.position, targetPosition, deltaTime * _Speed);
+                transform.position = Vector3.Lerp(transform.position, targetPosition, deltaTime * speed);
             }
             else
             {
                 Vector3 direction = transform.Direction(targetPosition, false);
-                Vector3 velocity = direction * deltaTime * _Speed;
+                Vector3 velocity = direction * deltaTime * speed;
                 Vector3 newPosition = transform.position + velocity;
 
                 float distance = Vector3.Distance(newPosition, targetPosition);
 
-                if (distance > _MaxDistance)
+                if (distance > maxDistance)
                 {
-                    transform.position = targetPosition - direction.normalized * _MaxDistance;
+                    transform.position = targetPosition - direction.normalized * maxDistance;
                 }
                 else
                 {

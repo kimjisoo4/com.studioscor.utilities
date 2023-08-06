@@ -5,21 +5,41 @@ namespace StudioScor.Utilities
 {
     public class ExplosiveLLCEventListener : MonoBehaviour
     {
-        public UnityEvent OnFootR;
-        public UnityEvent OnFootL;
-        public UnityEvent OnHit;
+        [SerializeField] private UnityEvent onFootR;
+        [SerializeField] private UnityEvent onFootL;
+        [SerializeField] private UnityEvent onHit;
+
+        public event UnityAction OnFootR;
+        public event UnityAction OnFootL;
+        public event UnityAction OnHit;
 
         public void FootR()
         {
-            OnFootR?.Invoke();
+            Callback_OnFootR();
         }
         public void FootL()
         {
-            OnFootL?.Invoke();
+            Callback_OnFootL();
         }
         public void Hit()
         {
+            Callback_OnHit();
+        }
+
+        protected virtual void Callback_OnFootR()
+        {
+            OnFootR?.Invoke();
+            onFootR?.Invoke();
+        }
+        protected virtual void Callback_OnFootL()
+        {
+            OnFootL?.Invoke();
+            onFootL?.Invoke();
+        }
+        protected virtual void Callback_OnHit()
+        {
             OnHit?.Invoke();
+            onHit?.Invoke();
         }
     }
 }

@@ -9,48 +9,49 @@ namespace CuBattle
     public class SetTargetToConstraintComponent : BaseMonoBehaviour
     {
         [Header(" [ Set Target To Constraint Component] ")]
-        [SerializeField] private GameObject _Target;
-        private IConstraint _Constraint;
+        [SerializeField] private Component targetConstraint;
+
+        private IConstraint constraint;
 
         private void Reset()
         {
-            if(gameObject.TryGetComponentInParentOrChildren(out _Constraint))
+            if(gameObject.TryGetComponentInParentOrChildren(out constraint))
             {
-                var target = _Constraint as Component;
+                var target = constraint as Component;
 
                 if(target is not null)
                 {
-                    _Target = target.gameObject;
+                    this.targetConstraint = target;
                 }
             }
         }
 
         private void OnValidate()
         {
-            if (_Target)
+            if (targetConstraint)
             {
-                if(!_Target.TryGetComponent(out _Constraint))
+                if(!targetConstraint.TryGetComponent(out constraint))
                 {
-                    _Target = null;
+                    targetConstraint = null;
                 }
             }
         }
 
         private void Awake()
         {
-            if (_Target)
+            if (targetConstraint)
             {
-                _Target.TryGetComponent(out _Constraint);
+                constraint = targetConstraint as IConstraint;
             }
             else
             {
-                if(gameObject.TryGetComponentInParentOrChildren(out _Constraint))
+                if(gameObject.TryGetComponentInParentOrChildren(out constraint))
                 {
-                    var target = _Constraint as Component;
+                    var target = constraint as Component;
 
                     if (target is not null)
                     {
-                        _Target = target.gameObject;
+                        this.targetConstraint = target;
                     }
                 }
             }
@@ -73,13 +74,13 @@ namespace CuBattle
 
         public void SetTarget(Transform target = null)
         {
-            int sourceCount = _Constraint.sourceCount;
+            int sourceCount = constraint.sourceCount;
 
             if (sourceCount > 1)
             {
                 for(int i = 0; i < sourceCount; i++)
                 {
-                    _Constraint.RemoveSource(0);
+                    constraint.RemoveSource(0);
                 }
             }
 
@@ -87,7 +88,7 @@ namespace CuBattle
             {
                 if(sourceCount == 1)
                 {
-                    _Constraint.RemoveSource(0);
+                    constraint.RemoveSource(0);
                 }
 
                 return;
@@ -99,9 +100,9 @@ namespace CuBattle
             source.sourceTransform = target;
 
             if (sourceCount == 0)
-                _Constraint.AddSource(source);
+                constraint.AddSource(source);
             else
-                _Constraint.SetSource(0, source);
+                constraint.SetSource(0, source);
         }
     }
 }

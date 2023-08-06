@@ -8,10 +8,10 @@ namespace StudioScor.Utilities
     public class LoadSceneGroup : SceneLoader
     {
         [Header(" [ Load Scene Group ] ")]
-        [SerializeField] private SceneLoader _MainScene;
-        [SerializeField] private SceneLoader[] _SubScenes;
+        [SerializeField] private SceneLoader mainScene;
+        [SerializeField] private SceneLoader[] subScenes;
 
-        public override Scene GetScene => _MainScene.GetScene;
+        public override Scene GetScene => mainScene.GetScene;
 
         private int _Count;
 
@@ -23,9 +23,9 @@ namespace StudioScor.Utilities
 
         public override void LoadScene()
         {
-            _MainScene.OnFinished += MainScene_OnFinished;
+            mainScene.OnFinished += MainScene_OnFinished;
 
-            _MainScene.LoadScene();
+            mainScene.LoadScene();
         }
 
         private void MainScene_OnFinished(SceneLoader scene)
@@ -34,7 +34,7 @@ namespace StudioScor.Utilities
 
             _Count = 0;
 
-            foreach (var subScene in _SubScenes)
+            foreach (var subScene in subScenes)
             {
                 _Count++;
 
@@ -56,12 +56,12 @@ namespace StudioScor.Utilities
 
         public override void UnLoadScene()
         {
-            foreach (var scene in _SubScenes)
+            foreach (var scene in subScenes)
             {
                 scene.UnLoadScene();
             }
 
-            _MainScene.UnLoadScene();
+            mainScene.UnLoadScene();
         }
     }
 }

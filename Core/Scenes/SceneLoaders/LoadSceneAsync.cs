@@ -9,15 +9,15 @@ namespace StudioScor.Utilities
     public class LoadSceneAsync : SceneLoader
     {
         [Header(" [ Load Scene Async ]")]
-        [SerializeField] private SceneData _Scene;
-        [SerializeField] private LoadSceneMode _Mode = LoadSceneMode.Single;
+        [SerializeField] private SceneData scene;
+        [SerializeField] private LoadSceneMode loadSceneMode = LoadSceneMode.Single;
 
-        public override Scene GetScene => _Scene.GetScene();
+        public override Scene GetScene => scene.GetScene();
 
         private void OnValidate()
         {
 #if UNITY_EDITOR
-            _Scene.OnValidate();
+            scene.OnValidate();
 #endif
         }
 
@@ -26,14 +26,14 @@ namespace StudioScor.Utilities
             base.OnReset();
 
 #if UNITY_EDITOR
-            _Scene.OnValidate();
+            scene.OnValidate();
 #endif
         }
 
 
         public override void LoadScene()
         {
-            var async = _Scene.LoadScene(_Mode);
+            var async = scene.LoadScene(loadSceneMode);
 
             Callback_OnStarted();
 
@@ -50,7 +50,7 @@ namespace StudioScor.Utilities
 
         public override void UnLoadScene()
         {
-            _Scene.UnLoadScene();
+            scene.UnLoadScene();
         }
 
         

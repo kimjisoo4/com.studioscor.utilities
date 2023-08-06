@@ -1,21 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-
-using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-   
-
     public class SimpleSceneChanger : BaseMonoBehaviour
     {
         [Header(" [ Simple Scene Changer ]")]
-        [SerializeField] private SceneLoader _Scene;
-        [SerializeField] private bool _IsAutoPlaying = false;
+        [SerializeField] private SceneLoader scene;
+        [SerializeField] private bool isAutoPlaying = false;
 
-        [SerializeField] private UnityEvent _OnStartedLoad;
-        [SerializeField] private UnityEvent _OnFinishedLoad;
+        [SerializeField] private UnityEvent onStartedLoad;
+        [SerializeField] private UnityEvent onFinishedLoad;
 
         public event UnityAction OnStartedLoad;
         public event UnityAction OnFinishedLoad;
@@ -23,24 +18,24 @@ namespace StudioScor.Utilities
 
         private void Start()
         {
-            _Scene.OnStarted += Scene_OnStarted;
-            _Scene.OnFinished += Scene_OnFinished;
+            scene.OnStarted += Scene_OnStarted;
+            scene.OnFinished += Scene_OnFinished;
 
-            if (_IsAutoPlaying)
+            if (isAutoPlaying)
                 LoadScene();
         }
 
         private void OnDestroy()
         {
-            _Scene.OnStarted -= Scene_OnStarted;
-            _Scene.OnFinished -= Scene_OnFinished;
+            scene.OnStarted -= Scene_OnStarted;
+            scene.OnFinished -= Scene_OnFinished;
         }
 
         public void LoadScene()
         {
             Log("Started Load Scene");
 
-            _Scene.LoadScene();
+            scene.LoadScene();
         }
 
         private void Scene_OnStarted(SceneLoader scene)
@@ -57,7 +52,7 @@ namespace StudioScor.Utilities
         {
             Log("Un Load Scene");
 
-            _Scene.UnLoadScene();
+            scene.UnLoadScene();
         }
 
         private void SimpleSceneChanger_Completed(AsyncOperation async)
@@ -71,7 +66,7 @@ namespace StudioScor.Utilities
         {
             Log("On Finished Load Scene");
 
-            _OnFinishedLoad?.Invoke();
+            onFinishedLoad?.Invoke();
             OnFinishedLoad?.Invoke();
         }
 
@@ -79,7 +74,7 @@ namespace StudioScor.Utilities
         {
             Log("On Started Load Scene");
 
-            _OnStartedLoad?.Invoke();
+            onStartedLoad?.Invoke();
             OnStartedLoad?.Invoke();
         }
     }

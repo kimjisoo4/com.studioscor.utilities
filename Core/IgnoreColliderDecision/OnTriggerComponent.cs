@@ -2,26 +2,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using UnityEngine.Events;
-using System.Collections;
-using System.Linq;
 
 namespace StudioScor.Utilities
 {
+
     public class OnTriggerComponent : BaseMonoBehaviour
     {
-        [Header(" [ Tags ] ")]
-        [SerializeField][STagSelector] private string[] tags;
-        [SerializeField] private bool isIgnoreTag = false;
-
-        [Header(" [ Layers ] ")]
-        [SerializeField] private LayerMask layers;
-        [SerializeField] private bool isIgnoreLayer = true;
+        [Header(" [ On Trigger Component ] ")]
+        [SerializeField] private IgnoreColliderDecision[] ignoreDecisions;
 
         [Header(" [ Trigger Enter & Exit ] ")]
         [SerializeField] private bool useTriggerEnter = true;
         [SerializeField] private bool isOnceEnter = false;
         [SerializeField] private bool useTriggerExit = false;
         [SerializeField] private bool isOnceExit = false;
+
         [Header(" [ Trigger Stay ]")]
         [SerializeField] private bool useTriggerStay = false;
 
@@ -33,8 +28,10 @@ namespace StudioScor.Utilities
 
         private bool wasEnterTrigger;
         private bool wasExitTrigger;
-        private Coroutine updateHandler;
+        private bool shouldStayTrigger;
         private List<Collider> stayedColliders;
+
+        public List<Collider> StayedColliders => stayedColliders;
 
         #region EDITOR ONLY
         [Conditional("UNITY_EDITOR")]
@@ -54,41 +51,39 @@ namespace StudioScor.Utilities
                 stayedColliders = new();
         }
 
-        private IEnumerator UpdateTrigger()
+        private void Update()
         {
-            while (useTriggerStay)
-            {
-                TriggerStay();
+            if (!useTriggerStay)
+                return;
 
-                yield return null;
+            if (!shouldStayTrigger)
+                return;
+
+            TriggerStay();
+
+            Callback_TriggerStay();
+        }
+
+        protected virtual bool CanTrigger(Collider other)
+        {
+            if (ignoreDecisions is null || ignoreDecisions.Length == 0)
+                return true;
+
+            foreach (var ignoreDecision in ignoreDecisions)
+            {
+                if (!ignoreDecision.Decision(other))
+                    return false;
             }
 
-            yield break;
+            return true;
         }
 
-        protected bool CheckIgnoreTag(Collider other)
-        {
-            if (tags.Contains(other.tag))
-                return !isIgnoreTag;
-            else
-                return isIgnoreTag;
-        }
-        protected bool CheckIgnoreLayer(Collider other)
-        {
-            if(other.gameObject.ContainLayer(layers))
-                return !isIgnoreLayer;
-            else 
-                return isIgnoreLayer;
-        }
         private void OnTriggerEnter(Collider other)
         {
             if ((!useTriggerEnter || (isOnceEnter && wasEnterTrigger)) && !useTriggerStay)
                 return;
             
-            if (!CheckIgnoreTag(other))
-                return;
-
-            if (!CheckIgnoreLayer(other))
+            if (!CanTrigger(other))
                 return;
 
             if (useTriggerEnter)
@@ -96,15 +91,15 @@ namespace StudioScor.Utilities
                 wasEnterTrigger = true;
 
                 TriggerEnter(other);
+
+                Callback_TriggerEnter(other);
             }
 
             if (useTriggerStay && !stayedColliders.Contains(other))
             {
                 stayedColliders.Add(other);
 
-                if (stayedColliders.Count == 1)
-                    updateHandler = StartCoroutine(UpdateTrigger());
-
+                shouldStayTrigger = true;
             }
 
             DrawSphere(other.bounds.center, Color.red);
@@ -115,10 +110,7 @@ namespace StudioScor.Utilities
             if ((!useTriggerExit || (isOnceExit && wasExitTrigger)) && !useTriggerStay)
                 return;
 
-            if (!CheckIgnoreTag(other))
-                return;
-
-            if (!CheckIgnoreLayer(other))
+            if (!CanTrigger(other))
                 return;
 
             if (useTriggerExit)
@@ -126,36 +118,50 @@ namespace StudioScor.Utilities
                 wasExitTrigger = true;
 
                 TriggerExit(other);
+
+                Callback_TriggerExit(other);
             }
 
             if (useTriggerStay && stayedColliders.Contains(other))
             {
                 stayedColliders.Remove(other);
 
-                if (updateHandler is not null)
-                {
-                    StopCoroutine(updateHandler);
-                    updateHandler = null;
-                }
+                shouldStayTrigger = stayedColliders.Count > 0;
             }
 
             DrawSphere(other.bounds.center, Color.red);
         }
 
+        
+        protected virtual void TriggerEnter(Collider other)
+        {
+
+        }
+        protected virtual void TriggerExit(Collider other)
+        {
+
+        }
+        protected virtual void TriggerStay()
+        {
+
+        }
+        
+
+
         #region Callback
-        private void TriggerEnter(Collider other)
+        private void Callback_TriggerEnter(Collider other)
         {
             Log($"On Trigger Enter - [ {other.name} ]");
 
             OnEnteredTrigger?.Invoke(other);
         }
-        private void TriggerExit(Collider other)
+        private void Callback_TriggerExit(Collider other)
         {
             Log($"On Trigger Exit - [ {other.name} ]");
 
             OnExitedTrigger?.Invoke(other);
         }
-        private void TriggerStay()
+        private void Callback_TriggerStay()
         {
             if (stayedColliders.Count <= 0)
                 return;
@@ -164,6 +170,7 @@ namespace StudioScor.Utilities
 
             OnStayedTrigger?.Invoke(stayedColliders);
         }
+
         #endregion
     }
 }

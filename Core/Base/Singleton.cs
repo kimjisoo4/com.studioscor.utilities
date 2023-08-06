@@ -6,38 +6,40 @@ namespace StudioScor.Utilities
     public class Singleton<T> : BaseMonoBehaviour where T : Singleton<T>
 	{
         [Header(" [ Singleton ] ")]
-		[SerializeField] private bool _UseDontDestroy = false;
+		[SerializeField] private bool useDontDestroy = false;
 
-		private static T _Instance = default;
+		private static T instance = default;
 		public static T Instance
 		{
 			get
 			{
-				if (!_Instance)
+				if (!instance)
 				{
-					_Instance = FindObjectOfType<T>();
+					instance = FindObjectOfType<T>();
 
-					if (_Instance)
-						_Instance.Initialization();
+					if (instance)
+						instance.Initialization();
 					else
                     {
-						GameObject gameObject = new GameObject(typeof(T).Name, typeof(T));
+						GameObject gameObject = new GameObject(typeof(T).Name);
+
+						instance = gameObject.AddComponent<T>();
                     }
 				}
 
-				return _Instance;
+				return instance;
 			}
 		}
 
         private void Awake()
         {
-            if (!_Instance)
+            if (!instance)
             {
 				Initialization();
 			}
-            else if(_Instance != this)
+            else if(instance != this)
             {
-				Log("Initialization - Destory");
+				Log("Initialization - Destory", false, SUtility.NAME_COLOR_RED);
 
 				Destroy(gameObject);
             }
@@ -45,19 +47,20 @@ namespace StudioScor.Utilities
 
 		private void Initialization()
         {
-			Log("Initialization");
+			Log("Initialization", false, SUtility.NAME_COLOR_GREEN);
 
-			if (_UseDontDestroy)
+			if (useDontDestroy)
             {
-				Log("Don't Destroy On Load");
+				Log("Don't Destroy On Load", false, SUtility.NAME_COLOR_GREEN);
 
 				DontDestroyOnLoad(gameObject);
 			}
 				
-			_Instance = GetComponent<T>();
+			instance = GetComponent<T>();
 
-			_Instance.Setup();
+			instance.Setup();
 		}
+
 		protected virtual void Setup() 
 		{
 			Log("Setup");

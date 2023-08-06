@@ -1,17 +1,10 @@
 ﻿using UnityEngine;
 using System.Linq;
-using System;
 using System.Collections.Generic;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 
 namespace StudioScor.Utilities
 {
-
-
     public class RandomData<T> : BaseScriptableObject, ISerializationCallbackReceiver
     {
         [System.Serializable]
@@ -35,14 +28,14 @@ namespace StudioScor.Utilities
             }
         }
 
-        [SerializeField] private FRandomData[] _InitialData;
-        [SerializeField] private List<FRandomData> _RuntimeData;
+        [SerializeField] private FRandomData[] initialData;
+        [SerializeField][SReadOnly] private List<FRandomData> runtimeData;
         
-        private float _InitialMaxChance = 0f;
-        private float _RuntimeMaxChance = 0f;
+        private float initialMaxChance = 0f;
+        private float runtimeMaxChance = 0f;
 
-        public int RemainCount => _RuntimeData.Count;
-        public bool HasData => _RuntimeData.Count > 0;
+        public int RemainCount => runtimeData.Count;
+        public bool HasData => runtimeData.Count > 0;
 
 
         public void OnBeforeSerialize()
@@ -60,27 +53,27 @@ namespace StudioScor.Utilities
         {
             float chance = 0f;
 
-            for (int i = 0; i < _InitialData.Length; i++)
+            for (int i = 0; i < initialData.Length; i++)
             {
-                var data = _InitialData[i];
+                var data = initialData[i];
 
                 data.MinRange = chance;
-                data.MaxRange = data.MinRange + _InitialData[i].Chance;
+                data.MaxRange = data.MinRange + initialData[i].Chance;
 
-                _InitialData[i] = data;
+                initialData[i] = data;
 
                 chance += data.Chance;
             }
 
-            _InitialMaxChance = chance;
+            initialMaxChance = chance;
 
-            for (int i = 0; i < _InitialData.Length; i++)
+            for (int i = 0; i < initialData.Length; i++)
             {
-                var data = _InitialData[i];
+                var data = initialData[i];
 
-                data.Percent = data.Chance.SafeDivide(_InitialMaxChance) * 100f;
+                data.Percent = data.Chance.SafeDivide(initialMaxChance) * 100f;
 
-                _InitialData[i] = data;
+                initialData[i] = data;
             }
         }
 
@@ -90,39 +83,39 @@ namespace StudioScor.Utilities
 
             float chance = 0f;
 
-            for (int i = 0; i < _RuntimeData.Count; i++)
+            for (int i = 0; i < runtimeData.Count; i++)
             {
-                var data = _RuntimeData[i];
+                var data = runtimeData[i];
 
                 data.MinRange = chance;
-                data.MaxRange = data.MinRange + _RuntimeData[i].Chance;
+                data.MaxRange = data.MinRange + runtimeData[i].Chance;
 
-                _RuntimeData[i] = data;
+                runtimeData[i] = data;
 
                 chance += data.Chance;
             }
 
-            _RuntimeMaxChance = chance;
+            runtimeMaxChance = chance;
 
-            for (int i = 0; i < _RuntimeData.Count; i++)
+            for (int i = 0; i < runtimeData.Count; i++)
             {
-                var data = _RuntimeData[i];
+                var data = runtimeData[i];
 
-                data.Percent = data.Chance.SafeDivide(_RuntimeMaxChance) * 100f;
+                data.Percent = data.Chance.SafeDivide(runtimeMaxChance) * 100f;
 
-                _RuntimeData[i] = data;
+                runtimeData[i] = data;
             }
         }
 
         protected override void OnReset()
         {
-            _RuntimeData = _InitialData.ToList();
-            _RuntimeMaxChance = _InitialMaxChance;
+            runtimeData = initialData.ToList();
+            runtimeMaxChance = initialMaxChance;
         }
 
         public void TryReturnData(T returnData)
         {
-            foreach (var data in _RuntimeData)
+            foreach (var data in runtimeData)
             {
                 if (data.Data.Equals(returnData))
                 {
@@ -131,11 +124,11 @@ namespace StudioScor.Utilities
             }
 
 
-            foreach (var data in _InitialData)
+            foreach (var data in initialData)
             {
                 if (data.Data.Equals(returnData))
                 {
-                    _RuntimeData.Add(data);
+                    runtimeData.Add(data);
 
                     UpdateRuntimeData();
 
@@ -149,11 +142,11 @@ namespace StudioScor.Utilities
             if (!HasData)
                 return;
 
-            for(int i = _RuntimeData.LastIndex(); i >= 0; i--)
+            for(int i = runtimeData.LastIndex(); i >= 0; i--)
             {
-                if (_RuntimeData[i].Data.Equals(removeData))
+                if (runtimeData[i].Data.Equals(removeData))
                 {
-                    _RuntimeData.RemoveAt(i);
+                    runtimeData.RemoveAt(i);
 
                     UpdateRuntimeData();
 
@@ -172,20 +165,20 @@ namespace StudioScor.Utilities
 
             if (HasData)
             {
-                float rand = UnityEngine.Random.Range(0f, _RuntimeMaxChance);
+                float rand = UnityEngine.Random.Range(0f, runtimeMaxChance);
                 Log($" Rand Value - {rand:N1} ");
 
-                for (int i = 0; i < _RuntimeData.Count; i++)
+                for (int i = 0; i < runtimeData.Count; i++)
                 {
-                    Log($" Check Data Chance Value - InRange [{_RuntimeData[i].Name}] ?");
+                    Log($" Check Data Chance Value - InRange [{runtimeData[i].Name}] ?");
 
-                    if (rand.InRange(_RuntimeData[i].MinRange, _RuntimeData[i].MaxRange, true, false))
+                    if (rand.InRange(runtimeData[i].MinRange, runtimeData[i].MaxRange, true, false))
                     {
-                        data = _RuntimeData[i].Data;
+                        data = runtimeData[i].Data;
 
                         hasData = true;
 
-                        Log($" Find Random Data - {_RuntimeData[i].Name} ");
+                        Log($" Find Random Data - {runtimeData[i].Name} ");
                         break;
                     }
                 }

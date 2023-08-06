@@ -7,18 +7,18 @@ namespace StudioScor.Utilities
     public class MovarbleCast : BaseMonoBehaviour
     {
         [Header(" [ Movarble ] ")]
-        [SerializeField] private float _Radius;
-        [SerializeField] private LayerMask _LayerMask;
+        [SerializeField] private float radius;
+        [SerializeField] private LayerMask layerMask;
         [Space(5f)]
-        [SerializeField] private bool _AutoPlaying = true;
+        [SerializeField] private bool isAutoPlaying = true;
         [Space(5f)]
         public UnityEvent<Vector3> OnMovedHit;
 
-        private bool _IsPlaying;
-        private Vector3 _PrevPosition;
-        private List<RaycastHit> _RaycastHits;
-        private List<Collider> _ColliderHits;
-        private List<Transform> _IgnoreTransform;
+        private bool isPlaying;
+        private Vector3 prevPosition;
+        private List<RaycastHit> raycastHits;
+        private List<Collider> colliderHits;
+        private List<Transform> ignoreTransform;
 
         private void OnDrawGizmos()
         {
@@ -26,7 +26,7 @@ namespace StudioScor.Utilities
                 return;
 
             Gizmos.color = new Color(1, 0, 0, 0.3f);
-            Gizmos.DrawSphere(transform.position, _Radius);
+            Gizmos.DrawSphere(transform.position, radius);
         }
         private void OnDrawGizmosSelected()
         {
@@ -34,80 +34,80 @@ namespace StudioScor.Utilities
                 return;
 
             Gizmos.color = new Color(1, 0, 0, 0.8f);
-            Gizmos.DrawSphere(transform.position, _Radius);
+            Gizmos.DrawSphere(transform.position, radius);
         }
 
         private void Awake()
         {
-            _IgnoreTransform = new();
-            _RaycastHits = new();
-            _ColliderHits = new();
+            ignoreTransform = new();
+            raycastHits = new();
+            colliderHits = new();
         }
 
         private void OnEnable()
         {
-            if (_AutoPlaying)
+            if (isAutoPlaying)
             {
                 OnMovableCast();
             }
         }
         private void OnDisable()
         {
-            if (_AutoPlaying)
+            if (isAutoPlaying)
             {
                 EndMovableCast();
             }
         }
         public void OnMovableCast()
         {
-            _IsPlaying = true;
+            isPlaying = true;
 
-            _IgnoreTransform.Add(transform);
+            ignoreTransform.Add(transform);
 
-            _PrevPosition = transform.position;
+            prevPosition = transform.position;
         }
         public void EndMovableCast()
         {
-            _IsPlaying = false;
+            isPlaying = false;
         }
         public void ResetMovarbleCast()
         {
-            _IgnoreTransform.Clear();
-            _IsPlaying = false;
+            ignoreTransform.Clear();
+            isPlaying = false;
         }
         public void AddIgnoreTransform(Transform transform)
         {
-            _IgnoreTransform.Add(transform);
+            ignoreTransform.Add(transform);
         }
 
         private void FixedUpdate()
         {
-            if (!_IsPlaying)
+            if (!isPlaying)
                 return;
 
             Vector3 position = transform.position;
 
-            if (_PrevPosition == transform.position)
+            if (prevPosition == transform.position)
             {
-                _ColliderHits.Clear();
+                colliderHits.Clear();
 
-                if (SUtility.Physics.DrawOverlapSphere(position, _Radius, _LayerMask, ref _ColliderHits, _IgnoreTransform, UseDebug))
+                if (SUtility.Physics.DrawOverlapSphere(position, radius, layerMask, ref colliderHits, ignoreTransform, UseDebug))
                 {
                     OnMoveHit(position);
                 }
             }
             else
             {
-                _RaycastHits.Clear();
+                raycastHits.Clear();
 
-                if (SUtility.Physics.DrawSphereCastAll(_PrevPosition, position, _Radius, _LayerMask, ref _RaycastHits, _IgnoreTransform, UseDebug))
+                if (SUtility.Physics.DrawSphereCastAll(prevPosition, position, radius, layerMask, ref raycastHits, ignoreTransform, UseDebug))
                 {
-                    OnMoveHit(_RaycastHits[0].point);
+                    OnMoveHit(raycastHits[0].point);
                 }
             }
 
 
-            _PrevPosition = position;
+            prevPosition = position;
         }
 
         private void OnMoveHit(Vector3 position)

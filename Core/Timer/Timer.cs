@@ -7,53 +7,53 @@ namespace StudioScor.Utilities
     {
 		public delegate void TimerHandler(Timer timer);
 
-		[SerializeField] private float _Duration;
+		[SerializeField] private float duration;
 		
-		private float _RemainTime;
-		private float _ElapsedTime;
-		private float _NormalizedTime;
+		private float remainTime;
+		private float elapsedTime;
+		private float normalizedTime;
 
-		private bool _IsPlaying;
-		private bool _IsFinished;
+		private bool isPlaying;
+		private bool isFinished;
 
 		public event TimerHandler OnStartedTimer;
 		public event TimerHandler OnFinishedTimer;
 		public event TimerHandler OnCanceledTimer;
 
-		public float Duration => _Duration;
-		public float RemainTime => _RemainTime;
-		public float ElapsedTime => _ElapsedTime;
-		public float NormalizedTime => _NormalizedTime;
-		public bool IsPlaying => _IsPlaying;
-		public bool IsStopped => !_IsPlaying;
-		public bool IsFinished => _IsFinished;
+		public float Duration => duration;
+		public float RemainTime => remainTime;
+		public float ElapsedTime => elapsedTime;
+		public float NormalizedTime => normalizedTime;
+		public bool IsPlaying => isPlaying;
+		public bool IsStopped => !isPlaying;
+		public bool IsFinished => isFinished;
 
 		public Timer()
         {
-			_Duration = 0.2f;
-			_RemainTime = _Duration;
-			_ElapsedTime = 0;
-			_IsPlaying = false;
-			_IsFinished = false;
+			duration = 0.2f;
+			remainTime = duration;
+			elapsedTime = 0;
+			isPlaying = false;
+			isFinished = false;
 		}
 
 		public Timer(float time, bool isPlaying = false)
         {
-			_Duration = time;
-			_RemainTime = _Duration;
-			_ElapsedTime = 0;
-			_IsPlaying = isPlaying;
-			_IsFinished = false;
+			duration = time;
+			remainTime = duration;
+			elapsedTime = 0;
+			this.isPlaying = isPlaying;
+			isFinished = false;
 		}
 		public void OnResetTimer()
         {
-			_RemainTime = _Duration;
-			_ElapsedTime = 0;
-			_IsFinished = false;
+			remainTime = duration;
+			elapsedTime = 0;
+			isFinished = false;
 		}
 		public void OnTimer(float duration)
         {
-			_Duration = duration;
+			this.duration = duration;
 
 			OnTimer();
         }
@@ -66,59 +66,59 @@ namespace StudioScor.Utilities
 
 			OnResetTimer();
 
-			_IsPlaying = true;
+			isPlaying = true;
 
 			OnStartedTimer?.Invoke(this);
 		}
 
 		public void SetDuration(float duration)
         {
-			_Duration = duration;
+			this.duration = duration;
         }
 		public void JumpTimer(float time)
         {
-			_RemainTime -= time;
-			_ElapsedTime = time;
+			remainTime -= time;
+			elapsedTime = time;
         }
 
 		public void OnFinisheTimer()
 		{
-			_IsPlaying = false;
-			_RemainTime = 0;
-			_ElapsedTime = _Duration;
-			_IsFinished = true;
-			_NormalizedTime = 1;
+			isPlaying = false;
+			remainTime = 0;
+			elapsedTime = duration;
+			isFinished = true;
+			normalizedTime = 1;
 
 			OnFinishedTimer?.Invoke(this);
 		}
 		private void OnCancelTimer()
         {
-			_IsPlaying = false;
-			_IsFinished = false;
+			isPlaying = false;
+			isFinished = false;
 
 			OnCanceledTimer?.Invoke(this);
 		}
 		public void OnPauseTimer()
         {
-			if (!_IsPlaying)
+			if (!isPlaying)
 				return;
 
-			_IsPlaying = false;
+			isPlaying = false;
         }
 		public void OnResumeTimer()
         {
-			if (_IsPlaying)
+			if (isPlaying)
 				return;
 
-			_IsPlaying = true;
+			isPlaying = true;
 		}
 
 		public void EndTimer()
         {
-			if (!_IsPlaying)
+			if (!isPlaying)
 				return;
 
-            if (_RemainTime <= 0f)
+            if (remainTime <= 0f)
             {
 				OnFinisheTimer();
 			}
@@ -130,20 +130,20 @@ namespace StudioScor.Utilities
 		
 		public void UpdateTimer(float deltaTime)
         {
-			if (_IsFinished || !_IsPlaying)
+			if (isFinished || !isPlaying)
 				return;
 
-			_RemainTime -= deltaTime;
-			_ElapsedTime = _Duration - _RemainTime;
+			remainTime -= deltaTime;
+			elapsedTime = duration - remainTime;
 
-            if (_RemainTime <= 0)
+            if (remainTime <= 0)
             {
 				OnFinisheTimer();
 
 				return;
 			}
 
-			_NormalizedTime = _ElapsedTime / _Duration;
+			normalizedTime = elapsedTime / duration;
         }
     }
 

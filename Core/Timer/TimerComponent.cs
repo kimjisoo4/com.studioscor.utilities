@@ -7,46 +7,36 @@ namespace StudioScor.Utilities
     public class TimerComponent : BaseMonoBehaviour
     {
         [Header("[ Timer Component ]")]
-		[SerializeField] private float _Duration = 1f;
-        [SerializeField] private EExitAction _ExitAction = EExitAction.Destroy;
+        [SerializeField] private Timer timer;
+        [SerializeField] private EExitAction exitAction = EExitAction.Destroy;
 
         [Header(" [ Play Speed ] ")]
-        [SerializeField] private float _PlaySpeed = 1f;
+        [SerializeField] private float playSpeed = 1f;
 
         [Header(" [ Auto Playing ] ")]
-        [SerializeField] private bool _AutoPlaying = true;
+        [SerializeField] private bool isAutoPlaying = true;
 
-		[SerializeField] private UnityEvent _OnStartedTimer;
-		[SerializeField] private UnityEvent _OnFinishedTimer;
-		[SerializeField] private UnityEvent _OnCanceledTimer;
+        [Header(" [ Events ] ")]
+		[SerializeField] private UnityEvent onStartedTimer;
+		[SerializeField] private UnityEvent onFinishedTimer;
+		[SerializeField] private UnityEvent onCanceledTimer;
 
-        public event UnityAction OnStartedTimer;
-        public event UnityAction OnFinishedTimer;
-        public event UnityAction OnCanceledTimer;
-
-        private readonly Timer _Timer = new();
-
-        public float Duration => _Duration;
-        public float NormalizedTime => _Timer.NormalizedTime;
-        public float RemainTime => _Timer.RemainTime;
-        public float ElaspedTime => _Timer.ElapsedTime;
-        public bool IsFinished => _Timer.IsFinished;
-        public bool IsPlaying => _Timer.IsPlaying;
-        public bool IsStopped => _Timer.IsStopped;
+        public Timer Timer => timer;
 
 
         private void Awake()
         {
-            _Timer.OnStartedTimer += Timer_OnStartedTimer;
-            _Timer.OnFinishedTimer += Timer_OnFinishedTimer;
-            _Timer.OnCanceledTimer += Timer_OnCanceledTimer;
+            timer.OnStartedTimer += Timer_OnStartedTimer;
+            timer.OnFinishedTimer += Timer_OnFinishedTimer;
+            timer.OnCanceledTimer += Timer_OnCanceledTimer;
         }
 
         private void OnEnable()
         {
-            if (_AutoPlaying)
+            if (isAutoPlaying)
                 OnTimer();
         }
+
         private void OnDisable()
         {
             EndTimer();
@@ -54,73 +44,73 @@ namespace StudioScor.Utilities
 
         private void Update()
         {
-            float deltaTime = Time.deltaTime * _PlaySpeed;
+            float deltaTime = Time.deltaTime * playSpeed;
 
             UpdateTimer(deltaTime);
         }
 
         public void SetPlaySpeed(float newSpeed)
         {
-            _PlaySpeed = newSpeed;
+            playSpeed = newSpeed;
         }
 
         public void SetTimer(float duration)
         {
-            _Duration = duration;
+            timer.SetDuration(duration);
         }
 
         public void OnTimer()
         {
-            Log($"On Timer - [ Duration : {_Duration:N2} ] ");
+            Log($"On Timer - [ Duration : {timer.Duration:N2} ] ");
             
-            _Timer.OnTimer(_Duration);
+            timer.OnTimer(timer.Duration);
         }
         public void EndTimer()
         {
-            Log($"End Timer - [ {(_Timer.IsFinished ? "Finished" : "Canceled")} ] ");
+            Log($"End Timer - [ {(timer.IsFinished ? "Finished" : "Canceled")} ] ");
 
-            _Timer.EndTimer();
+            timer.EndTimer();
         }
         public void OnPauseTimer()
         {
-            Log($"On Pause Timer - [ RemainTime : {_Timer.RemainTime:N2} ] ");
+            Log($"On Pause Timer - [ RemainTime : {timer.RemainTime:N2} ] ");
 
-            _Timer.OnPauseTimer();
+            timer.OnPauseTimer();
         }
         public void OnResumeTimer()
         {
-            Log($"On Resume Timer - [ RemainTime : {_Timer.RemainTime:N2} ] ");
+            Log($"On Resume Timer - [ RemainTime : {timer.RemainTime:N2} ] ");
 
-            _Timer.OnResumeTimer();
+            timer.OnResumeTimer();
         }
 
         public void UpdateTimer(float deltaTime)
         {
-            _Timer.UpdateTimer(deltaTime);
+            timer.UpdateTimer(deltaTime);
         }
-        private void Timer_OnCanceledTimer(Timer timer)
-        {
-            Log(" On Canceled Timer ");
 
-            _OnCanceledTimer?.Invoke();
-            OnCanceledTimer?.Invoke();
-        }
         private void Timer_OnStartedTimer(Timer timer)
         {
             Log(" On Started Timer ");
 
-            _OnStartedTimer?.Invoke();
-            OnStartedTimer?.Invoke();
+            onStartedTimer?.Invoke();
         }
+
+        private void Timer_OnCanceledTimer(Timer timer)
+        {
+            Log(" On Canceled Timer ");
+
+            onCanceledTimer?.Invoke();
+        }
+        
 
         private void Timer_OnFinishedTimer(Timer timer)
         {
-            Log($" On Finished Timer - [ ExieAction : {_ExitAction} ]");
+            Log($" On Finished Timer - [ ExieAction : {exitAction} ]");
 
-            _OnFinishedTimer?.Invoke();
-            OnFinishedTimer?.Invoke();
+            onFinishedTimer?.Invoke();
 
-            switch (_ExitAction)
+            switch (exitAction)
             {
                 case EExitAction.None:
                     break;

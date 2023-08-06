@@ -8,9 +8,10 @@ namespace StudioScor.Utilities
         public abstract void LoadScene();
         public abstract void UnLoadScene();
 
+        public abstract Scene GetScene { get; }
+
         public event UnityAction<SceneLoader> OnStarted;
         public event UnityAction<SceneLoader> OnFinished;
-        public abstract Scene GetScene { get; }
 
         protected void Callback_OnStarted()
         {

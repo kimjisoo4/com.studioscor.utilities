@@ -10,16 +10,16 @@ namespace StudioScor.Utilities
     public class LoadingScene : SceneLoader
     {
         [Header(" [ Loading Scene ] ")]
-        [SerializeField] private SceneData _LoadingScene;
+        [SerializeField] private SceneData loadingScene;
 
-        public override Scene GetScene => _LoadingScene.GetScene();
+        public override Scene GetScene => loadingScene.GetScene();
 
-        private int _Count;
+        private int count;
 
         private void OnValidate()
         {
 #if UNITY_EDITOR
-            _LoadingScene.OnValidate();
+            loadingScene.OnValidate();
 #endif
         }
 
@@ -27,7 +27,7 @@ namespace StudioScor.Utilities
         {
             Callback_OnStarted();
 
-            var async = _LoadingScene.LoadScene(LoadSceneMode.Additive);
+            var async = loadingScene.LoadScene(LoadSceneMode.Additive);
 
             if (async is null)
             {
@@ -46,7 +46,7 @@ namespace StudioScor.Utilities
 
         public override void UnLoadScene()
         {
-            _LoadingScene.UnLoadScene();
+            loadingScene.UnLoadScene();
         }
 
         private void LoadingScene_OnFinished(SceneLoader scene)
@@ -56,13 +56,13 @@ namespace StudioScor.Utilities
 
         private void UnLoadOtherScenes()
         {
-            var scene = _LoadingScene.GetScene();
+            var scene = loadingScene.GetScene();
 
             SceneManager.SetActiveScene(scene);
 
             OnUnLoadOtherScenes();
 
-            if (_Count == 0)
+            if (count == 0)
                 OnFinishedUnloadOtherScene();
         }
 
@@ -74,7 +74,7 @@ namespace StudioScor.Utilities
             Log($" Current Active Scene - {activeScene.name}");
             Log($" Current Scene Count - {count}");
 
-            _Count = count - 1;
+            this.count = count - 1;
 
             for (int i = count - 1; i >= 0; i--)
             {
@@ -88,7 +88,7 @@ namespace StudioScor.Utilities
 
                     if(async is null)
                     {
-                        _Count--;
+                        this.count--;
                     }
                     else
                     {
@@ -104,9 +104,9 @@ namespace StudioScor.Utilities
 
         private void Async_UnLoadedOther_Completed(AsyncOperation async)
         {
-            _Count--;
+            count--;
 
-            if (_Count == 0)
+            if (count == 0)
                 OnFinishedUnloadOtherScene();
         }
 

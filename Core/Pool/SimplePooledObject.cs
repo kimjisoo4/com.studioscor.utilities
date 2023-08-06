@@ -9,18 +9,18 @@ namespace StudioScor.Utilities
     public class SimplePooledObject : BaseMonoBehaviour
     {
         [Header(" [ Simple Pooled Object ] ")]
-        [SerializeField] private bool _ReleasedWhenDisable = true;
+        [SerializeField] private bool releasedWhenDisable = true;
         [Space(5f)]
-        [SerializeField] private UnityEvent _OnCreated;
-        [SerializeField] private UnityEvent _OnReleased;
+        [SerializeField] private UnityEvent onCreated;
+        [SerializeField] private UnityEvent onReleased;
 
-        public UnityAction OnCreated;
-        public UnityAction OnReleased;
+        private SimplePool pool;
+        private bool isActivate = false;
 
-        private SimplePool _Pool;
+        public bool IsActivate => isActivate;
 
-        private bool _IsActivate = false;
-
+        public event UnityAction OnCreated;
+        public event UnityAction OnReleased;
         
         private void OnDisable()
         {
@@ -28,9 +28,9 @@ namespace StudioScor.Utilities
             if (!gameObject.scene.isLoaded)
                 return;
 #endif
-            if (_ReleasedWhenDisable)
+            if (releasedWhenDisable)
             {
-                if (transform.parent != _Pool.Container)
+                if (transform.parent != pool.Container)
                 {
                     if (gameObject.activeSelf)
                         gameObject.SetActive(false);
@@ -48,7 +48,7 @@ namespace StudioScor.Utilities
 
             if (poolContainer is not null)
             {
-                _Pool = poolContainer;
+                pool = poolContainer;
 
                 Callback_OnCreated();
             }
@@ -62,7 +62,7 @@ namespace StudioScor.Utilities
 
         public void Activate()
         {
-            _IsActivate = true;
+            isActivate = true;
         }
 
         private IEnumerator DeleayedRelease()
@@ -74,16 +74,16 @@ namespace StudioScor.Utilities
 
         public void Release()
         {
-            if (!_IsActivate)
+            if (!isActivate)
                 return;
 
-            _IsActivate = false;
+            isActivate = false;
             
             Log(" Release ");
 
-            if (_Pool is not null)
+            if (pool is not null)
             {
-                _Pool.Release(this);
+                pool.Release(this);
 
                 Callback_OnReleased();
             }
@@ -95,7 +95,7 @@ namespace StudioScor.Utilities
 
         public void ResetParent()
         {
-            SetParent(_Pool.Container);
+            SetParent(pool.Container);
         }
 
         public virtual void SetParent(Transform parent, bool worldPositionStay = true)
@@ -119,14 +119,14 @@ namespace StudioScor.Utilities
             transform.SetLocalPositionAndRotation(localPosition, localRotation);
         }
 
-        private void Callback_OnCreated()
+        protected virtual void Callback_OnCreated()
         {
-            _OnCreated?.Invoke();
+            onCreated?.Invoke();
             OnCreated?.Invoke();
         }
-        private void Callback_OnReleased()
+        protected virtual void Callback_OnReleased()
         {
-            _OnReleased?.Invoke();
+            onReleased?.Invoke();
             OnReleased?.Invoke();
         }
     }

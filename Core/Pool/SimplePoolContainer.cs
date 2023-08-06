@@ -18,7 +18,26 @@ namespace StudioScor.Utilities
         private GameObject instContainer;
         private SimplePool simplePool;
 
-        public void SetContainer(GameObject newContainer)
+        public void Initialization(Transform newContainer = null)
+        {
+            if (instContainer)
+                return;
+
+            if(newContainer)
+            {
+                SetContainer(newContainer.gameObject);
+            }
+            else if(container)
+            {
+                SetContainer(Instantiate(container));
+            }
+            else
+            {
+                SetContainer(new GameObject(name));
+            }
+        }
+
+        private void SetContainer(GameObject newContainer)
         {
             instContainer = newContainer;
 

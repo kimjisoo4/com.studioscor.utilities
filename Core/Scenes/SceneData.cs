@@ -16,88 +16,88 @@ namespace StudioScor.Utilities
         }
 
         [Header(" [ Simple Scene Changer ]")]
-        [SerializeField] private ESceneInputFieldType _Type = ESceneInputFieldType.Target;
+        [SerializeField] private ESceneInputFieldType sceneFiledType = ESceneInputFieldType.Target;
 
-        [SerializeField, SEnumCondition(nameof(_Type), (int)ESceneInputFieldType.Name)] private string _Name;
-        [SerializeField, SEnumCondition(nameof(_Type), (int)ESceneInputFieldType.Number)] private int _Number;
+        [SerializeField, SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Name)] private string sceneName;
+        [SerializeField, SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Number)] private int sceneNumber;
 
 #if UNITY_EDITOR
-        [SEnumCondition(nameof(_Type), (int)ESceneInputFieldType.Target)] public Object Target;
+        [SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Target)] public Object Target;
 #endif
 
-        [SerializeField][SEnumCondition(nameof(_Type), (int)ESceneInputFieldType.Target)] private string _TargetName;
+        [SerializeField][SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Target)] private string targetSceneName;
 
 
         [Conditional("UNITY_EDITOR")]
         public void OnValidate()
         {
 #if UNITY_EDITOR
-            if (_Type.Equals(ESceneInputFieldType.Target))
+            if (sceneFiledType.Equals(ESceneInputFieldType.Target))
             {
-                if (Target && _TargetName != Target.name)
-                    _TargetName = Target.name;
+                if (Target && targetSceneName != Target.name)
+                    targetSceneName = Target.name;
             }
 #endif
         }
 
         public Scene GetScene()
         {
-            switch (_Type)
+            switch (sceneFiledType)
             {
                 case ESceneInputFieldType.Name:
-                    return SceneManager.GetSceneByName(_Name);
+                    return SceneManager.GetSceneByName(sceneName);
                 case ESceneInputFieldType.Number:
-                    return SceneManager.GetSceneByBuildIndex(_Number);
+                    return SceneManager.GetSceneByBuildIndex(sceneNumber);
                 case ESceneInputFieldType.Target:
-                    return SceneManager.GetSceneByName(_TargetName);
+                    return SceneManager.GetSceneByName(targetSceneName);
                 default:
                     return default;
             }
         }
         public AsyncOperation LoadScene(LoadSceneMode mode = LoadSceneMode.Single)
         {
-            switch (_Type)
+            switch (sceneFiledType)
             {
                 case ESceneInputFieldType.Name:
-                    if (SceneManager.GetSceneByName(_Name).isLoaded)
+                    if (SceneManager.GetSceneByName(sceneName).isLoaded)
                         return null;
 
-                    return SceneManager.LoadSceneAsync(_Name, mode);
+                    return SceneManager.LoadSceneAsync(sceneName, mode);
                 case ESceneInputFieldType.Number:
-                    if (SceneManager.GetSceneByBuildIndex(_Number).isLoaded)
+                    if (SceneManager.GetSceneByBuildIndex(sceneNumber).isLoaded)
                         return null;
 
-                    return SceneManager.LoadSceneAsync(_Number, mode);
+                    return SceneManager.LoadSceneAsync(sceneNumber, mode);
                 case ESceneInputFieldType.Target:
-                    if (SceneManager.GetSceneByName(_TargetName).isLoaded)
+                    if (SceneManager.GetSceneByName(targetSceneName).isLoaded)
                         return null;
 
-                    return SceneManager.LoadSceneAsync(_TargetName, mode);
+                    return SceneManager.LoadSceneAsync(targetSceneName, mode);
                 default:
                     return default;
             }
         }
         public AsyncOperation UnLoadScene(UnloadSceneOptions options = UnloadSceneOptions.UnloadAllEmbeddedSceneObjects)
         {
-            switch (_Type)
+            switch (sceneFiledType)
             {
                 case ESceneInputFieldType.Name:
-                    if (!SceneManager.GetSceneByName(_Name).isLoaded)
+                    if (!SceneManager.GetSceneByName(sceneName).isLoaded)
                         return null;
 
-                    return SceneManager.UnloadSceneAsync(_Name, options);
+                    return SceneManager.UnloadSceneAsync(sceneName, options);
 
                 case ESceneInputFieldType.Number:
-                    if (!SceneManager.GetSceneByBuildIndex(_Number).isLoaded)
+                    if (!SceneManager.GetSceneByBuildIndex(sceneNumber).isLoaded)
                         return null;
 
-                    return SceneManager.UnloadSceneAsync(_Number, options);
+                    return SceneManager.UnloadSceneAsync(sceneNumber, options);
 
                 case ESceneInputFieldType.Target:
-                    if (!SceneManager.GetSceneByName(_TargetName).isLoaded)
+                    if (!SceneManager.GetSceneByName(targetSceneName).isLoaded)
                         return null;
 
-                    return SceneManager.UnloadSceneAsync(_TargetName, options);
+                    return SceneManager.UnloadSceneAsync(targetSceneName, options);
 
                 default:
                     return default;

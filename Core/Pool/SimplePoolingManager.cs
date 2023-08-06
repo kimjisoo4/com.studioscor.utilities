@@ -9,36 +9,39 @@ namespace StudioScor.Utilities
     {
         public SimplePooledObject PooledObject;
         public Transform Container;
+        public int StartSize;
+        public int Capacity;
         public int MaxSize;
 
-        public FPooledObject(SimplePooledObject pooledObject = null, Transform container = null, int maxSize = 5)
+        public FPooledObject(SimplePooledObject pooledObject = null, Transform container = null,int startSize = 5, int capacity = 10, int maxSize = 10)
         {
             PooledObject = pooledObject;
             Container = container;
+            StartSize = startSize;
+            Capacity = capacity;
             MaxSize = maxSize;
         }
     }
     
     public class SimplePoolingManager : Singleton<SimplePoolingManager>
     {
-        [SerializeField] private List<FPooledObject> _PooledObjects;
-        private Dictionary<SimplePooledObject, SimplePool> _Pools;
+        [Header(" Simple Pooling Manager ")]
+        [SerializeField] private List<FPooledObject> pooledObjects;
+        private readonly Dictionary<SimplePooledObject, SimplePool> pools = new();
 
         protected override void Setup()
         {
             base.Setup();
 
-            _Pools = new();
-
-            foreach (var pooledObject in _PooledObjects)
+            foreach (var pooledObject in pooledObjects)
             {
-                Add(pooledObject.PooledObject, pooledObject.Container, pooledObject.MaxSize);
+                Add(pooledObject.PooledObject, pooledObject.Container, pooledObject.StartSize, pooledObject.Capacity, pooledObject.MaxSize);
             }
         }
 
         public bool HasPool(SimplePooledObject pooledObject)
         {
-            return _Pools.ContainsKey(pooledObject);
+            return pools.ContainsKey(pooledObject);
         }
 
         public SimplePooledObject Get(SimplePooledObject pooledObject)
@@ -46,7 +49,7 @@ namespace StudioScor.Utilities
             if (!pooledObject)
                 return null;
 
-            if (_Pools.TryGetValue(pooledObject, out SimplePool spawner))
+            if (pools.TryGetValue(pooledObject, out SimplePool spawner))
             {
                 Log(" Get - " + pooledObject);
 
@@ -59,18 +62,18 @@ namespace StudioScor.Utilities
                 return Get(pooledObject);
             }
         }
-        public void Add(SimplePooledObject pooledObject, Transform container = null, int size = 5)
+        public void Add(SimplePooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 10)
         {
-            if(_Pools.ContainsKey(pooledObject))
+            if(pools.ContainsKey(pooledObject))
             {
                 Log("item Contained [ " + pooledObject + " ]");
 
                 return;
             }
 
-            SimplePool pool = new(pooledObject, container, size);
+            SimplePool pool = new(pooledObject, container, startSize, capacity, maxSize);
 
-            _Pools.Add(pooledObject, pool);
+            pools.Add(pooledObject, pool);
 
             Log("Add New Pool [ " + pooledObject + " ]");
         }
