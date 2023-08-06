@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
-
 namespace StudioScor.Utilities
 {
     [RequireComponent(typeof(Rigidbody))]

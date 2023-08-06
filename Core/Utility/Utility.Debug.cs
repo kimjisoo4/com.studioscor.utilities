@@ -90,6 +90,279 @@ namespace StudioScor.Utilities
                 UnityEngine.Debug.LogError($"<color={color}>{message}</color>", context);
             }
 
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DrawRay(Vector3 start, Vector3 direction, Color color = default, float duration = 0f, bool depthTest = true)
+            {
+                color = (color == default) ? Color.white : color;
+
+                UnityEngine.Debug.DrawRay(start, direction, color, duration, depthTest);
+            }
+            [Conditional("UNITY_EDITOR")]
+            public static void DrawLine(Vector3 start, Vector3 end, Color color = default, float duration = 0f, bool depthTest = true)
+            {
+                color = (color == default) ? Color.white : color;
+
+                UnityEngine.Debug.DrawLine(start, end, color, duration, depthTest);
+            }
+
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugPoint(Vector3 position, float scale = 1.0f, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                color = (color == default(Color)) ? Color.white : color;
+
+                
+                DrawRay(position + (Vector3.up * (scale * 0.5f)), -Vector3.up * scale, color, duration, depthTest);
+                
+                DrawRay(position + (Vector3.right * (scale * 0.5f)), -Vector3.right * scale, color, duration, depthTest);
+                
+                DrawRay(position + (Vector3.forward * (scale * 0.5f)), -Vector3.forward * scale, color, duration, depthTest);
+            }
+
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugBounds(Bounds bounds, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                Vector3 center = bounds.center;
+
+                float x = bounds.extents.x;
+                float y = bounds.extents.y;
+                float z = bounds.extents.z;
+
+                Vector3 ruf = center + new Vector3(x, y, z);
+                Vector3 rub = center + new Vector3(x, y, -z);
+                Vector3 luf = center + new Vector3(-x, y, z);
+                Vector3 lub = center + new Vector3(-x, y, -z);
+
+                Vector3 rdf = center + new Vector3(x, -y, z);
+                Vector3 rdb = center + new Vector3(x, -y, -z);
+                Vector3 lfd = center + new Vector3(-x, -y, z);
+                Vector3 lbd = center + new Vector3(-x, -y, -z);
+
+                DrawLine(ruf, luf, color, duration, depthTest);
+                DrawLine(ruf, rub, color, duration, depthTest);
+                DrawLine(luf, lub, color, duration, depthTest);
+                DrawLine(rub, lub, color, duration, depthTest);
+
+                DrawLine(ruf, rdf, color, duration, depthTest);
+                DrawLine(rub, rdb, color, duration, depthTest);
+                DrawLine(luf, lfd, color, duration, depthTest);
+                DrawLine(lub, lbd, color, duration, depthTest);
+
+                DrawLine(rdf, lfd, color, duration, depthTest);
+                DrawLine(rdf, rdb, color, duration, depthTest);
+                DrawLine(lfd, lbd, color, duration, depthTest);
+                DrawLine(lbd, rdb, color, duration, depthTest);
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugLocalCube(Transform transform, Vector3 size, Vector3 center = default, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                Vector3 lbb = transform.TransformPoint(center + ((-size) * 0.5f));
+                Vector3 rbb = transform.TransformPoint(center + (new Vector3(size.x, -size.y, -size.z) * 0.5f));
+
+                Vector3 lbf = transform.TransformPoint(center + (new Vector3(size.x, -size.y, size.z) * 0.5f));
+                Vector3 rbf = transform.TransformPoint(center + (new Vector3(-size.x, -size.y, size.z) * 0.5f));
+
+                Vector3 lub = transform.TransformPoint(center + (new Vector3(-size.x, size.y, -size.z) * 0.5f));
+                Vector3 rub = transform.TransformPoint(center + (new Vector3(size.x, size.y, -size.z) * 0.5f));
+
+                Vector3 luf = transform.TransformPoint(center + ((size) * 0.5f));
+                Vector3 ruf = transform.TransformPoint(center + (new Vector3(-size.x, size.y, size.z) * 0.5f));
+
+                DrawLine(lbb, rbb, color, duration, depthTest);
+                DrawLine(rbb, lbf, color, duration, depthTest);
+                DrawLine(lbf, rbf, color, duration, depthTest);
+                DrawLine(rbf, lbb, color, duration, depthTest);
+
+                DrawLine(lub, rub, color, duration, depthTest);
+                DrawLine(rub, luf, color, duration, depthTest);
+                DrawLine(luf, ruf, color, duration, depthTest);
+                DrawLine(ruf, lub, color, duration, depthTest);
+
+                DrawLine(lbb, lub, color, duration, depthTest);
+                DrawLine(rbb, rub, color, duration, depthTest);
+                DrawLine(lbf, luf, color, duration, depthTest);
+                DrawLine(rbf, ruf, color, duration, depthTest);
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugCircle(Vector3 position, Vector3 upAxis, float radius, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                Vector3 up = upAxis.normalized * radius;
+                Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
+                Vector3 right = Vector3.Cross(up, forward).normalized * radius;
+
+                Matrix4x4 matrix = new Matrix4x4();
+
+                matrix[0] = right.x;
+                matrix[1] = right.y;
+                matrix[2] = right.z;
+
+                matrix[4] = up.x;
+                matrix[5] = up.y;
+                matrix[6] = up.z;
+
+                matrix[8] = forward.x;
+                matrix[9] = forward.y;
+                matrix[10] = forward.z;
+
+                Vector3 lastPoint = position + matrix.MultiplyPoint3x4(new Vector3(Mathf.Cos(0), 0, Mathf.Sin(0)));
+                Vector3 nextPoint = Vector3.zero;
+
+                color = (color == default) ? Color.white : color;
+
+                for (var i = 0; i < 91; i++)
+                {
+                    nextPoint.x = Mathf.Cos((i * 4) * Mathf.Deg2Rad);
+                    nextPoint.z = Mathf.Sin((i * 4) * Mathf.Deg2Rad);
+                    nextPoint.y = 0;
+
+                    nextPoint = position + matrix.MultiplyPoint3x4(nextPoint);
+
+                    DrawLine(lastPoint, nextPoint, color, duration, depthTest);
+                    lastPoint = nextPoint;
+                }
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugWireSphere(Vector3 position, float radius = 1.0f, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                float angle = 10.0f;
+
+                Vector3 x = new Vector3(position.x, position.y + radius * Mathf.Sin(0), position.z + radius * Mathf.Cos(0));
+                Vector3 y = new Vector3(position.x + radius * Mathf.Cos(0), position.y, position.z + radius * Mathf.Sin(0));
+                Vector3 z = new Vector3(position.x + radius * Mathf.Cos(0), position.y + radius * Mathf.Sin(0), position.z);
+
+                Vector3 newX;
+                Vector3 newY;
+                Vector3 newZ;
+
+                for (int i = 1; i < 37; i++)
+                {
+
+                    newX = new Vector3(position.x, position.y + radius * Mathf.Sin(angle * i * Mathf.Deg2Rad), position.z + radius * Mathf.Cos(angle * i * Mathf.Deg2Rad));
+                    newY = new Vector3(position.x + radius * Mathf.Cos(angle * i * Mathf.Deg2Rad), position.y, position.z + radius * Mathf.Sin(angle * i * Mathf.Deg2Rad));
+                    newZ = new Vector3(position.x + radius * Mathf.Cos(angle * i * Mathf.Deg2Rad), position.y + radius * Mathf.Sin(angle * i * Mathf.Deg2Rad), position.z);
+
+                    DrawLine(x, newX, color, duration, depthTest);
+                    DrawLine(y, newY, color, duration, depthTest);
+                    DrawLine(z, newZ, color, duration, depthTest);
+
+                    x = newX;
+                    y = newY;
+                    z = newZ;
+                }
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugCylinder(Vector3 start, Vector3 end, float radius, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                Vector3 up = (end - start).normalized * radius;
+                Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
+                Vector3 right = Vector3.Cross(up, forward).normalized * radius;
+
+                //Radial circles
+                DebugCircle(start, up, radius, color, duration, depthTest);
+                DebugCircle(end, -up, radius, color, duration, depthTest);
+                DebugCircle((start + end) * 0.5f, up, radius, color, duration, depthTest);
+
+                //Side lines
+                DrawLine(start + right, end + right, color, duration, depthTest);
+                DrawLine(start - right, end - right, color, duration, depthTest);
+
+                DrawLine(start + forward, end + forward, color, duration, depthTest);
+                DrawLine(start - forward, end - forward, color, duration, depthTest);
+
+                //Start endcap
+                DrawLine(start - right, start + right, color, duration, depthTest);
+                DrawLine(start - forward, start + forward, color, duration, depthTest);
+
+                //End endcap
+                DrawLine(end - right, end + right, color, duration, depthTest);
+                DrawLine(end - forward, end + forward, color, duration, depthTest);
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugCone(Vector3 position, Vector3 direction, float angle, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                float length = direction.magnitude;
+
+                Vector3 forward = direction;
+                Vector3 up = Vector3.Slerp(forward, -forward, 0.5f);
+                Vector3 right = Vector3.Cross(forward, up).normalized * length;
+
+                direction = direction.normalized;
+
+                Vector3 slerpedVector = Vector3.Slerp(forward, up, angle / 90.0f);
+
+                float dist;
+                var farPlane = new Plane(-direction, position + forward);
+                var distRay = new Ray(position, slerpedVector);
+
+                farPlane.Raycast(distRay, out dist);
+
+                DrawRay(position, slerpedVector.normalized * dist, color);
+                DrawRay(position, Vector3.Slerp(forward, -up, angle / 90.0f).normalized * dist, color, duration, depthTest);
+                DrawRay(position, Vector3.Slerp(forward, right, angle / 90.0f).normalized * dist, color, duration, depthTest);
+                DrawRay(position, Vector3.Slerp(forward, -right, angle / 90.0f).normalized * dist, color, duration, depthTest);
+
+                DebugCircle(position + forward, direction,(forward - (slerpedVector.normalized * dist)).magnitude, color, duration, depthTest);
+                DebugCircle(position + (forward * 0.5f), direction, ((forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude, color, duration, depthTest);
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugArrow(Vector3 position, Vector3 direction, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                DrawRay(position, direction, color, duration, depthTest);
+                DebugCone(position + direction, -direction * 0.333f, 15, color, duration, depthTest);
+            }
+
+            [Conditional("UNITY_EDITOR")]
+            public static void DebugCapsule(Vector3 start, Vector3 end, float radius, Color color = default, float duration = 0, bool depthTest = true)
+            {
+                Vector3 up = (end - start).normalized * radius;
+                Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
+                Vector3 right = Vector3.Cross(up, forward).normalized * radius;
+
+                float height = (start - end).magnitude;
+                float sideLength = Mathf.Max(0, (height * 0.5f) - radius);
+                Vector3 middle = (end + start) * 0.5f;
+
+                start = middle + ((start - middle).normalized * sideLength);
+                end = middle + ((end - middle).normalized * sideLength);
+
+                //Radial circles
+                DebugCircle(start, up, radius, color, duration, depthTest);
+                DebugCircle(end, -up, radius, color,  duration, depthTest);
+
+                //Side lines
+                DrawLine(start + right, end + right, color, duration, depthTest);
+                DrawLine(start - right, end - right, color, duration, depthTest);
+
+                DrawLine(start + forward, end + forward, color, duration, depthTest);
+                DrawLine(start - forward, end - forward, color, duration, depthTest);
+
+                for (int i = 1; i < 26; i++)
+                {
+                    //Start endcap
+                    DrawLine(Vector3.Slerp(right, -up, i / 25.0f) + start, Vector3.Slerp(right, -up, (i - 1) / 25.0f) + start, color, duration, depthTest);
+                    DrawLine(Vector3.Slerp(-right, -up, i / 25.0f) + start, Vector3.Slerp(-right, -up, (i - 1) / 25.0f) + start, color, duration, depthTest);
+                    DrawLine(Vector3.Slerp(forward, -up, i / 25.0f) + start, Vector3.Slerp(forward, -up, (i - 1) / 25.0f) + start, color, duration, depthTest);
+                    DrawLine(Vector3.Slerp(-forward, -up, i / 25.0f) + start, Vector3.Slerp(-forward, -up, (i - 1) / 25.0f) + start, color, duration, depthTest);
+
+                    //End endcap
+                    DrawLine(Vector3.Slerp(right, up, i / 25.0f) + end, Vector3.Slerp(right, up, (i - 1) / 25.0f) + end, color, duration, depthTest);
+                    DrawLine(Vector3.Slerp(-right, up, i / 25.0f) + end, Vector3.Slerp(-right, up, (i - 1) / 25.0f) + end, color, duration, depthTest);
+                    DrawLine(Vector3.Slerp(forward, up, i / 25.0f) + end, Vector3.Slerp(forward, up, (i - 1) / 25.0f) + end, color, duration, depthTest);
+                    DrawLine(Vector3.Slerp(-forward, up, i / 25.0f) + end, Vector3.Slerp(-forward, up, (i - 1) / 25.0f) + end, color, duration, depthTest);
+                }
+            }
+
+
+
+
             [Conditional("UNITY_EDITOR")]
             public static void DrawSliceSphere(Vector3 position, Quaternion rotation, float radius, float horizontalAngle, float verticalAngle,Color color, float duration)
             {
