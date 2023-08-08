@@ -39,12 +39,12 @@ namespace StudioScor.Utilities
 
         public virtual bool CanEnterState()
         {
-            return true;
+            return !IsPlaying;
         }
 
         public virtual bool CanExitState()
         {
-            return true;
+            return IsPlaying;
         }
 
 

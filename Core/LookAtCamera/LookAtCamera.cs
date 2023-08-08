@@ -3,16 +3,17 @@ using UnityEngine.Animations;
 
 namespace StudioScor.Utilities
 {
-    [RequireComponent(typeof(RotationConstraint))]
-    public class LookAtCamera : BaseMonoBehaviour
+    public class LookAtCamera : BaseStateMono
     {
         [Header(" [ Look At Camera Component ] ")]
         [SerializeField] private RotationConstraint constraint;
         [SerializeField] private Camera targetCamera;
 
-        private void Reset()
+        protected override void Reset()
         {
 #if UNITY_EDITOR
+            base.Reset();
+
             if(gameObject.TryGetComponentInParentOrChildren(out constraint))
             {
                 constraint.constraintActive = true;
@@ -20,7 +21,42 @@ namespace StudioScor.Utilities
 #endif
         }
 
-        private void Awake()
+        private void OnEnable()
+        {
+            TryEnterState();
+        }
+
+        private void OnDisable()
+        {
+            TryExitState();
+        }
+
+        protected override void EnterState()
+        {
+            base.EnterState();
+
+            EnterLookAtCamera();
+        }
+
+        protected override void ExitState()
+        {
+            base.ExitState();
+
+            ExitLookAtCamera();
+        }
+
+        [ContextMenu("On Look At Camera", false, 1000000)]
+        public void OnLookAtCamera()
+        {
+            ForceEnterState();
+        }
+        [ContextMenu("End Look At Camera", false, 1000000)]
+        public void EndLookAtCamera()
+        {
+            ForceExitState();
+        }
+
+        protected virtual void EnterLookAtCamera()
         {
             if (!targetCamera)
                 targetCamera = Camera.main;
@@ -38,6 +74,14 @@ namespace StudioScor.Utilities
             else
             {
                 constraint.AddSource(source);
+            }
+        }
+
+        protected virtual void ExitLookAtCamera()
+        {
+            if (constraint.sourceCount > 0)
+            {
+                constraint.RemoveSource(0);
             }
         }
     }

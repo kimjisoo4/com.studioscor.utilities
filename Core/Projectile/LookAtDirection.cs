@@ -59,13 +59,10 @@ namespace StudioScor.Utilities
             if(Target)
                 Direction = owner.Direction(Target);
 
-            Vector3 rotation = owner.eulerAngles;
-            Vector3 newRotation = Quaternion.LookRotation(Direction).eulerAngles;
+            Quaternion rotation = owner.rotation;
+            Quaternion newRotation = Quaternion.LookRotation(Direction);
 
-            Quaternion angle = Quaternion.RotateTowards(owner.rotation, Quaternion.LookRotation(Direction), deltaTime * TurnSpeed);
-            //float angle = Mathf.MoveTowardsAngle(rotation.y, newRotation.y, deltaTime * TurnSpeed);
-
-            //rotation.y = angle;
+            Quaternion angle = Quaternion.RotateTowards(rotation, newRotation, deltaTime * TurnSpeed);
 
             eularAngles = angle;
         }
