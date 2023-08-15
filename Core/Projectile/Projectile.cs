@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static Sirenix.OdinInspector.Editor.Internal.FastDeepCopier;
 
 namespace StudioScor.Utilities
 {

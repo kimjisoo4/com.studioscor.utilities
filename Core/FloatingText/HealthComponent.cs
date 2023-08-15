@@ -173,7 +173,6 @@ namespace StudioScor.Utilities
 
 			_IsDie = _Health > 0f;
 			_Full = _NormalizedHealth >= 1f;
-			_UseRegeneration = regenerationValue > 0;
 		}
 
 		public void ResetHealth()

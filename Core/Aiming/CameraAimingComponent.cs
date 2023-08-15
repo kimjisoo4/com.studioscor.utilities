@@ -178,20 +178,20 @@ namespace StudioScor.Utilities
         }
         #endregion
 
-        public void SetTarget(Transform target = null)
+        public void SetTarget(Transform newTarget = null)
         {
-            if (prevHitTransform == target)
+            if (prevHitTransform == newTarget)
                 return;
 
-            prevHitTransform = target;
+            prevHitTransform = newTarget;
 
             if (prevHitTransform)
             {
-                prevHitTransform.TryGetComponentInParentOrChildren(out this.target);
+                prevHitTransform.TryGetComponentInParentOrChildren(out target);
             }
             else
             {
-                this.target = null;
+                target = null;
             }
 
             Callback_OnChangedTarget();

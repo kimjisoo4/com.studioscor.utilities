@@ -477,7 +477,8 @@ namespace StudioScor.Utilities
                 {
                     foreach (var collider in colliders)
                     {
-                        if (!IgnoreTransform.Contains(collider.transform) && !IgnoreTransform.Contains(collider.transform.root))
+                        if (!IgnoreTransform.Contains(collider.transform) 
+                            && (!collider.attachedRigidbody || !IgnoreTransform.Contains(collider.attachedRigidbody.transform)))
                         {
                             hitResults.Add(collider);
                         }

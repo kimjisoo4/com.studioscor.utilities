@@ -6,66 +6,62 @@ namespace StudioScor.Utilities
     [System.Serializable]
     public class FiniteStateMachineSystemWithKey<TKey, TState> : FiniteStateMachineSystem<TState> where TState : class,IState
     {
-        [SerializeField] private TKey _DefaultStateKey;
+        [SerializeField] private TKey defaultStateKey;
         
-        private TKey _CurrentStateKey;
+        private TKey currentStateKey;
         
-        private Dictionary<TKey, TState> _States;
+        private readonly Dictionary<TKey, TState> states = new();
+        public IReadOnlyDictionary<TKey, TState> States => states;
         public TKey CurrentStateKey
         {
             get
             {
-                if (_NeedUpdateKey)
+                if (needUpdateKey)
                 {
-                    foreach (var state in _States)
+                    foreach (var state in states)
                     {
-                        if (state.Value == _CurrentState)
+                        if (state.Value == currentState)
                         {
-                            _CurrentStateKey = state.Key;
+                            currentStateKey = state.Key;
 
-                            _NeedUpdateKey = false;
+                            needUpdateKey = false;
 
                             break;
                         }
                     }
                 }
 
-                return _CurrentStateKey;
+                return currentStateKey;
             }
         }
 
-        private bool _NeedUpdateKey = false;
+        private bool needUpdateKey = false;
         
         public FiniteStateMachineSystemWithKey(TKey key, TState defaultState) : base(defaultState)
         {
-            _States = new();
+            states = new();
 
-            _States.Add(key, defaultState);
+            states.Add(key, defaultState);
         }
         public FiniteStateMachineSystemWithKey() : base()
         {
-            _States = new();
+            states = new();
         }
 
         public override void Setup()
         {
-            if (_States is null)
-            {
-                _States = new();
-
-                if(_DefaultStateKey != null && _DefaultState != null)
-                    AddState(_DefaultStateKey, _DefaultState);
-            }
+            if (defaultStateKey != null && defaultState != null)
+                AddState(defaultStateKey, defaultState);
 
             base.Setup();
         }
 
         public void SetDefaultState(TKey key, TState state)
         {
-            _DefaultStateKey = key;
-            _DefaultState = state;
+            defaultStateKey = key;
+            defaultState = state;
 
-            if(!_States.ContainsKey(key))
+            if(!states.ContainsKey(key))
             {
                 AddState(key, state);
             }
@@ -73,16 +69,16 @@ namespace StudioScor.Utilities
 
         public bool HasState(TKey key)
         {
-            return _States.ContainsKey(key);
+            return states.ContainsKey(key);
         }
         public bool HasState(TState state)
         {
-            return _States.ContainsValue(state);
+            return states.ContainsValue(state);
         }
 
         public bool CanSetState(TKey key)
         {
-            return _States.TryGetValue(key, out TState state) && CanSetState(state);
+            return states.TryGetValue(key, out TState state) && CanSetState(state);
         }
         public bool TrySetState(TKey key)
         {
@@ -100,27 +96,27 @@ namespace StudioScor.Utilities
         {
             base.ForceSetState(state);
 
-            _NeedUpdateKey = true;
+            needUpdateKey = true;
         }
 
         public void ForceSetState(TKey key)
         {
-            if (_States.TryGetValue(key, out TState state))
+            if (states.TryGetValue(key, out TState state))
             {
                 ForceSetState(state);
             }
         }
         public void ClearState()
         {
-            _States.Clear();
+            states.Clear();
         }
         public bool AddState(TKey key, TState state)
         {
-            return _States.TryAdd(key, state);
+            return states.TryAdd(key, state);
         }
         public bool RemoveState(TKey key)
         {
-            return _States.Remove(key);
+            return states.Remove(key);
         }
     }
 }

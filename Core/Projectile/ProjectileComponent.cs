@@ -17,6 +17,10 @@ namespace StudioScor.Utilities
         [Header(" Direction ")]
         [SerializeField] private LookAtDirection lookAtDirection;
 
+        public AccelerateMove AccelerateMove => accelerateMove;
+        public GravityMove GravityMove => gravityMove;  
+        public LookAtDirection LookAtDirection => lookAtDirection;
+
         private void OnEnable()
         {
             OnProjectile();

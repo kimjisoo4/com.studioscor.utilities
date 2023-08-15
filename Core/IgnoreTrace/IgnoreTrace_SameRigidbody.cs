@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace StudioScor.Utilities
 {
+
     [CreateAssetMenu(menuName ="StudioScor/TraceSystem/Ignore/new Ignore Same Rigidbody", fileName = "IgnoreTrace_SameRigidbody")]
     public class IgnoreTrace_SameRigidbody : IgnoreTrace
     {

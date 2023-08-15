@@ -8,15 +8,17 @@ namespace StudioScor.Utilities
     public class FiniteStateMachineSystem<T> where T : class, IState
     {
         [Header(" [ Default State ] ")]
-        [SerializeField] protected T _DefaultState;
+        [SerializeField] protected T defaultState;
 
-        protected T _CurrentState;
-        protected T _PrevState;
-        protected T _NextState;
+        protected T currentState;
+        protected T prevState;
+        protected T nextState;
 
-        public T CurrentState => _CurrentState;
-        public T PrevState => _PrevState;
-        public T NextState => _NextState;
+        public T CurrentState => currentState;
+        public T PrevState => prevState;
+        public T NextState => nextState;
+
+        public T DefaultState => defaultState;
 
         public event OnChangedStateHandler<T> OnChangedState;
 
@@ -26,25 +28,25 @@ namespace StudioScor.Utilities
         }
         public FiniteStateMachineSystem(T defaultState)
         {
-            _DefaultState = defaultState;
+            this.defaultState = defaultState;
         }
 
         public void SetDefaultState(T defaultState)
         {
-            _DefaultState = defaultState;
+            this.defaultState = defaultState;
         }
 
         public virtual void Setup()
         {
-            ForceSetState(_DefaultState);
+            ForceSetState(defaultState);
         }
         public bool TrySetDefaultState()
         {
-            return TrySetState(_DefaultState);
+            return TrySetState(defaultState);
         }
         public void ForceSetDefaultState()
         {
-            ForceSetState(_DefaultState);
+            ForceSetState(defaultState);
         }
 
         public bool CanSetState(T state)
@@ -52,37 +54,37 @@ namespace StudioScor.Utilities
             if (state == null)
                 return false;
 
-            _NextState = state;
+            nextState = state;
 
-            if (_CurrentState is not null)
+            if (currentState is not null)
             {
-                if (!_CurrentState.CanExitState())
+                if (!currentState.CanExitState())
                 {
-                    _NextState = null;
+                    nextState = null;
 
                     return false;
                 }
             }
 
-            if (!_NextState.CanEnterState())
+            if (!nextState.CanEnterState())
             {
-                _NextState = null;
+                nextState = null;
 
                 return false;
             }
 
-            _NextState = null;
+            nextState = null;
 
             return true;
         }
 
         public bool TrySetState(T state)
         {
-            _NextState = state;
+            nextState = state;
 
             if (!CanSetState(state))
             {
-                _NextState = null;
+                nextState = null;
 
                 return false;
             }
@@ -94,25 +96,25 @@ namespace StudioScor.Utilities
 
         public virtual void ForceSetState(T state)
         {
-            _PrevState = _CurrentState;
-            _CurrentState = state;
+            prevState = currentState;
+            currentState = state;
 
-            if (_PrevState is not null)
+            if (prevState is not null)
             {
-                _PrevState.ForceExitState();
+                prevState.ForceExitState();
             }
-            if(_CurrentState is not null)
+            if(currentState is not null)
             {
-                _CurrentState.ForceEnterState();
+                currentState.ForceEnterState();
             }
 
-            _PrevState = null;
-            _NextState = null;
+            prevState = null;
+            nextState = null;
         }
 
         protected virtual void Callback_OnChangedState(T prevState)
         {
-            OnChangedState?.Invoke(this, _CurrentState, prevState);
+            OnChangedState?.Invoke(this, currentState, prevState);
         }
     }
 }
