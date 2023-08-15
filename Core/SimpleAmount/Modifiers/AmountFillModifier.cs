@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 namespace StudioScor.Utilities
 {
+
     [AddComponentMenu("StudioScor/Utilities/SimpleAmount/Modifier/Amount Fill Modifier", order: 0)]
     public class AmountFillModifier : SimpleAmountModifier
     {
-        [Header(" [ Amount Text Modifier ] ")]
+        [Header(" [ Amount Fill Modifier ] ")]
         [SerializeField] private Image _Fill;
 
         protected override void Reset()

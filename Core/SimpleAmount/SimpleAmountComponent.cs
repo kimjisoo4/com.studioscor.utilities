@@ -11,73 +11,73 @@ namespace StudioScor.Utilities
     public class SimpleAmountComponent : BaseMonoBehaviour, ISimpleAmount
     {
         [Header(" [ Simple Amount ] ")]
-        [SerializeField] private float _CurrentValue;
-        [SerializeField] private float _MaxValue;
+        [SerializeField] private float currentValue;
+        [SerializeField] private float maxValue;
 
-        private readonly List<ISimpleAmountModifier> _Modifiers = new();
+        private readonly List<ISimpleAmountModifier> modifiers = new();
 
-        private bool _NeedUpdate;
-        private float _NormalizedValue;
-        private float _PrevValue;
+        private bool needUpdate;
+        private float normalizedValue;
+        private float prevValue;
 
-        public float PrevValue => _PrevValue;
-        public float CurrentValue => _CurrentValue;
-        public float MaxValue => _MaxValue;
-        public float NormalizedValue => _NormalizedValue;
+        public float PrevValue => prevValue;
+        public float CurrentValue => currentValue;
+        public float MaxValue => maxValue;
+        public float NormalizedValue => normalizedValue;
 
         public void AddModifier(ISimpleAmountModifier modifier)
         {
-            if(!_Modifiers.Contains(modifier))
+            if(!modifiers.Contains(modifier))
             {
-                _Modifiers.Add(modifier);
+                modifiers.Add(modifier);
             }
         }
         public void RemoveModifier(ISimpleAmountModifier modifier)
         {
-            _Modifiers.Remove(modifier);
+            modifiers.Remove(modifier);
         }
 
         public void SetMaxValue(float maxValue)
         {
-            _MaxValue = maxValue;
+            this.maxValue = maxValue;
 
-            _NormalizedValue = _CurrentValue / _MaxValue;
+            normalizedValue = currentValue / this.maxValue;
 
-            _NeedUpdate = true;
+            needUpdate = true;
         }
         public void SetCurrentValue(float currentValue)
         {
-            _PrevValue = _CurrentValue;
-            _CurrentValue = currentValue;
+            prevValue = this.currentValue;
+            this.currentValue = currentValue;
 
-            _NormalizedValue = _CurrentValue / _MaxValue;
+            normalizedValue = this.currentValue / maxValue;
 
-            _NeedUpdate = true;
+            needUpdate = true;
         }
-        public void SetValue(float currentValue, float maxValue)
+        public void SetValue(float maxValue, float currentValue)
         {
-            _PrevValue = _CurrentValue;
-            _CurrentValue = currentValue;
-            _MaxValue = maxValue;
+            prevValue = this.currentValue;
+            this.currentValue = currentValue;
+            this.maxValue = maxValue;
 
-            _NormalizedValue = _CurrentValue.SafeDivide(_MaxValue);
+            normalizedValue = this.currentValue.SafeDivide(this.maxValue);
 
-            _NeedUpdate = true;
+            needUpdate = true;
         }
 
         private void LateUpdate()
         {
-            if (!_NeedUpdate)
+            if (!needUpdate)
                 return;
 
-            _NeedUpdate = false;
+            needUpdate = false;
 
             UpdateAmount();
         }
 
         public void UpdateAmount()
         {
-            foreach (var modifier in _Modifiers)
+            foreach (var modifier in modifiers)
             {
                 modifier.UpdateModifier();
             }

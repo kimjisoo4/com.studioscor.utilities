@@ -31,10 +31,16 @@ namespace StudioScor.Utilities
 			SetValue(Value - value);
 		}
 
+		/// <summary>
+		/// Value++;
+		/// </summary>
 		public void OnIncrease()
         {
 			SetValue(Value + 1);
         }
+		/// <summary>
+		/// Value--;
+		/// </summary>
 		public void OnDecrease()
         {
 			SetValue(Value - 1);
