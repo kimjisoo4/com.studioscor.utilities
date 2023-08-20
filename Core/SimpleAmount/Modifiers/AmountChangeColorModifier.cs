@@ -9,6 +9,7 @@ namespace StudioScor.Utilities
         [Header(" [ Amount Change Color Modifier ] ")]
         [SerializeField] private Image targetImage;
         [SerializeField] private float targetValue = 0.8f;
+        [SerializeField] private bool isLessThen = true;
         [SerializeField] private Color targetColor = Color.yellow;
 
         private bool wasActivate = false;
@@ -26,21 +27,41 @@ namespace StudioScor.Utilities
         {
             float value = SimpleAmount.NormalizedValue;
 
-
-            if(wasActivate)
+            if(isLessThen)
             {
-                if (value > targetValue)
-                    wasActivate = false;
+                if (wasActivate)
+                {
+                    if (value > targetValue)
+                        wasActivate = false;
+                }
+                else
+                {
+                    if (value <= targetValue)
+                    {
+                        wasActivate = true;
+
+                        targetImage.color = targetColor;
+                    }
+                }
             }
             else
             {
-                if (value <= targetValue)
+                if (wasActivate)
                 {
-                    wasActivate = true;
+                    if (value < targetValue)
+                        wasActivate = false;
+                }
+                else
+                {
+                    if (value >= targetValue)
+                    {
+                        wasActivate = true;
 
-                    targetImage.color = targetColor;
+                        targetImage.color = targetColor;
+                    }
                 }
             }
+            
         }
     }
 }
