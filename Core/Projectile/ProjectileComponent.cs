@@ -4,22 +4,19 @@ namespace StudioScor.Utilities
 {
     public class ProjectileComponent : BaseMonoBehaviour
     {
-        [Header(" [ Projectile ] ")]
-        [SerializeField] private Rigidbody rigidBody;
+        [field: Header(" [ Projectile ] ")]
+        [field: SerializeField] public Rigidbody RigidBody { get; protected set; }
 
-        [Header(" Move")]
-        [SerializeField] private AccelerateMove accelerateMove;
+        [field: Header(" Move")]
+        [field: SerializeField] public AccelerateMove AccelerateMove { get; protected set; }
 
-        [Header(" Gravity ")]
-        [SerializeField] private bool useGravity = false;
-        [SerializeField] private GravityMove gravityMove;
+        [field: Header(" Gravity ")]
+        [field: SerializeField] public bool UseGravity { get; protected set; } = false;
+        [field: SerializeField] public GravityMove GravityMove { get; protected set; }
 
-        [Header(" Direction ")]
-        [SerializeField] private LookAtDirection lookAtDirection;
+        [field: Header(" Direction ")]
+        [field: SerializeField] public LookAtDirection LookAtDirection { get; protected set; }
 
-        public AccelerateMove AccelerateMove => accelerateMove;
-        public GravityMove GravityMove => gravityMove;  
-        public LookAtDirection LookAtDirection => lookAtDirection;
 
         private void OnEnable()
         {
@@ -32,33 +29,33 @@ namespace StudioScor.Utilities
 
         public void OnProjectile()
         {
-            accelerateMove.OnAccelerate();
+            AccelerateMove.OnAccelerate();
             
-            if(useGravity)
-                gravityMove.OnGravity();
+            if(UseGravity)
+                GravityMove.OnGravity();
 
-            lookAtDirection.OnLookAtDirection();
+            LookAtDirection.OnLookAtDirection();
         }
         public void EndProjectile()
         {
-            accelerateMove.EndAccelerate();
+            AccelerateMove.EndAccelerate();
 
-            if (useGravity)
-                gravityMove.EndGravity();
+            if (UseGravity)
+                GravityMove.EndGravity();
 
-            lookAtDirection.EndLookAtDirection();
+            LookAtDirection.EndLookAtDirection();
         }
 
         private void FixedUpdate()
         {
             float deltaTime = Time.fixedDeltaTime;
 
-            accelerateMove.UpdateAccelerate(deltaTime);
-            gravityMove.UpdateGravity(deltaTime);
-            lookAtDirection.UpdateRotation(deltaTime);
+            AccelerateMove.UpdateAccelerate(deltaTime);
+            GravityMove.UpdateGravity(deltaTime);
+            LookAtDirection.UpdateRotation(deltaTime);
 
-            rigidBody.rotation = lookAtDirection.EularAngles;
-            rigidBody.velocity = transform.forward * accelerateMove.Speed + gravityMove.Velocity;
+            RigidBody.rotation = LookAtDirection.Rotation;
+            RigidBody.velocity = transform.forward * AccelerateMove.Speed + GravityMove.Velocity;
         }
     }
 }

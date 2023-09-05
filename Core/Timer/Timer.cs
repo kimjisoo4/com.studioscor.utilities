@@ -59,14 +59,12 @@ namespace StudioScor.Utilities
         }
 		public void OnTimer()
         {
-            if (IsPlaying)
-            {
-				EndTimer();
-			}
-
-			OnResetTimer();
+			if (IsPlaying)
+				return;
 
 			isPlaying = true;
+			
+			OnResetTimer();
 
 			OnStartedTimer?.Invoke(this);
 		}

@@ -6,16 +6,16 @@ namespace StudioScor.Utilities
     public class LookAtDirection
     {
         [field: Header(" Look At Direction")]
-        [SerializeField] private Transform owner;
+        [field: SerializeField] public Transform Owner;
         [field: SerializeField] public Transform Target { get; set; } = null;
         [field: SerializeField] public Vector3 Direction { get; set; } = Vector3.forward;
         [field: SerializeField] public float TurnSpeed { get; set; } = 180f;
 
         [SerializeField][SReadOnly] private bool isPlaying = false;
-        [SerializeField][SReadOnly] private Quaternion eularAngles;
+        [SerializeField] private Quaternion turnRotation;
 
         public bool IsPlaying => isPlaying;
-        public Quaternion EularAngles => eularAngles;
+        public Quaternion Rotation => turnRotation;
 
         public void OnLookAtDirection(Transform newTarget)
         {
@@ -57,14 +57,20 @@ namespace StudioScor.Utilities
                 return;
 
             if(Target)
-                Direction = owner.Direction(Target);
+                Direction = Owner.Direction(Target);
 
-            Quaternion rotation = owner.rotation;
+            if (Direction.SafeEquals(Vector3.zero))
+            {
+                turnRotation = Owner.rotation;
+                return;
+            }
+
+            Quaternion rotation = Owner.rotation;
             Quaternion newRotation = Quaternion.LookRotation(Direction);
 
             Quaternion angle = Quaternion.RotateTowards(rotation, newRotation, deltaTime * TurnSpeed);
 
-            eularAngles = angle;
+            turnRotation = angle;
         }
     }
 }

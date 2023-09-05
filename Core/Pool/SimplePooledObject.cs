@@ -28,6 +28,9 @@ namespace StudioScor.Utilities
             if (!gameObject.scene.isLoaded)
                 return;
 #endif
+            if (pool is null)
+                return;
+
             if (releasedWhenDisable)
             {
                 if (transform.parent != pool.Container)
