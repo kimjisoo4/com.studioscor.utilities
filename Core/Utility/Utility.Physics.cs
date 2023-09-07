@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
 
 namespace StudioScor.Utilities
 {
@@ -575,9 +576,68 @@ namespace StudioScor.Utilities
                     return null;
                 }
             }
-#endregion
+            #endregion
 
-#region DrawSphereCastAll
+
+            #region Draw Shpere Cast All Non Alloc
+
+            public static int DrawSphereCastAllNonAlloc(Vector3 start, float radius, Vector3 direction, RaycastHit[] hitResults, 
+                                                       float distance = float.PositiveInfinity, int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                                       bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                int hitCount = UnityEngine.Physics.SphereCastNonAlloc(start, radius, direction, hitResults, distance, layerMask, queryTriggerInteraction);
+
+                #region EDITOR ONLY
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitResults.Length > 0)
+                    {
+                        DrawSphereCast(start, radius, direction, distance, out RaycastHit firstHit, layerMask);
+
+                        Debug.DrawCapsule(start, start + direction * firstHit.distance, radius, failedColor, duration);
+                        Debug.DrawCapsule(start + direction * firstHit.distance, start + direction * distance, radius, successColor, duration);
+
+                        foreach (var hit in hitResults)
+                        {
+                            Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+                
+                return hitCount;
+            }
+            public static int DrawSphereCastAllNonAlloc(Ray ray, float radius, RaycastHit[] hitResults,
+                                           float distance = float.PositiveInfinity, int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                           bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 start = ray.origin;
+                Vector3 direction = ray.direction;
+
+                return DrawSphereCastAllNonAlloc(start, radius, direction, hitResults, distance, layerMask, queryTriggerInteraction, useDebug, duration, rayColor, hitColor);
+            }
+            public static int DrawSphereCastAllNonAlloc(Vector3 start, Vector3 end, float radius, RaycastHit[] hitResults,
+                                                       int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                                       bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 direction = start.Direction(end, false);
+                float distance = direction.magnitude;
+                direction.Normalize();
+
+                return DrawSphereCastAllNonAlloc(start, radius, direction, hitResults, distance, layerMask, queryTriggerInteraction, useDebug, duration, rayColor, hitColor);
+            }
+            #endregion
+
+            #region DrawSphereCastAll
 
             public static RaycastHit[] DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask,
                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
@@ -725,8 +785,6 @@ namespace StudioScor.Utilities
             {
                 return DrawSphereCastAll(ray.origin, ray.origin + ray.direction * distance, radius, layerMask, ref hitResults, owner, ignoreTransforms, useDebug, duration, rayColor, hitColor);
             }
-
-
             public static bool DrawSphereCastAll(Vector3 start, Vector3 end, float radius, LayerMask layermask, ref List<RaycastHit> hitResults, List<Transform> ignoreTransforms = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
