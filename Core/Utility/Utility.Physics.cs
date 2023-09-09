@@ -153,8 +153,6 @@ namespace StudioScor.Utilities
                 return hitResult.Count > 0;
             }
 
-
-
             public static List<Collider> DrawConeCast(Transform transform, float angle, float distance, LayerMask layerMask, List<Transform> ignoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
@@ -578,6 +576,44 @@ namespace StudioScor.Utilities
             }
             #endregion
 
+            #region Draw Ray Cast 
+            public static bool DrawRayCast(Vector3 position, Vector3 direction, out RaycastHit hitResult,
+                                          float distance = Mathf.Infinity, int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                          bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                bool isHit = UnityEngine.Physics.Raycast(position, direction, out hitResult, distance, layerMask, queryTriggerInteraction);
+                
+                #region EDITOR ONLY
+#if UNITY_EDITOR
+                if(useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+
+                    if (isHit)
+                    {
+                        Debug.DrawLine(position, hitResult.point, failedColor, duration);
+                        Debug.DrawPoint(hitResult.point, successColor, 1f, duration);
+                        Debug.DrawLine(hitResult.point, position + direction * distance, successColor, duration);
+                    }
+                    else
+                    {
+                        Debug.DrawRay(position, direction * distance, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+                
+                return isHit;
+            }
+            public static bool DrawRayCast(Ray ray, out RaycastHit hitResult,
+                                          float distance = Mathf.Infinity, int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                          bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                return DrawRayCast(ray.origin, ray.direction, out hitResult, distance, layerMask, queryTriggerInteraction, useDebug, duration, rayColor, hitColor);
+            }
+            #endregion
 
             #region Draw Shpere Cast All Non Alloc
 
@@ -896,38 +932,7 @@ namespace StudioScor.Utilities
 
                 return isHit;
             }
-
-
-
-
-            public static bool DrawRayCast(Vector3 start, Vector3 direction, float distance, out RaycastHit hit, LayerMask layerMask,
-                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
-            {
-                bool isHit = UnityEngine.Physics.Raycast(start, direction, out hit, distance, layerMask);
-
-#if UNITY_EDITOR
-                if (useDebug)
-                {
-                    Color successColor = hitColor == default ? Color.green : hitColor;
-                    Color failedColor = rayColor == default ? Color.red : rayColor;
-
-                    if (isHit)
-                    {
-                        UnityEngine.Debug.DrawLine(start, hit.point, failedColor, duration);
-                        Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
-                        UnityEngine.Debug.DrawLine(hit.point, start + direction * distance, successColor, duration);
-                    }
-                    else
-                    {
-                        UnityEngine.Debug.DrawLine(start, start + direction * distance, failedColor, duration);
-                        Debug.DrawPoint(start + direction * distance, failedColor, 0.1f, duration);
-                    }
-                }
-#endif
-                return isHit;
-            }
-#endregion
         }
-
+        #endregion
     }
 }

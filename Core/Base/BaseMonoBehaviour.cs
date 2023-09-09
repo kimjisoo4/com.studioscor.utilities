@@ -19,7 +19,7 @@ namespace StudioScor.Utilities
             if (isError)
             {
                 SUtility.Debug.LogError($"{GetType().Name} [{name}] : {log}", this, color);
-                
+
                 return;
             }
 
