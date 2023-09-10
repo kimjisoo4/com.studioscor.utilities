@@ -46,10 +46,8 @@ namespace StudioScor.Utilities
             LookAtDirection.EndLookAtDirection();
         }
 
-        private void FixedUpdate()
+        public void UpdateProjectile(float deltaTime)
         {
-            float deltaTime = Time.fixedDeltaTime;
-
             AccelerateMove.UpdateAccelerate(deltaTime);
             GravityMove.UpdateGravity(deltaTime);
             LookAtDirection.UpdateRotation(deltaTime);

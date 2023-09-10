@@ -425,9 +425,49 @@ namespace StudioScor.Utilities
                 return Hits;
             }
 
-#endregion
+            #endregion
 
-#region DrawOverlapSphere
+            #region DrawOverlapSphereNoneAlloc
+            public static int DrawOverlapSphereNoneAlloc(Vector3 position, float radius, Collider[] results,
+                                                     int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                                     bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                if(results is null || results.Length <= 0)
+                {
+                    Debug.LogError($"[ {nameof(results)} ] is Null or Length is Zero!.", null, NAME_COLOR_RED);
+                    return -1;
+                }
+
+                int hitCount = UnityEngine.Physics.OverlapSphereNonAlloc(position, radius, results, layerMask, queryTriggerInteraction);
+
+                #region EDITOR ONLY
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = hitColor == default ? Color.green : hitColor;
+                    Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                    if (hitCount > 0)
+                    {
+                        Debug.DrawSphere(position, radius, successColor, duration);
+
+                        foreach (var result in results)
+                        {
+                            Debug.DrawPoint(result.bounds.center, 1f, duration);
+                        }
+                    }
+                    else
+                    {
+                        Debug.DrawSphere(position, radius, failedColor, duration);
+                    }
+                }
+#endif
+                #endregion
+
+                return hitCount;
+            }
+#endregion
+            #region DrawOverlapSphere
             public static Collider[] DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask,
                     bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
