@@ -16,6 +16,15 @@ namespace StudioScor.Utilities
             return Vector2.SqrMagnitude(lhs - rhs) < equaly;
         }
 
+        // horizontal Magnitude
+
+        public static float HorizontalMagnitude(this Vector3 lhs)
+        {
+            lhs.y = 0;
+
+            return lhs.magnitude;
+        }
+
         // Sqr Distance
         public static float SqrDistance(this Vector3 lhs, Vector3 rhs)
         {

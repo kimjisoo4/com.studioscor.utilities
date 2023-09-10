@@ -17,6 +17,11 @@ namespace StudioScor.Utilities
         public bool IsPlaying => isPlaying;
         public Quaternion Rotation => turnRotation;
 
+        public LookAtDirection() { }
+        public LookAtDirection(Transform owner)
+        {
+            Owner = owner;
+        }
         public void OnLookAtDirection(Transform newTarget)
         {
             if (IsPlaying)

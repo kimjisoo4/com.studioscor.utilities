@@ -8,9 +8,10 @@ namespace StudioScor.Utilities
         [field: Header(" [ Accelerate Move ]")]
         [field: SerializeField] public float StartSpeed { get; set; } = 10f;
         [field: SerializeField] public float TargetSpeed { get; set; } = 5f;
+        [field: SerializeField][field: Range(0f, 1f)] public float Strength { get; set; } = 1f;
         [field: SerializeField] public float AccelerateSpeed { get; set; } = 20f;
         [field: SerializeField] public float DecelerateSpeed { get; set; } = 20f;
-        [field: SerializeField]public bool IsStopped { get; set; } = false;
+        [field: SerializeField] public bool IsStopped { get; set; } = false;
 
         [SerializeField][SReadOnly] private bool isPlaying = false;
         [SerializeField][SReadOnly] private float speed = 0f;
@@ -52,11 +53,11 @@ namespace StudioScor.Utilities
             {
                 if (speed < TargetSpeed)
                 {
-                    speed = Mathf.MoveTowards(speed, TargetSpeed, AccelerateSpeed * deltaTime);
+                    speed = Mathf.MoveTowards(speed, TargetSpeed * Strength, AccelerateSpeed * deltaTime);
                 }
                 else
                 {
-                    speed = Mathf.MoveTowards(speed, TargetSpeed, DecelerateSpeed * deltaTime);
+                    speed = Mathf.MoveTowards(speed, TargetSpeed * Strength, DecelerateSpeed * deltaTime);
                 }
             }
         }
