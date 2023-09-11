@@ -10,12 +10,30 @@ namespace StudioScor.Utilities
         {
             return hits.ToList().ConvertAll(x => x.transform);
         }
+        public static IEnumerable<Transform> ConvertToTransform(this IEnumerable<Collider> colliders)
+        {
+            return colliders.ToList().ConvertAll(x => x.transform);
+        }
 
+        public static bool ContaineTransform(this Collider collider, Transform transform)
+        {
+            return collider && (collider.transform == transform || (collider.attachedRigidbody && collider.attachedRigidbody.transform == transform));
+        }
+        public static bool ContaineTransform(this Collider collider, IEnumerable<Transform> transforms)
+        {
+            foreach (var transform in transforms)
+            {
+                if (collider.ContaineTransform(transform))
+                    return true;
+            }
+
+            return false;
+        }
         public static bool ContaineTransform(this RaycastHit hit, Transform transform)
         {
             return hit.transform == transform || (hit.rigidbody && hit.rigidbody.transform == transform);
         }
-        public static bool ContaineTransform(this RaycastHit hit, List<Transform> transforms)
+        public static bool ContaineTransform(this RaycastHit hit, IEnumerable<Transform> transforms)
         {
             foreach (var transform in transforms)
             {
@@ -46,7 +64,6 @@ namespace StudioScor.Utilities
                 else
                 {
                     results.Add(hit);
-
                 }
             }
         }
