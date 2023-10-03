@@ -37,6 +37,7 @@ namespace StudioScor.Utilities
         private bool isPlaying = false;
         private float normalizedTime;
 
+        public Animator Animator => animator;
         public bool IsPlaying => isPlaying;
         public float NormalizedTime => normalizedTime;
 

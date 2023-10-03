@@ -2,22 +2,23 @@
 
 namespace StudioScor.Utilities
 {
+
     public class AnimNotifyEventListener : BaseMonoBehaviour
     {
         [Header(" [ Anim Notify Event Listener ] ")]
-        [SerializeField] private AnimationPlayer _AnimationPlayer;
+        [SerializeField] private AnimationPlayer animationPlayer;
 
 
         private void Reset()
         {
-            gameObject.TryGetComponentInParentOrChildren(out _AnimationPlayer);
+            gameObject.TryGetComponentInParentOrChildren(out animationPlayer);
         }
 
         private void Awake()
         {
-            if(!_AnimationPlayer)
+            if(!animationPlayer)
             {
-                if(!gameObject.TryGetComponentInParentOrChildren(out _AnimationPlayer))
+                if(!gameObject.TryGetComponentInParentOrChildren(out animationPlayer))
                 {
                     Log("Animation Player Is NULL!!", true);
                 }
@@ -27,15 +28,15 @@ namespace StudioScor.Utilities
 
         public void AnimNotify(string notify)
         {
-            _AnimationPlayer.AnimNotify(notify);
+            animationPlayer.AnimNotify(notify);
         }
         public void AnimNotifyStateEnter(string notify)
         {
-            _AnimationPlayer.AnimNotifyStateEnter(notify);
+            animationPlayer.AnimNotifyStateEnter(notify);
         }
         public void AnimNotifyStateExit(string notify)
         {
-            _AnimationPlayer.AnimNotifyStateEnter(notify);
+            animationPlayer.AnimNotifyStateEnter(notify);
         }
     }
 }

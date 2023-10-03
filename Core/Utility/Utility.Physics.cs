@@ -11,6 +11,21 @@ namespace StudioScor.Utilities
     {
         public static class Physics
         {
+            public static void IgnoreCollision(GameObject lhs, GameObject rhs, bool isIgnore)
+            {
+                var lhsColliders = lhs.GetComponentsInChildren<Collider>();
+                var rhsColliders = rhs.GetComponentsInChildren<Collider>();
+
+                foreach (var lhsCollider in lhsColliders)
+                {
+                    foreach (var rhsCollider in rhsColliders)
+                    {
+                        UnityEngine.Physics.IgnoreCollision(lhsCollider, rhsCollider, isIgnore);
+                    }
+                }
+                
+            }
+
             #region ConeCast
             public static bool DrawConeCast(Vector3 position, Vector3 direction, float angle, float distance, LayerMask layerMask, ref List<Collider> hitResult, List<Transform> ignoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)

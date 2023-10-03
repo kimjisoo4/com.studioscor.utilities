@@ -10,7 +10,7 @@ namespace StudioScor.Utilities
 {
 
     [AddComponentMenu("StudioScor/Utilities/Aiming/Aiming Component", order: 0)]
-    public class CameraAimingComponent : BaseMonoBehaviour, IAimingSystem
+    public class AimingComponent : BaseMonoBehaviour, IAimingSystem
     {
         public enum EAimingOrigin
         {
@@ -53,7 +53,6 @@ namespace StudioScor.Utilities
         {
 #if UNITY_EDITOR
             camera = Camera.main;
-            originTransform = transform;
 #endif
         }
 
