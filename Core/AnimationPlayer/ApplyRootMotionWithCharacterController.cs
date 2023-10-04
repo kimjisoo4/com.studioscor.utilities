@@ -2,32 +2,35 @@
 
 namespace StudioScor.Utilities
 {
-    public class ApplyRootMotionWithCharacterController : BaseMonoBehaviour
+
+    public class ApplyRootMotionWithCharacterController : ApplyRootMotion
     {
         [Header(" [ Apply Root Motion With Character Controller ] ")]
         [SerializeField] private CharacterController characterController;
-        [SerializeField] private Animator animator;
 
-        private void Reset()
+
+        protected override void Reset()
         {
+            base.Reset();
+
 #if UNITY_EDITOR
             characterController = GetComponentInParent<CharacterController>();
-            animator = GetComponent<Animator>();
 #endif
         }
-        private void Awake()
+
+        protected override void Awake()
         {
+            base.Awake();
+         
             if(!characterController)
                 characterController = GetComponentInParent<CharacterController>();
-
-            if(!animator)
-                animator = GetComponent<Animator>();
         }
 
-        private void OnAnimatorMove()
+        protected override void UpdateRootMotion()
         {
-            characterController.Move(animator.deltaPosition);
-            characterController.transform.rotation *= animator.deltaRotation;
+            characterController.Move(DeltaPosition);
+
+            characterController.transform.rotation *= DeltaRotation;
         }
     }
 }
