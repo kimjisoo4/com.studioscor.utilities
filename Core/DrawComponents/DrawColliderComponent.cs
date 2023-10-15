@@ -2,6 +2,7 @@
 
 namespace StudioScor.Utilities
 {
+
     public class DrawColliderComponent : BaseMonoBehaviour
     {
         #region EDITOR ONLY
