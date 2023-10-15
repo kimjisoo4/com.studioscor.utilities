@@ -7,6 +7,9 @@ namespace StudioScor.Utilities
         // GetComponenet
         public static T GetComponentInParentOrChildren<T>(this GameObject gameObject)
         {
+            if (!gameObject)
+                return default;
+
             var component = gameObject.GetComponentInParent<T>();
             
             if (component is not null)

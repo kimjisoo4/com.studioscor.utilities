@@ -5,8 +5,14 @@ namespace StudioScor.Utilities
 {
     public class ExplosiveLLCEventListener : MonoBehaviour
     {
+        [Header(" [ Explosive LLC Event Listener ] ")]
+        [Header("Foot R")]
         [SerializeField] private UnityEvent onFootR;
+        
+        [Header("Foot L")]
         [SerializeField] private UnityEvent onFootL;
+        
+        [Header("Hit")]
         [SerializeField] private UnityEvent onHit;
 
         public event UnityAction OnFootR;

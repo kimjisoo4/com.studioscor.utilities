@@ -46,6 +46,7 @@ namespace StudioScor.Utilities
         public event Action OnFailed;
         public event Action OnCanceled;
         public event Action OnFinished;
+        public event Action OnFinishedBlendIn;
         public event Action OnStartedBlendOut;
 
         public event Action<string> OnNotify;
@@ -57,6 +58,7 @@ namespace StudioScor.Utilities
         {
             gameObject.TryGetComponentInParentOrChildren(out animator);
         }
+
         private void OnValidate()
         {
             defaultStateHash = Animator.StringToHash(defaultStateName);
@@ -92,7 +94,7 @@ namespace StudioScor.Utilities
                     }
                     break;
                 case EAnimationState.Start:
-                    if (!animator.IsInTransition(layer))
+                    if (!animator.IsInTransition(layer) && currentStateHash == currentState.shortNameHash)
                     {
                         SetAnimationState(EAnimationState.Playing);
                     }
@@ -166,6 +168,9 @@ namespace StudioScor.Utilities
                 case EAnimationState.Start:
                     OnStart();
                     break;
+                case EAnimationState.Playing:
+                    OnPlaying();
+                    break;
                 case EAnimationState.BlendOut:
                     OnBlendOut();
                     break;
@@ -180,8 +185,10 @@ namespace StudioScor.Utilities
             }
         }
 
-        
-
+        private void OnPlaying()
+        {
+            Callback_OnFinishedBlendIn();
+        }
 
         public void TryStopAnimation(int hash, float fadeTime = 0.2f)
         {
@@ -213,6 +220,7 @@ namespace StudioScor.Utilities
             OnFailed = null;
             OnCanceled = null;
             OnFinished = null;
+            OnFinishedBlendIn = null;
             OnStartedBlendOut = null;
 
             OnNotify = null;
@@ -231,10 +239,6 @@ namespace StudioScor.Utilities
 
             notifyStates.Clear();
         }
-
-
-
-
 
         private void OnTryPlay()
         {
@@ -272,6 +276,8 @@ namespace StudioScor.Utilities
 
         private void OnFinish()
         {
+            ExitAllNotify();
+
             normalizedTime = 1f;
             isPlaying = false;
             currentStateHash = default;
@@ -364,10 +370,17 @@ namespace StudioScor.Utilities
             OnFinished = null;
             OnCanceled = null;
         }
+        protected void Callback_OnFinishedBlendIn()
+        {
+            Log("On Finished Blend In Animation");
 
+            OnFinishedBlendIn?.Invoke();
+
+            OnFinishedBlendIn = null;
+        }
         protected void Callback_OnStartedBlendOut()
         {
-            Log("On Blend In Animation");
+            Log("On Started Blend Out Animation");
 
             OnStartedBlendOut?.Invoke();
 
