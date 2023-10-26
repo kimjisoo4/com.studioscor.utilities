@@ -7,18 +7,17 @@ namespace StudioScor.Utilities
         public Vector3 DeltaPosition { get; }
         public Quaternion DeltaRotation { get; }
         public Animator Animator { get; }
-        public bool UseRootMotion { get; }
+        public bool ApplyRootMotion { get; }
         public void SetUseRootMotion(bool useRootMotion);
 
     }
-    public class ApplyRootMotion : BaseMonoBehaviour, IApplyRootMotion
+    public class ApplyRootMotionComponent : BaseMonoBehaviour, IApplyRootMotion
     {
         [Header(" [ Apply Root Motion ] ")]
         [SerializeField] private Animator animator;
-        [SerializeField] private bool useRootMotion = true;
 
         public Animator Animator => animator;
-        public bool UseRootMotion => useRootMotion;
+        public bool ApplyRootMotion => animator.applyRootMotion;
 
         [field: SerializeField][field: SReadOnly] public Vector3 DeltaPosition { get; protected set; }
         [field: SerializeField][field: SReadOnly] public Quaternion DeltaRotation { get; protected set; }
@@ -37,10 +36,10 @@ namespace StudioScor.Utilities
 
         public void SetUseRootMotion(bool useRootMotion)
         {
-            if (this.useRootMotion == useRootMotion)
+            if (animator.applyRootMotion == useRootMotion)
                 return;
 
-            this.useRootMotion = useRootMotion;
+            animator.applyRootMotion = useRootMotion;
 
             if(!useRootMotion)
             {
@@ -53,7 +52,7 @@ namespace StudioScor.Utilities
 
         private void OnAnimatorMove()
         {
-            if (!UseRootMotion)
+            if (!ApplyRootMotion)
                 return;
 
             DeltaPosition = animator.deltaPosition;

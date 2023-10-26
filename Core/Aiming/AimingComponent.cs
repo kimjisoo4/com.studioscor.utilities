@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using System.Linq;
-
-
 namespace StudioScor.Utilities
 {
 
@@ -28,13 +26,12 @@ namespace StudioScor.Utilities
         [SerializeField] private LayerMask layer;
         [SerializeField] private IgnoreTrace[] ignoreTraces;
 
-        [Header(" [ Auto Playing ] ")]
+        [Header(" Auto Playing ")]
         [SerializeField] private bool autoPlaying = true;
 
-        [Header(" [ Events ] ")]
+        [Header(" Events ")]
         [SerializeField] private UnityEvent<Transform> onChangedTarget;
 
-        public event UnityAction<Transform> OnChangedTarget;
 
         private List<RaycastHit> hits = new();
         private readonly List<Transform> ignoreTransforms = new();
@@ -48,6 +45,8 @@ namespace StudioScor.Utilities
         public bool IsPlaying => isPlaying;
         public Vector3 AimPosition => aimPosition;
         public ITargeting Target => target;
+
+        public event IAimingSystem.AimingSystemEventHandler OnChangedTarget;
 
         private void Reset()
         {
@@ -72,7 +71,7 @@ namespace StudioScor.Utilities
                 camera = Camera.main;
         }
 
-        void Update()
+        void FixedUpdate()
         {
             if (!camera)
             {
@@ -85,45 +84,45 @@ namespace StudioScor.Utilities
         }
 
         #region Ignore Transforms
-        public void AddIgnoreTransforms(Component component)
+        public void AddIgnoreTarget(Component component)
         {
-            AddIgnoreTransforms(component.transform);
+            AddIgnoreTarget(component.transform);
         }
-        public void AddIgnoreTransforms(GameObject target)
+        public void AddIgnoreTarget(GameObject target)
         {
-            AddIgnoreTransforms(target.transform);
+            AddIgnoreTarget(target.transform);
         }
-        public void AddIgnoreTransforms(Transform add)
+        public void AddIgnoreTarget(Transform add)
         {
             Log($" Add Ignore Transform {add.gameObject.name}", false, SUtility.NAME_COLOR_GREEN);
 
             ignoreTransforms.Add(add);
         }
-        public void AddIgnoreTransforms(IEnumerable<Transform> add)
+        public void AddIgnoreTarget(IEnumerable<Transform> add)
         {
             ignoreTransforms.AddRange(add);
         }
 
-        public void RemoveIgnoreTransforms(Component component)
+        public void RemoveIgnoreTarget(Component component)
         {
-            RemoveIgnoreTransforms(component.transform);
+            RemoveIgnoreTarget(component.transform);
         }
-        public void RemoveIgnoreTransforms(GameObject target)
+        public void RemoveIgnoreTarget(GameObject target)
         {
-            RemoveIgnoreTransforms(target.transform);
+            RemoveIgnoreTarget(target.transform);
         }
 
-        public void RemoveIgnoreTransforms(Transform remove)
+        public void RemoveIgnoreTarget(Transform remove)
         {
             Log($" Remove Ignore Transform {remove.gameObject.name}", false, SUtility.NAME_COLOR_GRAY);
 
             ignoreTransforms.Remove(remove);
         }
-        public void RemoveIgnoreTransforms(IEnumerable<Transform> removes)
+        public void RemoveIgnoreTarget(IEnumerable<Transform> removes)
         {
             foreach (var remove in removes)
             {
-                RemoveIgnoreTransforms(remove);
+                RemoveIgnoreTarget(remove);
             }
         }
         #endregion
@@ -261,7 +260,8 @@ namespace StudioScor.Utilities
             Transform target = this.target is null ? null : this.target.Point;
 
             onChangedTarget?.Invoke(target);
-            OnChangedTarget?.Invoke(target);
+
+            OnChangedTarget?.Invoke(this, target);
         }
     }
 }

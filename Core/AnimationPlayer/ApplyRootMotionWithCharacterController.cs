@@ -3,7 +3,7 @@
 namespace StudioScor.Utilities
 {
 
-    public class ApplyRootMotionWithCharacterController : ApplyRootMotion
+    public class ApplyRootMotionWithCharacterController : ApplyRootMotionComponent
     {
         [Header(" [ Apply Root Motion With Character Controller ] ")]
         [SerializeField] private CharacterController characterController;

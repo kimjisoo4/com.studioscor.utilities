@@ -21,14 +21,14 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Animation Player ] ")]
         [SerializeField] private Animator animator;
-        [SerializeField] private int layer = 1;
-        [SerializeField] private string defaultStateName = "Empty";
+        [SerializeField] private string defaultState = "Empty";
+
+        private int layer = 0;
 
         private int defaultStateHash;
         private int currentStateHash;
 
         private float fadeIn;
-        private float fadeOut;
         private float offset;
 
         private List<string> notifyStates;
@@ -58,16 +58,10 @@ namespace StudioScor.Utilities
         {
             gameObject.TryGetComponentInParentOrChildren(out animator);
         }
-
-        private void OnValidate()
-        {
-            defaultStateHash = Animator.StringToHash(defaultStateName);
-        }
-
         private void Awake()
         {
-            defaultStateHash = Animator.StringToHash(defaultStateName);
             notifyStates = new();
+            defaultStateHash = Animator.StringToHash(defaultState);
         }
 
         private void LateUpdate()
@@ -100,7 +94,7 @@ namespace StudioScor.Utilities
                     }
                     break;
                 case EAnimationState.Playing:
-                    if (normalizedTime > fadeOut)
+                    if (animator.IsInTransition(layer))
                     {
                         SetAnimationState(EAnimationState.BlendOut);
                     }
@@ -118,14 +112,14 @@ namespace StudioScor.Utilities
 
 
 
-        public void Play(string stateName, float fadeIn = 0.2f, float fadeOut = 0.8f, float offset = 0f)
+        public void Play(string stateName, float fadeIn = 0.2f, float offset = 0f, int layer = 0)
         {
             int hash = Animator.StringToHash(stateName);
 
-            PlayAnimation(hash, fadeIn, fadeOut, offset);
+            PlayAnimation(hash, fadeIn, offset, layer);
         }
 
-        public void Play(int stateHash, float fadeIn = 0.2f, float fadeOut = 0.8f, float offset = 0f)
+        public void Play(int stateHash, float fadeIn = 0.2f, float offset = 0f, int layer = 0)
         {
             if (!animator)
             {
@@ -137,17 +131,17 @@ namespace StudioScor.Utilities
                 }
             }
 
-            PlayAnimation(stateHash, fadeIn, fadeOut, offset);
+            PlayAnimation(stateHash, fadeIn, offset, layer);
         }
-        private void PlayAnimation(int stateHash, float fadeIn, float fadeOut, float offset)
+        private void PlayAnimation(int stateHash, float fadeIn, float offset, int layer = 0)
         {
             CancelAnimation();
 
             isPlaying = true;
             currentStateHash = stateHash;
             this.fadeIn = fadeIn;
-            this.fadeOut = fadeOut;
             this.offset = offset;
+            this.layer = layer;
 
             SetAnimationState(EAnimationState.TryPlay);
         }
@@ -290,15 +284,6 @@ namespace StudioScor.Utilities
         private void OnBlendOut()
         {
             Callback_OnStartedBlendOut();
-
-            if (fadeOut < 1f)
-            {
-                animator.CrossFade(defaultStateHash, 1f - fadeOut, layer);
-            }
-            else
-            {
-                SetAnimationState(EAnimationState.Finish);
-            }
         }
 
 
