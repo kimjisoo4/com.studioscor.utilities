@@ -18,6 +18,7 @@ namespace StudioScor.Utilities
             cameraTransform = Camera.main.transform;
             aimingSystem = aimingSystemActor.GetComponent<IAimingSystem>();
         }
+
         private void LateUpdate()
         {
             Vector3 position;

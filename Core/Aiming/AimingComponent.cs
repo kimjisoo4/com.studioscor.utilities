@@ -43,7 +43,17 @@ namespace StudioScor.Utilities
 
 
         public bool IsPlaying => isPlaying;
-        public Vector3 AimPosition => aimPosition;
+        public Vector3 AimPosition
+        {
+            get
+            {
+                if (target is null)
+                    return aimPosition;
+                else
+                    return target.Point.position;
+            }
+        }
+
         public ITargeting Target => target;
 
         public event IAimingSystem.AimingSystemEventHandler OnChangedTarget;
