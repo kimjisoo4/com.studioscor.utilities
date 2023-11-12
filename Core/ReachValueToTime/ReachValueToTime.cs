@@ -11,7 +11,9 @@ namespace StudioScor.Utilities
 
         private bool isPlaying = false;
         private float prevDistance = 0f;
+        private float deltaDistance = 0f;
 
+        public float DeltaDistance => deltaDistance;
         public float Distance => distance;
         public AnimationCurve Curve => curve;
         public bool IsPlaying => isPlaying;
@@ -35,6 +37,7 @@ namespace StudioScor.Utilities
             distance = reachValueToTime.distance;
             curve = reachValueToTime.curve;
             prevDistance = reachValueToTime.prevDistance;
+            deltaDistance = reachValueToTime.deltaDistance;
         }
         public void SetDistance(float distance)
         {
@@ -72,6 +75,7 @@ namespace StudioScor.Utilities
             this.distance = distance;
             this.curve = curve;
             prevDistance = 0f;
+            deltaDistance = 0f;
 
             isPlaying = true;
         }
@@ -82,6 +86,7 @@ namespace StudioScor.Utilities
 
             this.distance = distance; 
             prevDistance = 0f;
+            deltaDistance = 0f;
 
             isPlaying = true;
         }
@@ -92,6 +97,7 @@ namespace StudioScor.Utilities
                 return;
 
             prevDistance = 0f;
+            deltaDistance = 0f;
 
             isPlaying = true;
         }
@@ -117,8 +123,7 @@ namespace StudioScor.Utilities
 
             float distance = Curve.Evaluate(normalizeTime) * Distance;
 
-            float currentDistance = distance - prevDistance;
-
+            deltaDistance = distance - prevDistance;
             prevDistance = distance;
 
             if (normalizeTime >= 1f)
@@ -126,7 +131,7 @@ namespace StudioScor.Utilities
                 EndMovement();
             }
 
-            return currentDistance;
+            return deltaDistance;
         }
     }
 }

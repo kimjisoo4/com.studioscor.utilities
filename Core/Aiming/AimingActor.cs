@@ -1,22 +1,43 @@
 ﻿using UnityEngine;
 
-
 namespace StudioScor.Utilities
 {
     [AddComponentMenu("StudioScor/Utilities/Aiming/Aiming Actor", order: 0)]
     public class AimingActor : BaseMonoBehaviour
     {
         [Header(" [ Aim Component ] ")]
-        [SerializeField] private GameObject aimingSystemActor;
-        [SerializeField][Min(0f)] private float lerpSpeed = 10f;
+        [SerializeField] private GameObject _aimingSystemActor;
+        [SerializeField][Min(0f)] private float _lerpSpeed = 10f;
 
-        private Transform cameraTransform;
-        private IAimingSystem aimingSystem;
+        private Transform _cameraTransform;
+        private IAimingSystem _aimingSystem;
 
+
+        private void OnValidate()
+        {
+#if UNITY_EDITOR
+            if (gameObject.TryGetComponentInParent(out IAimingSystem aimingSystem))
+            {
+                _aimingSystemActor = aimingSystem.gameObject;
+
+            }
+#endif
+        }
         private void Awake()
         {
-            cameraTransform = Camera.main.transform;
-            aimingSystem = aimingSystemActor.GetComponent<IAimingSystem>();
+            _cameraTransform = Camera.main.transform;
+
+            if(_aimingSystemActor)
+            {
+                _aimingSystem = _aimingSystemActor.GetComponent<IAimingSystem>();
+            }
+            else
+            {
+                if (gameObject.TryGetComponentInParent(out _aimingSystem))
+                {
+                    _aimingSystemActor = _aimingSystem.gameObject;
+                }
+            }
         }
 
         private void LateUpdate()
@@ -24,18 +45,17 @@ namespace StudioScor.Utilities
             Vector3 position;
             Quaternion rotation;
 
-            if(lerpSpeed > 0)
+            if(_lerpSpeed > 0)
             {
                 float deltaTime = Time.deltaTime;
 
-                position = Vector3.Lerp(transform.position, aimingSystem.AimPosition, deltaTime * lerpSpeed);
-                rotation = Quaternion.Slerp(transform.rotation, cameraTransform.rotation, deltaTime * lerpSpeed);
-
+                position = Vector3.Lerp(transform.position, _aimingSystem.AimPosition, deltaTime * _lerpSpeed);
+                rotation = Quaternion.Slerp(transform.rotation, _cameraTransform.rotation, deltaTime * _lerpSpeed);
             }
             else
             {
-                position = aimingSystem.AimPosition;
-                rotation = cameraTransform.rotation;
+                position = _aimingSystem.AimPosition;
+                rotation = _cameraTransform.rotation;
             }
 
             transform.SetPositionAndRotation(position, rotation);

@@ -34,6 +34,19 @@ namespace StudioScor.Utilities
             return target.gameObject.TryGetComponentInParentOrChildren(out component);
         }
 
+
+        public static bool TryGetComponentInParent<T>(this GameObject gameObject, out T component)
+        {
+            component = gameObject.GetComponentInParent<T>();
+
+            return component is not null;
+        }
+        public static bool TryGetComponentInParent<T>(this Component target, out T component)
+        {
+            return target.gameObject.TryGetComponentInParent(out component);
+        }
+
+
         public static T GetComponentInRootOrParent<T>(this GameObject gameObject)
         {
             var component = gameObject.transform.root.GetComponent<T>();

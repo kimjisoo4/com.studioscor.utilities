@@ -11,9 +11,9 @@ namespace StudioScor.Utilities
 
         protected override void Reset()
         {
+#if UNITY_EDITOR
             base.Reset();
 
-#if UNITY_EDITOR
             characterController = GetComponentInParent<CharacterController>();
 #endif
         }
@@ -23,7 +23,9 @@ namespace StudioScor.Utilities
             base.Awake();
          
             if(!characterController)
+            {
                 characterController = GetComponentInParent<CharacterController>();
+            }
         }
 
         protected override void UpdateRootMotion()

@@ -67,13 +67,13 @@ namespace StudioScor.Utilities
             OnUpdatedHits?.Invoke(hits);
         }
 
-        protected virtual void OnEnable()
+        private void OnEnable()
         {
             _Explosion.OnExplosion();
 
             EnterStateAction();
         }
-        protected virtual void OnDisable()
+        private void OnDisable()
         {
             _Explosion.EndExplosion();
 

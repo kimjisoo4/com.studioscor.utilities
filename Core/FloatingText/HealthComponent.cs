@@ -134,7 +134,7 @@ namespace StudioScor.Utilities
         }
 
 
-		protected virtual void OnEnable()
+		private void OnEnable()
         {
 			if (_Setup.Equals(ESetup.Enable))
 				ResetHealth();

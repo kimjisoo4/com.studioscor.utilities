@@ -5,36 +5,36 @@ namespace StudioScor.Utilities
     public class SimpleFadeComponent : BaseMonoBehaviour
     {
         [Header(" [ Simple Fade Component ] ")]
-        [SerializeField] private FiniteStateMachineSystem<SimpleFadeState> _StateMachine;
-        [SerializeField] private FadeBase _Fade;
-        [SerializeField] private SimpleFadeState _FadeInState;
-        [SerializeField] private SimpleFadeState _FadeOutState;
+        [SerializeField] private FiniteStateMachineSystem<SimpleFadeState> stateMachine;
+        [SerializeField] private FadeBase fade;
+        [SerializeField] private SimpleFadeState fadeInState;
+        [SerializeField] private SimpleFadeState fadeOutState;
 
-        public FadeBase Fade => _Fade;
-        public float Amount => _Fade.Amount;
+        public FadeBase Fade => fade;
+        public float Amount => fade.Amount;
 
         public void SetFadeAmount(float amount)
         {
             Log($"Set Fade Amount - [{amount:N2}]");
 
-            _Fade.SetFadeAmount(amount);
+            fade.SetFadeAmount(amount);
         }
 
         private void Awake()
         {
-            _StateMachine.Setup();
+            stateMachine.Setup();
         }
 
         private void Start()
         {
-            Fade_OnChangedFadeState(_Fade.State);
+            Fade_OnChangedFadeState(fade.State);
 
-            _Fade.OnChangedFadeState += Fade_OnChangedFadeState;
+            fade.OnChangedFadeState += Fade_OnChangedFadeState;
         }
 
         private void OnDestroy()
         {
-            _Fade.OnChangedFadeState -= Fade_OnChangedFadeState;
+            fade.OnChangedFadeState -= Fade_OnChangedFadeState;
         }
 
         private void Fade_OnChangedFadeState(EFadeState state)
@@ -57,19 +57,19 @@ namespace StudioScor.Utilities
         {
             Log(" End Fade");
 
-            _StateMachine.TrySetDefaultState();
+            stateMachine.TrySetDefaultState();
         }
         private void OnFadeIn()
         {
             Log(" On Fade In");
 
-            _StateMachine.TrySetState(_FadeInState);
+            stateMachine.TrySetState(fadeInState);
         }
         private void OnFadeOut()
         {
             Log(" On Fade Out");
 
-            _StateMachine.TrySetState(_FadeOutState);
+            stateMachine.TrySetState(fadeOutState);
         }
 
 

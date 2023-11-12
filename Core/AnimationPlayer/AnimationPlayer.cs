@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Collections;
 
 namespace StudioScor.Utilities
 {
@@ -20,27 +19,27 @@ namespace StudioScor.Utilities
     public class AnimationPlayer : BaseMonoBehaviour
     {
         [Header(" [ Animation Player ] ")]
-        [SerializeField] private Animator animator;
-        [SerializeField] private string defaultState = "Empty";
+        [SerializeField] private Animator _animator;
+        [SerializeField] private string _defaultState = "Empty";
 
-        private int layer = 0;
+        private int _defaultStateHash;
+        
+        private EAnimationState _state;
 
-        private int defaultStateHash;
-        private int currentStateHash;
+        private int _layer = 0;
+        private int _currentStateHash;
 
-        private float fadeIn;
-        private float offset;
+        private float _fadeIn;
+        private float _offset;
+        private float _normalizedTime;
+        private bool _isPlaying = false;
 
-        private List<string> notifyStates;
 
-        private EAnimationState state;
-        private bool isPlaying = false;
-        private float normalizedTime;
+        private readonly List<string> _notifyStates = new();
 
-        public Animator Animator => animator;
-        public bool IsPlaying => isPlaying;
-        public float NormalizedTime => normalizedTime;
-
+        public Animator Animator => _animator;
+        public bool IsPlaying => _isPlaying;
+        public float NormalizedTime => _normalizedTime;
 
         public event Action OnStarted;
         public event Action OnFailed;
@@ -56,28 +55,29 @@ namespace StudioScor.Utilities
 
         private void Reset()
         {
-            gameObject.TryGetComponentInParentOrChildren(out animator);
+#if UNITY_EDITOR
+            gameObject.TryGetComponentInParentOrChildren(out _animator);
+#endif
         }
         private void Awake()
         {
-            notifyStates = new();
-            defaultStateHash = Animator.StringToHash(defaultState);
+            _defaultStateHash = Animator.StringToHash(_defaultState);
         }
 
         private void LateUpdate()
         {
-            if (!isPlaying)
+            if (!_isPlaying)
                 return;
 
-            var currentState = animator.GetCurrentAnimatorStateInfo(layer);
-            var nextState = animator.GetNextAnimatorStateInfo(layer);
+            var currentState = _animator.GetCurrentAnimatorStateInfo(_layer);
+            var nextState = _animator.GetNextAnimatorStateInfo(_layer);
 
-            normalizedTime = currentStateHash == nextState.shortNameHash ? nextState.normalizedTime : currentState.normalizedTime;
+            _normalizedTime = _currentStateHash == nextState.shortNameHash ? nextState.normalizedTime : currentState.normalizedTime;
 
-            switch (state)
+            switch (_state)
             {
                 case EAnimationState.TryPlay:
-                    if (currentState.shortNameHash == currentStateHash || nextState.shortNameHash == currentStateHash)
+                    if (currentState.shortNameHash == _currentStateHash || nextState.shortNameHash == _currentStateHash)
                     {
                         SetAnimationState(EAnimationState.Start);
                     }
@@ -88,19 +88,19 @@ namespace StudioScor.Utilities
                     }
                     break;
                 case EAnimationState.Start:
-                    if (!animator.IsInTransition(layer) && currentStateHash == currentState.shortNameHash)
+                    if (!_animator.IsInTransition(_layer) && _currentStateHash == currentState.shortNameHash)
                     {
                         SetAnimationState(EAnimationState.Playing);
                     }
                     break;
                 case EAnimationState.Playing:
-                    if (animator.IsInTransition(layer))
+                    if (_animator.IsInTransition(_layer))
                     {
                         SetAnimationState(EAnimationState.BlendOut);
                     }
                     break;
                 case EAnimationState.BlendOut:
-                    if (!animator.IsInTransition(layer))
+                    if (!_animator.IsInTransition(_layer))
                     {
                         SetAnimationState(EAnimationState.Finish);
                     }
@@ -121,13 +121,13 @@ namespace StudioScor.Utilities
 
         public void Play(int stateHash, float fadeIn = 0.2f, float offset = 0f, int layer = 0)
         {
-            if (!animator)
+            if (!_animator)
             {
                 Log("Animator Is Null. Try GetComponent");
 
-                if (!gameObject.TryGetComponentInParentOrChildren(out animator))
+                if (!gameObject.TryGetComponentInParentOrChildren(out _animator))
                 {
-                    Log("Animator Is NULL!!", true);
+                    LogError("Animator Is NULL!!");
                 }
             }
 
@@ -137,11 +137,11 @@ namespace StudioScor.Utilities
         {
             CancelAnimation();
 
-            isPlaying = true;
-            currentStateHash = stateHash;
-            this.fadeIn = fadeIn;
-            this.offset = offset;
-            this.layer = layer;
+            _isPlaying = true;
+            _currentStateHash = stateHash;
+            this._fadeIn = fadeIn;
+            this._offset = offset;
+            this._layer = layer;
 
             SetAnimationState(EAnimationState.TryPlay);
         }
@@ -149,7 +149,7 @@ namespace StudioScor.Utilities
 
         private void SetAnimationState(EAnimationState newState)
         {
-            state = newState;
+            _state = newState;
 
             switch (newState)
             {
@@ -181,12 +181,12 @@ namespace StudioScor.Utilities
 
         private void OnPlaying()
         {
-            Callback_OnFinishedBlendIn();
+            Invoke_OnFinishedBlendIn();
         }
 
         public void TryStopAnimation(int hash, float fadeTime = 0.2f)
         {
-            if (currentStateHash != hash)
+            if (_currentStateHash != hash)
                 return;
 
             ForceStopAnimation(fadeTime);
@@ -198,7 +198,7 @@ namespace StudioScor.Utilities
 
             CancelAnimation();
 
-            animator.CrossFade(defaultStateHash, fadeTime, layer);
+            _animator.CrossFade(_defaultStateHash, fadeTime, _layer);
         }
         private void CancelAnimation()
         {
@@ -223,23 +223,23 @@ namespace StudioScor.Utilities
         }
         private void ExitAllNotify()
         {
-            if (notifyStates.Count <= 0)
+            if (_notifyStates.Count <= 0)
                 return;
 
-            foreach (var notify in notifyStates)
+            foreach (var notify in _notifyStates)
             {
-                Callback_OnExitNotifyState(notify);
+                Invoke_OnExitNotifyState(notify);
             }
 
-            notifyStates.Clear();
+            _notifyStates.Clear();
         }
 
         private void OnTryPlay()
         {
-            animator.CrossFade(currentStateHash, fadeIn, layer, offset);
+            _animator.CrossFade(_currentStateHash, _fadeIn, _layer, _offset);
 
-            isPlaying = true;
-            normalizedTime = 0f;
+            _isPlaying = true;
+            _normalizedTime = 0f;
 
             ClearEvents();
         }
@@ -247,23 +247,23 @@ namespace StudioScor.Utilities
         {
             ExitAllNotify();
 
-            Callback_OnCanceled();
+            Invoke_OnCanceled();
 
-            currentStateHash = default;
+            _currentStateHash = default;
 
             ClearEvents();
         }
         private void OnStart()
         {
-            Callback_OnStarted();
+            Invoke_OnStarted();
         }
         private void OnFail()
         {
-            normalizedTime = 0f;
-            isPlaying = false;
-            currentStateHash = default;
+            _normalizedTime = 0f;
+            _isPlaying = false;
+            _currentStateHash = default;
 
-            Callback_OnFailed();
+            Invoke_OnFailed();
 
             ClearEvents();
         }
@@ -272,18 +272,18 @@ namespace StudioScor.Utilities
         {
             ExitAllNotify();
 
-            normalizedTime = 1f;
-            isPlaying = false;
-            currentStateHash = default;
+            _normalizedTime = 1f;
+            _isPlaying = false;
+            _currentStateHash = default;
 
-            Callback_OnFinished();
+            Invoke_OnFinished();
 
             ClearEvents();
         }
 
         private void OnBlendOut()
         {
-            Callback_OnStartedBlendOut();
+            Invoke_OnStartedBlendOut();
         }
 
 
@@ -292,35 +292,35 @@ namespace StudioScor.Utilities
             if (!IsPlaying)
                 return;
 
-            Callback_OnNotify(notify);
+            Invoke_OnNotify(notify);
         }
         public void AnimNotifyStateEnter(string notify)
         {
             if (!IsPlaying)
                 return;
 
-            if (notifyStates.Contains(notify))
+            if (_notifyStates.Contains(notify))
                 return;
 
-            notifyStates.Add(notify);
+            _notifyStates.Add(notify);
 
-            Callback_OnEnterNotifyState(notify);
+            Invoke_OnEnterNotifyState(notify);
         }
         public void AnimNotifyStateExit(string notify)
         {
             if (!IsPlaying)
                 return;
 
-            if (!notifyStates.Contains(notify))
+            if (!_notifyStates.Contains(notify))
                 return;
 
-            notifyStates.Remove(notify);
+            _notifyStates.Remove(notify);
 
-            Callback_OnExitNotifyState(notify);
+            Invoke_OnExitNotifyState(notify);
         }
 
         #region Callback
-        protected void Callback_OnStarted()
+        protected void Invoke_OnStarted()
         {
             Log("On Enter Animation");
 
@@ -328,7 +328,7 @@ namespace StudioScor.Utilities
 
             OnFailed = null;
         }
-        protected void Callback_OnFailed()
+        protected void Invoke_OnFailed()
         {
             Log("On Failed Animation");
 
@@ -336,7 +336,7 @@ namespace StudioScor.Utilities
 
             OnFailed = null;
         }
-        protected void Callback_OnCanceled()
+        protected void Invoke_OnCanceled()
         {
             Log("On Canceled Animation");
 
@@ -346,7 +346,7 @@ namespace StudioScor.Utilities
             OnFinished = null;
             OnStartedBlendOut = null;
         }
-        protected void Callback_OnFinished()
+        protected void Invoke_OnFinished()
         {
             Log("On Finished Animation");
 
@@ -355,7 +355,7 @@ namespace StudioScor.Utilities
             OnFinished = null;
             OnCanceled = null;
         }
-        protected void Callback_OnFinishedBlendIn()
+        protected void Invoke_OnFinishedBlendIn()
         {
             Log("On Finished Blend In Animation");
 
@@ -363,7 +363,7 @@ namespace StudioScor.Utilities
 
             OnFinishedBlendIn = null;
         }
-        protected void Callback_OnStartedBlendOut()
+        protected void Invoke_OnStartedBlendOut()
         {
             Log("On Started Blend Out Animation");
 
@@ -372,21 +372,21 @@ namespace StudioScor.Utilities
             OnStartedBlendOut = null;
         }
 
-        protected void Callback_OnNotify(string notify)
+        protected void Invoke_OnNotify(string notify)
         {
             Log("On Notify - " + notify);
 
             OnNotify?.Invoke(notify);
         }
 
-        protected void Callback_OnEnterNotifyState(string notify)
+        protected void Invoke_OnEnterNotifyState(string notify)
         {
             Log("On Enter Notify State - " + notify);
 
             OnEnterNotifyState?.Invoke(notify);
         }
 
-        protected void Callback_OnExitNotifyState(string notify)
+        protected void Invoke_OnExitNotifyState(string notify)
         {
             Log("On Exit Notify State - " + notify);
 

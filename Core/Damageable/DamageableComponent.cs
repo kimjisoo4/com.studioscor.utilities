@@ -20,14 +20,14 @@ namespace StudioScor.Utilities
 
         private void OnEnable()
         {
-			if (autoPlaying)
-				OnDamageable();
+            if (autoPlaying)
+                OnDamageable();
         }
 		private void OnDisable()
-		{
-			if (autoPlaying)
-				EndDamageable();
-		}
+        {
+            if (autoPlaying)
+                EndDamageable();
+        }
 
 		public void OnDamageable()
         {

@@ -7,36 +7,37 @@ namespace StudioScor.Utilities
     public class GameEventListnerComponent : BaseMonoBehaviour
     {
         [Header(" [ GameEvent Listner Component ] ")]
-        [SerializeField] private GameEvent _GameEvent;
-        [SerializeField] private UnityEvent _Event;
+        [SerializeField] private GameEvent gameEvent;
+        [SerializeField] private UnityEvent triggerEvent;
 
-        private GameEventListner _GameEventListener;
+        private GameEventListner gameEventListener;
 
         private void Awake()
         {
-            _GameEventListener = new GameEventListner(_GameEvent);
+            gameEventListener = new GameEventListner(gameEvent);
 
-            _GameEventListener.OnEvent += GameEventListner_OnEvent;
+            gameEventListener.OnEvent += GameEventListner_OnEvent;
         }
 
         private void GameEventListner_OnEvent()
         {
-            Log($"Invoke - [ {_GameEvent.name} ]");
+            Log($"Invoke - [ {gameEvent.name} ]");
 
-            _Event.Invoke();
+            triggerEvent.Invoke();
         }
 
         private void OnEnable()
         {
-            Log($" Add Listen - [ {_GameEvent.name} ] ");
+            Log($" Add Listen - [ {gameEvent.name} ] ");
 
-            _GameEventListener.OnListner();
+            gameEventListener.OnListner();
         }
+
         private void OnDisable()
         {
-            Log($" End Listen - [ {_GameEvent.name} ] ");
+            Log($" End Listen - [ {gameEvent.name} ] ");
 
-            _GameEventListener.Endlistner();
+            gameEventListener.Endlistner();
         }
     }
 

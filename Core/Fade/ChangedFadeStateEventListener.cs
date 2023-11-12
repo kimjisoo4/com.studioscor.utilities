@@ -6,17 +6,17 @@ namespace StudioScor.Utilities
     public class ChangedFadeStateEventListener : BaseMonoBehaviour
     {
         [Header(" [ Changed Fade State Event Listner ] ")]
-        [SerializeField] private FadeBase _Fade;
-        [SerializeField] private ChangedFadeStateEvents _Events;
+        [SerializeField] private FadeBase _fade;
+        [SerializeField] private ChangedFadeStateEvents events;
 
 
         private void OnEnable()
         {
-            _Events.AddListener(_Fade);
+            events.AddListener(_fade);
         }
         private void OnDisable()
         {
-            _Events.RemoveListener(_Fade);
+            events.RemoveListener(_fade);
         }
     }
 

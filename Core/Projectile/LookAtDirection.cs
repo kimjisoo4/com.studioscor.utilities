@@ -13,7 +13,6 @@ namespace StudioScor.Utilities
 
         [SerializeField][SReadOnly] private bool isPlaying = false;
         [SerializeField] private Quaternion turnRotation;
-
         public bool IsPlaying => isPlaying;
         public Quaternion Rotation => turnRotation;
 

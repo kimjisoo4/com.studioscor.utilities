@@ -24,20 +24,14 @@ namespace StudioScor.Utilities
         
         private void OnDisable()
         {
-#if UNITY_EDITOR
-            if (!gameObject.scene.isLoaded)
-                return;
-#endif
             if (pool is null)
                 return;
-
             if (releasedWhenDisable)
             {
                 if (transform.parent != pool.Container)
                 {
                     if (gameObject.activeSelf)
                         gameObject.SetActive(false);
-
                     CoroutineManager.Instance.StartCoroutine(DeleayedRelease());
                 }
                 else

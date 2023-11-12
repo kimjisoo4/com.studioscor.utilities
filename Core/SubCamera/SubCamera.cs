@@ -31,7 +31,7 @@ namespace StudioScor.Utilities
         {
             if (!gameObject.scene.isLoaded)
                 return;
-
+         
             DetachCamera();
         }
 

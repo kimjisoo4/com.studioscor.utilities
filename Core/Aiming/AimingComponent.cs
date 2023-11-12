@@ -17,57 +17,58 @@ namespace StudioScor.Utilities
         }
 
         [Header(" [ Aiming Component ] ")]
-        [SerializeField] private EAimingOrigin aimingOrigin = EAimingOrigin.Screen;
-        [SerializeField][SEnumCondition(nameof(aimingOrigin), (int)EAimingOrigin.Transform)] private Transform originTransform;
-        [SerializeField][SEnumCondition(nameof(aimingOrigin), (int)EAimingOrigin.Transform)] private Vector3 offset;
-        [SerializeField] private new Camera camera;
-        [SerializeField] private float distance = 10f;
-        [SerializeField] private float radius = 1f;
-        [SerializeField] private LayerMask layer;
-        [SerializeField] private IgnoreTrace[] ignoreTraces;
+        [SerializeField] private EAimingOrigin _aimingOrigin = EAimingOrigin.Screen;
+        [SerializeField][SEnumCondition(nameof(_aimingOrigin), (int)EAimingOrigin.Transform)] private Transform _originTransform;
+        [SerializeField][SEnumCondition(nameof(_aimingOrigin), (int)EAimingOrigin.Transform)] private Vector3 _offset;
+        [SerializeField][SEnumCondition(nameof(_aimingOrigin), (int)EAimingOrigin.Screen)] private Camera _camera;
+        [SerializeField] private float _distance = 10f;
+        [SerializeField] private float _radius = 1f;
+        [SerializeField] private LayerMask _layer;
+        [SerializeField] private IgnoreTrace[] _ignoreTraces;
 
         [Header(" Auto Playing ")]
-        [SerializeField] private bool autoPlaying = true;
+        [SerializeField] private bool _autoPlaying = true;
 
         [Header(" Events ")]
-        [SerializeField] private UnityEvent<Transform> onChangedTarget;
+        [SerializeField] private bool _useUnityEvent = false;
+        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvent<Transform> _onChangedTarget;
 
 
-        private List<RaycastHit> hits = new();
-        private readonly List<Transform> ignoreTransforms = new();
+        private List<RaycastHit> _hits = new();
+        private readonly List<Transform> _ignoreTransforms = new();
 
-        private Vector3 aimPosition;
-        private ITargeting target;
-        private bool isPlaying = false;
-        private Transform prevHitTransform;
+        private Vector3 _aimPosition;
+        private ITargeting _target;
+        private bool _isPlaying = false;
+        private Transform _prevHitTransform;
 
 
-        public bool IsPlaying => isPlaying;
+        public bool IsPlaying => _isPlaying;
         public Vector3 AimPosition
         {
             get
             {
-                if (target is null)
-                    return aimPosition;
+                if (_target is null)
+                    return _aimPosition;
                 else
-                    return target.Point.position;
+                    return _target.Point.position;
             }
         }
 
-        public ITargeting Target => target;
+        public ITargeting Target => _target;
 
         public event IAimingSystem.AimingSystemEventHandler OnChangedTarget;
 
         private void Reset()
         {
 #if UNITY_EDITOR
-            camera = Camera.main;
+            _camera = Camera.main;
 #endif
         }
 
         private void OnEnable()
         {
-            if (autoPlaying)
+            if (_autoPlaying)
                 OnAiming();
         }
         private void OnDisable()
@@ -77,15 +78,15 @@ namespace StudioScor.Utilities
 
         void Start()
         {
-            if (!camera)
-                camera = Camera.main;
+            if (!_camera)
+                _camera = Camera.main;
         }
 
         void FixedUpdate()
         {
-            if (!camera)
+            if (!_camera)
             {
-                camera = Camera.main;
+                _camera = Camera.main;
 
                 return;
             }
@@ -104,13 +105,13 @@ namespace StudioScor.Utilities
         }
         public void AddIgnoreTarget(Transform add)
         {
-            Log($" Add Ignore Transform {add.gameObject.name}", false, SUtility.NAME_COLOR_GREEN);
+            Log($" Add Ignore Transform {add.gameObject.name}", SUtility.NAME_COLOR_GREEN);
 
-            ignoreTransforms.Add(add);
+            _ignoreTransforms.Add(add);
         }
         public void AddIgnoreTarget(IEnumerable<Transform> add)
         {
-            ignoreTransforms.AddRange(add);
+            _ignoreTransforms.AddRange(add);
         }
 
         public void RemoveIgnoreTarget(Component component)
@@ -124,9 +125,9 @@ namespace StudioScor.Utilities
 
         public void RemoveIgnoreTarget(Transform remove)
         {
-            Log($" Remove Ignore Transform {remove.gameObject.name}", false, SUtility.NAME_COLOR_GRAY);
+            Log($" Remove Ignore Transform {remove.gameObject.name}", SUtility.NAME_COLOR_GRAY);
 
-            ignoreTransforms.Remove(remove);
+            _ignoreTransforms.Remove(remove);
         }
         public void RemoveIgnoreTarget(IEnumerable<Transform> removes)
         {
@@ -140,26 +141,26 @@ namespace StudioScor.Utilities
 
         public void OnAiming()
         {
-            if (isPlaying)
+            if (_isPlaying)
                 return;
 
-            isPlaying = true;
+            _isPlaying = true;
         }
         public void EndAiming()
         {
-            if (!isPlaying)
+            if (!_isPlaying)
                 return;
 
-            isPlaying = false;
+            _isPlaying = false;
         }
         public void UpdateAiming()
         {
-            if (!isPlaying)
+            if (!_isPlaying)
                 return;
 
-            hits.Clear();
+            _hits.Clear();
 
-            switch (aimingOrigin)
+            switch (_aimingOrigin)
             {
                 case EAimingOrigin.Screen:
                     CalcScreenAiming();
@@ -186,36 +187,36 @@ namespace StudioScor.Utilities
             if (!origin)
                 return;
 
-            originTransform = origin;
+            _originTransform = origin;
         }
         #endregion
 
         public void SetTarget(Transform newTarget = null)
         {
-            if (prevHitTransform == newTarget)
+            if (_prevHitTransform == newTarget)
                 return;
 
-            prevHitTransform = newTarget;
+            _prevHitTransform = newTarget;
 
-            if (prevHitTransform)
+            if (_prevHitTransform)
             {
-                prevHitTransform.TryGetComponentInParentOrChildren(out target);
+                _prevHitTransform.TryGetComponentInParentOrChildren(out _target);
             }
             else
             {
-                target = null;
+                _target = null;
             }
 
-            Callback_OnChangedTarget();
+            Invoke_OnChangedTarget();
         }
 
         private void CalcTransformAiming()
         {
-            if (!originTransform)
+            if (!_originTransform)
                 return;
 
-            Vector3 start = originTransform.TransformPoint(offset);
-            Vector3 direction = start.Direction(camera.transform.TransformPoint(Vector3.forward * distance));
+            Vector3 start = _originTransform.TransformPoint(_offset);
+            Vector3 direction = start.Direction(_camera.transform.TransformPoint(Vector3.forward * _distance));
 
             OnCast(start, direction);
         }
@@ -223,28 +224,28 @@ namespace StudioScor.Utilities
         private void CalcScreenAiming()
         {
             Vector2 center = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
-            Ray ray = camera.ScreenPointToRay(center);
+            Ray ray = _camera.ScreenPointToRay(center);
 
             OnCast(ray.origin, ray.direction);
         }
 
         private void OnCast(Vector3 start, Vector3 direction)
         {
-            if (!SUtility.Physics.DrawSphereCastAll(start, direction, distance, radius, layer, ref hits, ignoreTransforms, UseDebug))
+            if (!SUtility.Physics.DrawSphereCastAll(start, direction, _distance, _radius, _layer, ref _hits, _ignoreTransforms, UseDebug))
             {
-                aimPosition = start + direction * distance;
+                _aimPosition = start + direction * _distance;
 
                 SetTarget(null);
             }
             else
             {
-                foreach (var ignoreTrace in ignoreTraces)
+                foreach (var ignoreTrace in _ignoreTraces)
                 {
-                    ignoreTrace.Ignore(transform, ref hits);
+                    ignoreTrace.Ignore(transform, ref _hits);
 
-                    if (hits.Count == 0)
+                    if (_hits.Count == 0)
                     {
-                        aimPosition = start + direction * distance;
+                        _aimPosition = start + direction * _distance;
 
                         SetTarget(null);
 
@@ -252,24 +253,27 @@ namespace StudioScor.Utilities
                     }
                 }
 
-                SUtility.Sort.SortRaycastHitByDistance(start, ref hits);
+                SUtility.Sort.SortRaycastHitByDistance(start, ref _hits);
 
-                var hit = hits[0].transform;
+                var hit = _hits[0].transform;
 
                 SetTarget(hit);
 
-                aimPosition = start + direction * hits[0].distance;
+                _aimPosition = start + direction * _hits[0].distance;
             }
         }
         
 
-        protected void Callback_OnChangedTarget()
+        protected void Invoke_OnChangedTarget()
         {
-            base.Log($"On Changed Target - [ {(this.target is null ? "Null" : this.target.Point.name)} ] ");
+            base.Log($"On Changed Target - [ {(_target is null ? "Null" : _target.Point.name)} ] ");
 
-            Transform target = this.target is null ? null : this.target.Point;
+            Transform target = _target is null ? null : _target.Point;
 
-            onChangedTarget?.Invoke(target);
+            if(_useUnityEvent)
+            {
+                _onChangedTarget?.Invoke(target);
+            }
 
             OnChangedTarget?.Invoke(this, target);
         }

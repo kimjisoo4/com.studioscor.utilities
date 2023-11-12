@@ -39,7 +39,7 @@ namespace StudioScor.Utilities
 			}
             else if(instance != this)
             {
-				Log("Initialization - Destory", false, SUtility.NAME_COLOR_RED);
+				Log("Initialization - Destory", SUtility.NAME_COLOR_RED);
 
 				Destroy(gameObject);
             }
@@ -47,11 +47,11 @@ namespace StudioScor.Utilities
 
 		private void Initialization()
         {
-			Log("Initialization", false, SUtility.NAME_COLOR_GREEN);
+			Log("Initialization", SUtility.NAME_COLOR_GREEN);
 
 			if (useDontDestroy)
             {
-				Log("Don't Destroy On Load", false, SUtility.NAME_COLOR_GREEN);
+				Log("Don't Destroy On Load", SUtility.NAME_COLOR_GREEN);
 
 				DontDestroyOnLoad(gameObject);
 			}

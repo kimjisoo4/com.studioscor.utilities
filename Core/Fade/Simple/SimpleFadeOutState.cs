@@ -5,13 +5,13 @@ namespace StudioScor.Utilities
     public class SimpleFadeOutState : SimpleFadeState
     {
         [Header(" [ Simple Fading State ] ")]
-        [SerializeField] private float _Duration;
+        [SerializeField] private float duration;
 
-        private float _ElapsedTime = 0f;
+        private float elapsedTime = 0f;
 
         private void OnEnable()
         {
-            _ElapsedTime = _Duration * (1 - SimpleFade.Amount);
+            elapsedTime = duration * (1 - SimpleFade.Amount);
         }
 
         private void Update()
@@ -21,9 +21,9 @@ namespace StudioScor.Utilities
             if (deltaTime.SafeEquals(0f))
                 return;
 
-            _ElapsedTime += deltaTime;
+            elapsedTime += deltaTime;
 
-            float amount = _ElapsedTime.SafeDivide(_Duration);
+            float amount = elapsedTime.SafeDivide(duration);
 
             amount = Mathf.Min(1f, amount);
 

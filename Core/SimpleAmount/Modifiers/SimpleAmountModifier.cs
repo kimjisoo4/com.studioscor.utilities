@@ -66,7 +66,7 @@ namespace StudioScor.Utilities
         private void OnAddModifier()
         {
             if(!_Target.TryGetComponentInParentOrChildren(out _SimpleAmount))
-                Log(" Simple Amount Is Null!", true);
+                LogError(" Simple Amount Is Null!");
 
             _SimpleAmount.AddModifier(this);
         }
@@ -74,7 +74,7 @@ namespace StudioScor.Utilities
         private void OnRemoveModifier()
         {
             if (!_Target.TryGetComponentInParentOrChildren(out _SimpleAmount))
-                Log(" Simple Amount Is Null!", true);
+                LogError(" Simple Amount Is Null!");
 
             _SimpleAmount.RemoveModifier(this);
 
