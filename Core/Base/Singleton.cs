@@ -9,6 +9,7 @@ namespace StudioScor.Utilities
 		[SerializeField] private bool useDontDestroy = false;
 
 		private static T instance = default;
+
 		public static T Instance
 		{
 			get
@@ -65,7 +66,6 @@ namespace StudioScor.Utilities
 		{
 			Log("Setup");
 		}
-
     }
 
 }

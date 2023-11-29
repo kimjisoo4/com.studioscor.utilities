@@ -31,7 +31,7 @@ namespace StudioScor.Utilities
 
         [Header(" Events ")]
         [SerializeField] private bool _useUnityEvent = false;
-        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvent<Transform> _onChangedTarget;
+        [SerializeField] private UnityEvent<Transform> _onChangedTarget;
 
 
         private List<RaycastHit> _hits = new();

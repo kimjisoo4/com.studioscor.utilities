@@ -6,6 +6,10 @@ namespace StudioScor.Utilities
 
     public abstract class BaseMonoBehaviour : MonoBehaviour
     {
+        private bool _isApplicationQuit = false;
+        protected bool IsApplicationQuit => _isApplicationQuit;
+
+        #region EDITOR ONLY
 #if UNITY_EDITOR
         [Header(" [ Use Debug ] ")]
         public bool UseDebug;
@@ -28,6 +32,13 @@ namespace StudioScor.Utilities
 #if UNITY_EDITOR
             SUtility.Debug.LogError($"{GetType().Name} [{name}] : {log}", this, color);
 #endif
+        }
+        #endregion
+
+
+        protected virtual void OnApplicationQuit()
+        {
+            _isApplicationQuit = true;
         }
     }
 }

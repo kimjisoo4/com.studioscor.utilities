@@ -18,6 +18,7 @@ namespace StudioScor.Utilities
     public abstract class BaseStateMono : BaseMonoBehaviour, IState
     {
         [Header(" [ State MonoBehaviour ] ")]
+        [SerializeField] private bool useUnityEvent = false;
         [SerializeField] protected BaseStateMonoEvent unityEvents = new();
 
         public event UnityAction<IState> OnEnteredState;
@@ -103,14 +104,22 @@ namespace StudioScor.Utilities
         {
             Log("Entered State");
 
-            unityEvents.OnEnteredState?.Invoke(this);
+            if (useUnityEvent)
+            {
+                unityEvents.OnEnteredState?.Invoke(this);
+            }
+
             OnEnteredState?.Invoke(this);
         }
         private void Callback_OnExitedState()
         {
             Log("Exited State");
 
-            unityEvents.OnExitedState?.Invoke(this);
+            if (useUnityEvent)
+            {
+                unityEvents.OnExitedState?.Invoke(this);
+            }
+
             OnExitedState?.Invoke(this);
         }
     }

@@ -51,7 +51,7 @@ namespace StudioScor.InputSystem
 #endif
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             axisTarget.eulerAngles = new Vector3(LookAxis.Pitch, LookAxis.Yaw);
         }

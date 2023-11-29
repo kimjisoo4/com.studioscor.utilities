@@ -6,8 +6,8 @@ namespace StudioScor.Utilities
     public abstract class BaseClass
     {
         [field: Header(" Use Debug ")]
-        [field: SerializeField] protected virtual bool UseDebug { get; private set; } = false;
-        [HideInInspector] protected virtual Object Context { get; private set; } = null;
+        [field: SerializeField] public virtual bool UseDebug { get; set; } = false;
+        [HideInInspector] public virtual Object Context { get; set; } = null;
 
 
         [Conditional("UNITY_EDITOR")]

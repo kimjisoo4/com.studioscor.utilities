@@ -3,7 +3,7 @@
 namespace StudioScor.Utilities
 {
     [System.Serializable]
-    public class Timer
+    public class Timer : BaseClass
     {
 		public delegate void TimerHandler(Timer timer);
 
@@ -21,8 +21,8 @@ namespace StudioScor.Utilities
 		public event TimerHandler OnCanceledTimer;
 
 		public float Duration => duration;
-		public float RemainTime => remainTime;
-		public float ElapsedTime => elapsedTime;
+		public float RemainTime => IsPlaying ? remainTime : 0f;
+		public float ElapsedTime => isPlaying ?  elapsedTime : 0f;
 		public float NormalizedTime => normalizedTime;
 		public bool IsPlaying => isPlaying;
 		public bool IsStopped => !isPlaying;
@@ -66,7 +66,7 @@ namespace StudioScor.Utilities
 			
 			OnResetTimer();
 
-			OnStartedTimer?.Invoke(this);
+			Invoke_OnStartedTimer();
 		}
 
 		public void SetDuration(float duration)
@@ -87,14 +87,14 @@ namespace StudioScor.Utilities
 			isFinished = true;
 			normalizedTime = 1;
 
-			OnFinishedTimer?.Invoke(this);
+			Invoke_OnFinishedTimer();
 		}
 		private void OnCancelTimer()
         {
 			isPlaying = false;
 			isFinished = false;
 
-			OnCanceledTimer?.Invoke(this);
+			Invoke_OnCanceledTimer();
 		}
 		public void OnPauseTimer()
         {
@@ -142,6 +142,26 @@ namespace StudioScor.Utilities
 			}
 
 			normalizedTime = elapsedTime / duration;
+        }
+
+
+        private void Invoke_OnStartedTimer()
+        {
+            Log("On Started Timer");
+
+            OnStartedTimer?.Invoke(this);
+        }
+        private void Invoke_OnFinishedTimer()
+        {
+            Log("On Finished Timer");
+
+            OnFinishedTimer?.Invoke(this);
+        }
+        private void Invoke_OnCanceledTimer()
+        {
+            Log("On Canceled Timer");
+
+            OnCanceledTimer?.Invoke(this);
         }
     }
 

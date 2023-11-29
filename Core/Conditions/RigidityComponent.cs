@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-
 
 namespace StudioScor.Utilities
 {
@@ -12,53 +10,58 @@ namespace StudioScor.Utilities
         public event RigidityHandler OnFinishedRigidity;
         public void OnRigidity();
     }
+
     public class RigidityComponent : BaseMonoBehaviour, IRigidity
     {
-        [SerializeField] private bool _UseRigidity = true;
-        [SerializeField] private float _Duration = 0.1f;
+        [Header(" [ Rigidity Component ] ")]
+        [SerializeField] private bool useRigidity = true;
+        [SerializeField] private float duration = 0.1f;
 
-        private Timer _Timer = new();
+        private Timer timer = new();
 
         public event IRigidity.RigidityHandler OnStartedRigidity;
         public event IRigidity.RigidityHandler OnFinishedRigidity;
 
         private void Awake()
         {
-            _Timer = new();
+            timer = new();
 
-            _Timer.OnFinishedTimer += Timer_OnFinishedTimer;
+            timer.OnFinishedTimer += Timer_OnFinishedTimer;
         }
 
         private void Timer_OnFinishedTimer(Timer timer)
         {
-            OnFinishRigidity();
+            Invoke_OnFinishedRigidity();
         }
 
         public void OnRigidity()
         {
-            if (!_UseRigidity)
+            if (!useRigidity)
                 return;
 
-            _Timer.OnTimer(_Duration);
+            timer.OnTimer(duration);
 
-            OnStartRigidity();
+            Invoke_OnStartedRigidity();
         }
 
         private void Update()
         {
+            if (!timer.IsPlaying)
+                return;
+
             float deltaTime = Time.deltaTime;
 
-            _Timer.UpdateTimer(deltaTime);
+            timer.UpdateTimer(deltaTime);
         }
 
         #region Callback
-        private void OnStartRigidity()
+        private void Invoke_OnStartedRigidity()
         {
             Log("On Start Rigidity");
 
             OnStartedRigidity?.Invoke(this);
         }
-        private void OnFinishRigidity()
+        private void Invoke_OnFinishedRigidity()
         {
             Log("On Finish Rigidity");
 

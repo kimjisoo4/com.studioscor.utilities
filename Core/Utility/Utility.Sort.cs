@@ -9,8 +9,8 @@ namespace StudioScor.Utilities
     {
         public static class Sort
         {
-            private static Vector3 _Position;
-            private static Quaternion _Rotation;
+            private static Vector3 _position;
+            private static Quaternion _rotation;
 
             // RaycastHit
             #region Distance
@@ -20,11 +20,11 @@ namespace StudioScor.Utilities
             }
             public static void SortRaycastHitByDistance(Vector3 position, ref List<RaycastHit> hits)
             {
-                _Position = position;
+                _position = position;
 
                 hits.Sort(CompareRaycastHitByDistance);
 
-                _Position = default;
+                _position = default;
             }
             private static int CompareRaycastHitByDistance(RaycastHit a, RaycastHit b)
             {
@@ -42,13 +42,13 @@ namespace StudioScor.Utilities
             #region Nearst Angle
             public static void SortRaycastHitPointByNearstAngle(Vector3 position, Quaternion rotation, ref List<RaycastHit> hits)
             {
-                _Position = position;
-                _Rotation = rotation;
+                _position = position;
+                _rotation = rotation;
 
                 hits.Sort(CompareRaycastHitPointByNearstAngle);
 
-                _Position = default;
-                _Rotation = default;
+                _position = default;
+                _rotation = default;
             }
             public static void SortRaycastHitPointByNearstAngle(Transform target, ref List<RaycastHit> hits)
             {
@@ -60,7 +60,7 @@ namespace StudioScor.Utilities
             }
             private static int CompareRaycastHitPointByNearstAngle(RaycastHit a, RaycastHit b)
             {
-                if (Mathf.Abs(AngleOnForward(_Position, _Rotation, a.point)) > Mathf.Abs(AngleOnForward(_Position, _Rotation, b.point)))
+                if (Mathf.Abs(AngleOnForward(_position, _rotation, a.point)) > Mathf.Abs(AngleOnForward(_position, _rotation, b.point)))
                 {
                     return -1;
                 }
@@ -71,16 +71,119 @@ namespace StudioScor.Utilities
             }
             #endregion
 
+            // Collider
+            #region Distance
+            public static void SortTransformByDistance(Vector3 position, ref List<Collider> transforms)
+            {
+                _position = position;
+
+                transforms.Sort(CompareTransformByDistance);
+
+                _position = default;
+            }
+
+            public static void SortTransformByDistance(Transform target, ref List<Collider> transforms)
+            {
+                SortTransformByDistance(target.position, ref transforms);
+            }
+            private static int CompareTransformByDistance(Component a, Component b)
+            {
+                if (a == null)
+                {
+                    if (b == null)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+                else
+                {
+                    if (b == null)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        if (Vector3.Distance(_position, a.transform.position) < Vector3.Distance(_position, b.transform.position))
+                        {
+                            return -1;
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region Nearst Angle
+            public static void SortTransformByNearstAngle(Vector3 position, Quaternion rotation, ref List<Collider> transforms)
+            {
+                _position = position;
+                _rotation = rotation;
+
+                transforms.Sort(CompareTransformByNearstAngle);
+
+                _position = default;
+                _rotation = default;
+            }
+            public static void SortTransformByNearstAngle(Vector3 position, Vector3 direction, ref List<Collider> transforms)
+            {
+                SortTransformByNearstAngle(position, Quaternion.Euler(direction), ref transforms);
+            }
+            public static void SortTransformByNearstAngle(Transform target, ref List<Collider> transforms)
+            {
+                SortTransformByNearstAngle(target.position, target.rotation, ref transforms);
+            }
+            private static int CompareTransformByNearstAngle(Collider a, Collider b)
+            {
+                if (a == null)
+                {
+                    if (b == null)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+                else
+                {
+                    if (b == null)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        if (Mathf.Abs(AngleOnForward(_position, _rotation, a.transform.position)) > Mathf.Abs(AngleOnForward(_position, _rotation, b.transform.position)))
+                        {
+                            return -1;
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+
 
             // Transform
             #region Distance
             public static void SortTransformByDistance(Vector3 position, ref List<Transform> transforms)
             {
-                _Position = position;
+                _position = position;
 
                 transforms.Sort(CompareTransformByDistance);
 
-                _Position = default;
+                _position = default;
             }
 
             public static void SortTransformByDistance(Transform target, ref List<Transform> transforms)
@@ -108,7 +211,7 @@ namespace StudioScor.Utilities
                     }
                     else
                     {
-                        if (Vector3.Distance(_Position, a.position) < Vector3.Distance(_Position, b.position))
+                        if (Vector3.Distance(_position, a.position) < Vector3.Distance(_position, b.position))
                         {
                             return -1;
                         }
@@ -124,13 +227,13 @@ namespace StudioScor.Utilities
             #region Nearst Angle
             public static void SortTransformByNearstAngle(Vector3 position, Quaternion rotation, ref List<Transform> transforms)
             {
-                _Position = position;
-                _Rotation = rotation;
+                _position = position;
+                _rotation = rotation;
 
                 transforms.Sort(CompareTransformByNearstAngle);
 
-                _Position = default;
-                _Rotation = default;
+                _position = default;
+                _rotation = default;
             }
             public static void SortTransformByNearstAngle(Vector3 position, Vector3 direction, ref List<Transform> transforms)
             {
@@ -161,7 +264,7 @@ namespace StudioScor.Utilities
                     }
                     else
                     {
-                        if (Mathf.Abs(AngleOnForward(_Position, _Rotation, a.position)) > Mathf.Abs(AngleOnForward(_Position, _Rotation, b.position)))
+                        if (Mathf.Abs(AngleOnForward(_position, _rotation, a.position)) > Mathf.Abs(AngleOnForward(_position, _rotation, b.position)))
                         {
                             return -1;
                         }

@@ -6,38 +6,39 @@ namespace StudioScor.Utilities
     public class DilationComponent : BaseMonoBehaviour, IDilationSystem
     {
         [Header(" [ Dilation Component ] ")]
-        [SerializeField] private float speed = 1f;
+        [SerializeField] private float _speed = 1f;
 
-        private float defaultSpeed;
-        public float Speed => speed;
+        private float _defaultSpeed;
+        public float Speed => _speed;
 
-        public event DilationEventHandler OnChangedDilation;
+        public event IDilationSystem.DilationEventHandler OnChangedDilation;
 
         void Awake()
         {
-            defaultSpeed = speed;
+            _defaultSpeed = _speed;
         }
 
         public void ResetDilation()
         {
-            SetDilation(defaultSpeed);
+            SetDilation(_defaultSpeed);
         }
+
         public void SetDilation(float newDilation)
         {
-            if (speed.SafeEquals(newDilation))
+            if (_speed.SafeEquals(newDilation))
                 return;
 
-            var prevDilation = speed;
-            speed = newDilation;
+            var prevDilation = _speed;
+            _speed = newDilation;
 
-            Callback_OnChangedDilation(prevDilation);
+            Invoke_OnChangedDilation(prevDilation);
         }
 
-        private void Callback_OnChangedDilation(float prevDilation)
+        private void Invoke_OnChangedDilation(float prevDilation)
         {
-            Log($"On Changed Dilation [ Current : {speed:N2} | Prev : {prevDilation:N2} ]");
+            Log($"On Changed Dilation [ Current : {_speed:N2} | Prev : {prevDilation:N2} ]");
 
-            OnChangedDilation?.Invoke(this, speed, prevDilation);
+            OnChangedDilation?.Invoke(this, _speed, prevDilation);
         }
     }
 }

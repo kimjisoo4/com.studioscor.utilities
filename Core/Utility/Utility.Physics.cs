@@ -512,7 +512,7 @@ namespace StudioScor.Utilities
                 return colliders;
             }
 
-            public static bool DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, ref List<Collider> hitResults, List<Transform> IgnoreTransform, 
+            public static bool DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, ref List<Collider> hitResults, List<Transform> ignoreTransform = null, 
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Collider[] colliders = UnityEngine.Physics.OverlapSphere(position, radius, layerMask);
@@ -527,16 +527,20 @@ namespace StudioScor.Utilities
                     return false;
                 }
 
-                if (IgnoreTransform.Count > 0)
+                if (ignoreTransform is not null && ignoreTransform.Count > 0)
                 {
                     foreach (var collider in colliders)
                     {
-                        if (!IgnoreTransform.Contains(collider.transform) 
-                            && (!collider.attachedRigidbody || !IgnoreTransform.Contains(collider.attachedRigidbody.transform)))
+                        if (!ignoreTransform.Contains(collider.transform) 
+                            && (!collider.attachedRigidbody || !ignoreTransform.Contains(collider.attachedRigidbody.transform)))
                         {
                             hitResults.Add(collider);
                         }
                     }
+                }
+                else
+                {
+                    hitResults.AddRange(colliders);
                 }
 
 #if UNITY_EDITOR
@@ -566,7 +570,7 @@ namespace StudioScor.Utilities
 
 
 
-            public static List<Collider> DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, List<Transform> IgnoreTransform,
+            public static List<Collider> DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, List<Transform> IgnoreTransform = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Collider[] colliders = UnityEngine.Physics.OverlapSphere(position, radius, layerMask);
@@ -583,7 +587,7 @@ namespace StudioScor.Utilities
 
                 List<Collider> hits = new();
 
-                if (IgnoreTransform.Count > 0)
+                if (IgnoreTransform is not null && IgnoreTransform.Count > 0)
                 {
                     foreach (var collider in colliders)
                     {
@@ -595,7 +599,7 @@ namespace StudioScor.Utilities
                 }
                 else
                 {
-                    hits = colliders.ToList();
+                    hits.AddRange(colliders);
                 }
 
 #if UNITY_EDITOR
