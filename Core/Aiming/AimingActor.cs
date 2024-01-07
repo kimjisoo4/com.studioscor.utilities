@@ -40,15 +40,19 @@ namespace StudioScor.Utilities
             }
         }
 
-        private void LateUpdate()
+        public override void Tick(float deltaTime)
+        {
+            base.Tick(deltaTime);
+
+            UpdateAimingActor(deltaTime);
+        }
+        private void UpdateAimingActor(float deltaTime)
         {
             Vector3 position;
             Quaternion rotation;
 
-            if(_lerpSpeed > 0)
+            if (_lerpSpeed > 0)
             {
-                float deltaTime = Time.deltaTime;
-
                 position = Vector3.Lerp(transform.position, _aimingSystem.AimPosition, deltaTime * _lerpSpeed);
                 rotation = Quaternion.Slerp(transform.rotation, _cameraTransform.rotation, deltaTime * _lerpSpeed);
             }

@@ -36,6 +36,9 @@ namespace StudioScor.Utilities
         #endregion
 
 
+        public virtual void Tick(float deltaTime) { }
+        public virtual void FixedTick(float deltaTime) { }
+
         protected virtual void OnApplicationQuit()
         {
             _isApplicationQuit = true;

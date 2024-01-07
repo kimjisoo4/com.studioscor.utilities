@@ -26,9 +26,6 @@ namespace StudioScor.Utilities
         [SerializeField] private LayerMask _layer;
         [SerializeField] private IgnoreTrace[] _ignoreTraces;
 
-        [Header(" Auto Playing ")]
-        [SerializeField] private bool _autoPlaying = true;
-
         [Header(" Events ")]
         [SerializeField] private bool _useUnityEvent = false;
         [SerializeField] private UnityEvent<Transform> _onChangedTarget;
@@ -39,11 +36,8 @@ namespace StudioScor.Utilities
 
         private Vector3 _aimPosition;
         private ITargeting _target;
-        private bool _isPlaying = false;
         private Transform _prevHitTransform;
 
-
-        public bool IsPlaying => _isPlaying;
         public Vector3 AimPosition
         {
             get
@@ -66,33 +60,12 @@ namespace StudioScor.Utilities
 #endif
         }
 
-        private void OnEnable()
-        {
-            if (_autoPlaying)
-                OnAiming();
-        }
-        private void OnDisable()
-        {
-            EndAiming();
-        }
-
         void Start()
         {
             if (!_camera)
                 _camera = Camera.main;
         }
 
-        void FixedUpdate()
-        {
-            if (!_camera)
-            {
-                _camera = Camera.main;
-
-                return;
-            }
-
-            UpdateAiming();
-        }
 
         #region Ignore Transforms
         public void AddIgnoreTarget(Component component)
@@ -141,22 +114,30 @@ namespace StudioScor.Utilities
 
         public void OnAiming()
         {
-            if (_isPlaying)
+            if (enabled)
                 return;
 
-            _isPlaying = true;
+            enabled = true;
         }
         public void EndAiming()
         {
-            if (!_isPlaying)
+            if (!enabled)
                 return;
 
-            _isPlaying = false;
+            enabled = false;
         }
-        public void UpdateAiming()
+
+        public override void FixedTick(float deltaTime)
         {
-            if (!_isPlaying)
+            if (!enabled)
                 return;
+
+            base.FixedTick(deltaTime);
+
+            if(!_camera)
+            {
+                _camera = Camera.main;
+            }    
 
             _hits.Clear();
 

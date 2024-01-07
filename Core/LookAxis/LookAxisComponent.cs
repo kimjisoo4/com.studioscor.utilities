@@ -11,6 +11,7 @@ namespace StudioScor.InputSystem
         
         [Header(" [ Look Axis] ")]
         [SerializeField] private LookAxis lookAxis;
+        [SerializeField] private float followSpeed = 10f;
 
         public LookAxis LookAxis => lookAxis;
 
@@ -51,9 +52,28 @@ namespace StudioScor.InputSystem
 #endif
         }
 
-        private void Update()
+        public override void Tick(float deltaTime)
         {
-            axisTarget.eulerAngles = new Vector3(LookAxis.Pitch, LookAxis.Yaw);
+            base.Tick(deltaTime);
+
+            UpdateLookAxis(deltaTime);
+        }
+
+        private void UpdateLookAxis(float deltaTime)
+        {
+            if (followSpeed <= 0f)
+            {
+                axisTarget.eulerAngles = new Vector3(LookAxis.Pitch, LookAxis.Yaw);
+            }
+            else
+            {
+                float speed = followSpeed * deltaTime;
+
+                float pitch = Mathf.MoveTowardsAngle(axisTarget.eulerAngles.x, LookAxis.Pitch, speed);
+                float yaw = Mathf.MoveTowardsAngle(axisTarget.eulerAngles.y, LookAxis.Yaw, speed);
+
+                axisTarget.eulerAngles = new Vector3(pitch, yaw);
+            }
         }
     }
 }
