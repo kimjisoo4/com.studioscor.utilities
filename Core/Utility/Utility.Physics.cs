@@ -725,8 +725,19 @@ namespace StudioScor.Utilities
                                                        bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Vector3 direction = start.Direction(end, false);
-                float distance = direction.magnitude;
-                direction.Normalize();
+                float distance;
+                
+                if (direction == Vector3.zero)
+                {
+                    direction = Vector3.forward;
+                    distance = 0.01f;
+                }
+                else
+                {
+                    distance = direction.magnitude;
+                    direction.Normalize();
+                }
+
 
                 return DrawSphereCastAllNonAlloc(start, radius, direction, hitResults, distance, layerMask, queryTriggerInteraction, useDebug, duration, rayColor, hitColor);
             }

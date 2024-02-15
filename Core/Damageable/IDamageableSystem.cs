@@ -14,6 +14,9 @@ namespace StudioScor.Utilities
 
 		public FDamageInfo LastDamageInfo { get; }
 
+		public GameObject gameObject { get; }
+		public Transform transform { get; }
+
 		public event TakeDamageEventHandler OnTakeAnyDamage;
 		public event TakeDamageEventHandler OnTakePointDamage;
 	}
