@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
 using System.Collections.Generic;
-
-using UnityEngine.Internal;
 
 namespace StudioScor.Utilities
 {

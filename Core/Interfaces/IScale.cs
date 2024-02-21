@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
-
-namespace StudioScor.Utilities
+﻿namespace StudioScor.Utilities
 {
     public interface IScale
     {

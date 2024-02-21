@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 #if SCOR_ENABLE_UNIVERSAL_RENDER
 using UnityEngine.Rendering.Universal;
 #endif

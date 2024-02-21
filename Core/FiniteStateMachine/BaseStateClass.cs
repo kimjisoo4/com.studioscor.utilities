@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-
-using System.Diagnostics;
-using StudioScor.Utilities;
 using UnityEngine.Events;
 
 namespace StudioScor.Utilities

@@ -1,6 +1,4 @@
 ﻿using UnityEngine.Events;
-using UnityEngine;
-using System.Collections;
 
 namespace StudioScor.Utilities
 {

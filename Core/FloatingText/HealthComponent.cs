@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Pool;
-using System.Diagnostics;
-using System;
 
 namespace StudioScor.Utilities
 {
-    
+
 
     public class HealthComponent : BaseMonoBehaviour
 	{
