@@ -231,12 +231,12 @@ namespace StudioScor.Utilities.VisualScripting
         {
             var data = flow.stack.GetElementData<Data>(this);
 
-            if(data.IsActivate)
-            {
-                OnInterrupt(flow);
-            }
+            if (!data.IsActivate)
+                return null;
 
             data.IsActivate = false;
+            
+            OnInterrupt(flow);
 
             return Canceled;
         }

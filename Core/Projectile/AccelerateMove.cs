@@ -3,6 +3,69 @@
 namespace StudioScor.Utilities
 {
     [System.Serializable]
+    public class ForceMove
+    {
+        [field: Header(" [ Force Move ] ")]
+        [field: SerializeField] public float Mass { get; private set; } = 1f;
+        [field: SerializeField] public float Drag { get; private set; } = 1f;
+        [field: SerializeField] public float MinimumForce { get; private set; } = 0.2f;
+
+        public Vector3 Force { get; private set; }
+        public bool IsPlaying { get; private set; }
+
+        public ForceMove(float mass, float drag, float minimumForce = 0.2f)
+        {
+            Setup(mass, drag, minimumForce);
+        }
+
+        public void Setup(float newMass, float newDrag, float newMinimumForce = 0.2f)
+        {
+            Mass = Mathf.Max(0.001f, newMass);
+            Drag = newDrag;
+            MinimumForce = newMinimumForce;
+        }
+
+        public void OnAddForce(Vector3 force, bool isOverride = false)
+        {
+            IsPlaying = true;
+
+            if(isOverride)
+            {
+                Force = force / Mass;
+            }
+            else
+            {
+                Force += force / Mass;
+            }
+        }
+        public void EndForce(bool isClear = true)
+        {
+            if (!IsPlaying)
+                return;
+
+            IsPlaying = false;
+
+            if(isClear)
+            {
+                Force = Vector3.zero;
+            }
+            
+        }
+
+        public void UpdateForce(float deltaTime)
+        {
+            if (!IsPlaying)
+                return;
+
+            Force = Vector3.MoveTowards(Force, Vector3.zero, Drag * deltaTime);
+
+            if (Force.magnitude < MinimumForce)
+            {
+                EndForce(true);
+            }
+        }
+    }
+    [System.Serializable]
     public class AccelerateMove
     {
         [field: Header(" [ Accelerate Move ]")]
