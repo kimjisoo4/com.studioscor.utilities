@@ -16,6 +16,7 @@ namespace StudioScor.Utilities
     }
     public interface ISubActionTask : IActionTask
     {
+        public bool IsFixedUpdate { get; }
         public void UpdateSubTask(float normalizedTime);
     }
     public interface IMainActionTask : IActionTask

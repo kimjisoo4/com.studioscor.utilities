@@ -17,7 +17,7 @@ namespace StudioScor.Utilities
             _value = newValue;
         }
 
-        public override IVariable Clone()
+        public override IVariable<float> Clone()
         {
             var clone = new DefaultFloatVariable();
 

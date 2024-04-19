@@ -2,19 +2,16 @@
 
 namespace StudioScor.Utilities
 {
-    public interface IDirectionModule : IVariable
+    public interface ITransformVariable : IVariable<Transform>
     {
-        public Vector3 GetDirection();
     }
-    public abstract class DirectionVariable : IDirectionModule
+
+    public abstract class TransformVariable : ITransformVariable
     {
         private GameObject _owner;
         public GameObject Owner => _owner;
-
-        public abstract IVariable Clone();
-
-        public abstract Vector3 GetDirection();
-
+        public abstract IVariable<Transform> Clone();
+        public abstract Transform GetValue();
         public virtual void Setup(GameObject owner)
         {
             _owner = owner;

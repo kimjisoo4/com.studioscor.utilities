@@ -2,11 +2,11 @@
 
 namespace StudioScor.Utilities
 {
-    public interface IVariable
+    public interface IVariable<T>
     {
         public GameObject Owner { get; }
         public void Setup(GameObject owner);
-
-        public IVariable Clone();
+        public T GetValue();
+        public IVariable<T> Clone();
     }
 }
