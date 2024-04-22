@@ -4,7 +4,7 @@ using UnityEngine;
 namespace StudioScor.Utilities
 {
     [Serializable]
-    public class TimerActionTask : ActionTask, IMainActionTask
+    public class TimerMainTask : Task, IMainTask
     {
         [Header(" [ Timer Ability Task ] ")]
         [SerializeReference]
@@ -19,11 +19,11 @@ namespace StudioScor.Utilities
         public bool IsFixedUpdate => false;
         public float NormalizedTime => _timer.NormalizedTime;
 
-        private TimerActionTask _original;
+        private TimerMainTask _original;
 
-        public override IActionTask Clone()
+        public override ITask Clone()
         {
-            var copy = new TimerActionTask();
+            var copy = new TimerMainTask();
 
             copy._original = this;
 

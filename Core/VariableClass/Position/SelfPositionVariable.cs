@@ -6,7 +6,7 @@ namespace StudioScor.Utilities
     [Serializable]
     public class SelfPositionVariable : PositionVariable
     {
-        public override IVariable<Vector3> Clone()
+        public override IPositionVariable Clone()
         {
             return new SelfPositionVariable();
         }

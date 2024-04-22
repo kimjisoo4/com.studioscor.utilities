@@ -5,16 +5,16 @@ namespace StudioScor.Utilities
 
     public interface IPositionVariable : IVariable<Vector3>
     {
+        public abstract IPositionVariable Clone();
     }
     public abstract class PositionVariable : IPositionVariable
     {
-        private GameObject _owner;
-        public GameObject Owner => _owner;
-        public abstract IVariable<Vector3> Clone();
+        public GameObject Owner { get; protected set; }
+        public abstract IPositionVariable Clone();
         public abstract Vector3 GetValue();
         public virtual void Setup(GameObject owner)
         {
-            _owner = owner;
+            Owner = owner;
         }
     }
 

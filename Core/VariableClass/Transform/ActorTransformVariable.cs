@@ -14,7 +14,7 @@ namespace StudioScor.Utilities
 
             _actor = owner.GetActor();
         }
-        public override IVariable<Transform> Clone()
+        public override ITransformVariable Clone()
         {
             return new ActorTransformVariable();
         }

@@ -12,7 +12,7 @@ namespace StudioScor.Utilities
 
         private WorldDirectionVariable _original = null;
 
-        public override IVariable<Vector3> Clone()
+        public override IDirectionVariable Clone()
         {
             var clone = new WorldDirectionVariable();
 

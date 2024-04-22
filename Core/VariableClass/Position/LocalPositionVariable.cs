@@ -17,7 +17,7 @@ namespace StudioScor.Utilities
             _position = position;
         }
 
-        public override IVariable<Vector3> Clone()
+        public override IPositionVariable Clone()
         {
             var clone = new LocalPositionVariable();
 

@@ -20,7 +20,7 @@ namespace StudioScor.Utilities
             transformVariable.Setup(owner);
         }
 
-        public override IVariable<Vector3> Clone()
+        public override IPositionVariable Clone()
         {
             var clone = new TargetPositionVariable();
 

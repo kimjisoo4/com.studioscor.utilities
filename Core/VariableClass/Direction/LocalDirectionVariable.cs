@@ -17,7 +17,7 @@ namespace StudioScor.Utilities
             _direction = direction;
         }
 
-        public override IVariable<Vector3> Clone()
+        public override IDirectionVariable Clone()
         {
             var clone = new LocalDirectionVariable();
 

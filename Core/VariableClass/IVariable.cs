@@ -7,6 +7,6 @@ namespace StudioScor.Utilities
         public GameObject Owner { get; }
         public void Setup(GameObject owner);
         public T GetValue();
-        public IVariable<T> Clone();
     }
+
 }

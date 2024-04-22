@@ -8,15 +8,13 @@ namespace StudioScor.Utilities
 
     public abstract class ConditionVariable : IConditionVariable
     {
-        private GameObject _owner;
-        public GameObject Owner => _owner;
-
+        public GameObject Owner { get; protected set; }
         public abstract IVariable<bool> Clone();
         public abstract bool GetValue();
 
         public virtual void Setup(GameObject owner)
         {
-            _owner = owner;
+            Owner = owner;
         }
     }
 }

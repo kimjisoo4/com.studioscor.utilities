@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+
     [Serializable]
     public class DefaultFloatVariable : FloatVariable
     {
@@ -17,7 +18,7 @@ namespace StudioScor.Utilities
             _value = newValue;
         }
 
-        public override IVariable<float> Clone()
+        public override IFloatVariable Clone()
         {
             var clone = new DefaultFloatVariable();
 

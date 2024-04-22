@@ -3,23 +3,23 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
-    public interface IActionTask
+    public interface ITask
     {
         public bool IsPlaying { get; }
         public GameObject Owner { get; }
 
         public void Setup(GameObject owner);
-        public IActionTask Clone();
+        public ITask Clone();
 
         public void OnTask();
         public void EndTask();
     }
-    public interface ISubActionTask : IActionTask
+    public interface ISubTask : ITask
     {
         public bool IsFixedUpdate { get; }
         public void UpdateSubTask(float normalizedTime);
     }
-    public interface IMainActionTask : IActionTask
+    public interface IMainTask : ITask
     {
         public bool IsFixedUpdate { get; }
         public float NormalizedTime { get; }
@@ -28,7 +28,7 @@ namespace StudioScor.Utilities
     }
 
     [Serializable]
-    public abstract class ActionTask : IActionTask
+    public abstract class Task : ITask
     {
         private GameObject _owner;
         private bool _isPlaying = false;
@@ -43,7 +43,7 @@ namespace StudioScor.Utilities
             SetupTask();
         }
 
-        public abstract IActionTask Clone();
+        public abstract ITask Clone();
 
         public void OnTask()
         {

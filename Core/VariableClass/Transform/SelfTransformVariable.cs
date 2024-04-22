@@ -6,7 +6,7 @@ namespace StudioScor.Utilities
     [Serializable]
     public class SelfTransformVariable : TransformVariable
     {
-        public override IVariable<Transform> Clone()
+        public override ITransformVariable Clone()
         {
             return new SelfTransformVariable();
         }
