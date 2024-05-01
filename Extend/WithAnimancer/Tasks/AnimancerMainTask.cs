@@ -10,10 +10,7 @@ namespace StudioScor.Utilities.Extend.Animancer
     {
         [Header(" [ Animancer Ability Task ] ")]
         [SerializeField] private ClipTransition _animation;
-        [SerializeField][Range(0f, 1f)] private float _fadeOut = 0.2f;
-
-        private ClipTransition Animation => _original is null ? _animation : _original._animation;
-        private float FadeOut => _original is null ? _fadeOut : _original._fadeOut;
+        [SerializeField][Range(0f, 1f)] private float _fadeOut = 0.8f;
 
         public bool IsFixedUpdate => false;
         public float NormalizedTime => _animancerState.NormalizedTime;
@@ -45,26 +42,27 @@ namespace StudioScor.Utilities.Extend.Animancer
         {
             base.EnterTask();
 
-            _endTime = 1f - FadeOut;
+            _endTime = _original is null ? _fadeOut : _original._fadeOut;
+            var animation = _original is null ? _animation : _original._animation;
 
-            _animancerState = _layer.GetOrCreateState(Animation);
+            _animancerState = _layer.GetOrCreateState(animation);
 
             if(_animancerState.IsPlaying)
             {
                 _animancerState = _layer.GetOrCreateWeightlessState(_animancerState);
             }
 
-            _animancerState = _layer.Play(_animancerState, Animation.FadeDuration, Animation.FadeMode);
+            _animancerState = _layer.Play(_animancerState, animation.FadeDuration, animation.FadeMode);
         }
         protected override void ExitTask()
         {
             base.ExitTask();
 
-            _layer.StartFade(0f, FadeOut);
+            _layer.StartFade(0f, 1f - _endTime);
         }
 
 
-        public void UpdateMainTask(float deltaTime)
+        public void UpdateTask(float deltaTime)
         {
             if (!IsPlaying)
                 return;
@@ -76,7 +74,7 @@ namespace StudioScor.Utilities.Extend.Animancer
                 EndTask();
             }
         }
-        public void UpdateFixedTask(float deltaTime)
+        public void FixedUpdateTask(float deltaTime)
         {
             return;
         }

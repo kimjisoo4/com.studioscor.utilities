@@ -30,14 +30,14 @@ namespace StudioScor.Utilities
             return copy;
         }
 
-        public void UpdateMainTask(float deltaTime)
+        public void UpdateTask(float deltaTime)
         {
             if (!IsPlaying)
                 return;
 
             Update(deltaTime);
         }
-        public void UpdateFixedTask(float deltaTime)
+        public void FixedUpdateTask(float deltaTime)
         {
             return;
         }

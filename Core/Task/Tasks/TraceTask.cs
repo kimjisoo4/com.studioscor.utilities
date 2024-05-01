@@ -98,7 +98,12 @@ namespace StudioScor.Utilities
             _debug = hasOriginal ? _original._useDebug : _useDebug;
 
         }
+
         public void UpdateSubTask(float normalizedTime)
+        {
+            return;
+        }
+        public void FixedUpdateSubTask(float normalizedTime)
         {
             if (!IsPlaying)
                 return;
