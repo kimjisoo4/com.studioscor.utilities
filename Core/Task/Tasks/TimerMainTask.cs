@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+
     [Serializable]
     public class TimerMainTask : Task, IMainTask
     {
         [Header(" [ Timer Ability Task ] ")]
-        [SerializeReference]
 #if SCOR_ENABLE_SERIALIZEREFERENCE
-        [SerializeReferenceDropdown]
+        [SerializeReference, SerializeReferenceDropdown]
 #endif
         private IFloatVariable _duration = new DefaultFloatVariable(2f);
         private float Duration => _original is not null ? _original._duration.GetValue() : _duration.GetValue();

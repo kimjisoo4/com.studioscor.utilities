@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+
+   
+
     public interface ITransformVariable : IVariable<Transform>
     {
         public abstract ITransformVariable Clone();

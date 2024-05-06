@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+    
 
     public interface IPositionVariable : IVariable<Vector3>
     {

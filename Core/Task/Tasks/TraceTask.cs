@@ -12,23 +12,39 @@ namespace StudioScor.Utilities
         [SerializeField][Range(0f, 1f)] private float _startTime = 0.4f;
         [SerializeField][Range(0f, 1f)] private float _endTime = 0.6f;
         [SerializeField] private Variable_LayerMask _traceLayer;
-        [SerializeReference]
 #if SCOR_ENABLE_SERIALIZEREFERENCE
-        [SerializeReferenceDropdown]
+        [SerializeReference, SerializeReferenceDropdown]
 #endif
         private IPositionVariable _tracePosition = new WorldPositionVariable();
-        [SerializeReference]
 #if SCOR_ENABLE_SERIALIZEREFERENCE
-        [SerializeReferenceDropdown]
+        [SerializeReference, SerializeReferenceDropdown]
 #endif
         private IFloatVariable _traceRadius = new DefaultFloatVariable(1f);
 
         [Header(" Hit Target Action ")]
-        [SerializeReference]
 #if SCOR_ENABLE_SERIALIZEREFERENCE
-        [SerializeReferenceDropdown]
+        [SerializeReference, SerializeReferenceDropdown]
 #endif
-        private ITaskAction[] _onHitActionTasks;
+        private ITaskActionDecorator[] _hitDecorators;
+
+
+#if SCOR_ENABLE_SERIALIZEREFERENCE
+        [SerializeReference, SerializeReferenceDropdown]
+#endif
+        private ITaskAction[] _onHittingActionTasks;
+
+
+#if SCOR_ENABLE_SERIALIZEREFERENCE
+        [SerializeReference, SerializeReferenceDropdown]
+#endif
+        private ITaskAction[] _onHittingSelfActionTasks;
+
+
+#if SCOR_ENABLE_SERIALIZEREFERENCE
+        [SerializeReference, SerializeReferenceDropdown]
+#endif
+        private ITaskAction[] _onHitSelfActionTasks;
+
 
         [Header(" Use Debug ")]
         [SerializeField] private bool _useDebug = false;
@@ -47,7 +63,7 @@ namespace StudioScor.Utilities
 
         private TraceTask _original = null;
 
-        private bool wasTrigger = false;
+        private bool wasTrace = false;
 
         protected override void SetupTask()
         {
@@ -56,10 +72,24 @@ namespace StudioScor.Utilities
             _tracePosition.Setup(Owner);
             _traceRadius.Setup(Owner);
 
-            foreach (var actionTask in _onHitActionTasks)
+            _onHittingActionTasks.Setup(Owner);
+            if (_onHittingActionTasks is not null && _onHittingActionTasks.Length > 0)
             {
-                actionTask.Setup(Owner);
             }
+
+
+            _onHittingSelfActionTasks.Setup(Owner);
+            if (_onHittingSelfActionTasks is not null && _onHittingSelfActionTasks.Length > 0)
+            {
+            }
+
+
+            _onHitSelfActionTasks.Setup(Owner);
+            if (_onHitSelfActionTasks is not null && _onHitSelfActionTasks.Length > 0)
+            {
+            }
+
+            _hitDecorators.Setup(Owner);
         }
 
 
@@ -71,12 +101,10 @@ namespace StudioScor.Utilities
             clone._tracePosition = _tracePosition.Clone();
             clone._traceRadius = _traceRadius.Clone();
 
-            clone._onHitActionTasks = new ITaskAction[_onHitActionTasks.Length];
-
-            for(int i = 0; i < _onHitActionTasks.Length; i++)
-            {
-                clone._onHitActionTasks[i] = _onHitActionTasks[i].Clone();
-            }
+            clone._onHitSelfActionTasks = _onHitSelfActionTasks.CloneTask();
+            clone._onHittingActionTasks = _onHittingActionTasks.CloneTask();
+            clone._onHittingSelfActionTasks = _onHittingSelfActionTasks.CloneTask();
+            clone._hitDecorators = _hitDecorators.CloneTask();
 
             return clone;
         }
@@ -86,7 +114,7 @@ namespace StudioScor.Utilities
         {
             base.EnterTask();
 
-            wasTrigger = false;
+            wasTrace = false;
 
             bool hasOriginal = _original is not null;
 
@@ -98,21 +126,29 @@ namespace StudioScor.Utilities
             _debug = hasOriginal ? _original._useDebug : _useDebug;
 
         }
+        protected override void ExitTask()
+        {
+            base.ExitTask();
 
-        public void UpdateSubTask(float normalizedTime)
+            EndTrace();
+        }
+
+        public void UpdateSubTask(float deltaTime, float normalizedTime)
         {
             return;
         }
-        public void FixedUpdateSubTask(float normalizedTime)
+        public void FixedUpdateSubTask(float deltaTime, float normalizedTime)
         {
             if (!IsPlaying)
                 return;
 
-            if(!wasTrigger)
+            if(!wasTrace)
             {
                 if(_start <= normalizedTime)
                 {
                     OnTrace();
+
+                    UpdateTrace();
                 }
             }
             else
@@ -121,33 +157,33 @@ namespace StudioScor.Utilities
 
                 if(_end <= normalizedTime)
                 {
-                    EndTrace();
+                    EndTask();
                 }
             }
         }
         private void OnTrace()
         {
-            if (wasTrigger)
+            if (wasTrace)
                 return;
 
-            wasTrigger = true;
+            wasTrace = true;
             _ignoreTransforms.Add(Owner.transform);
 
             _prevPosition = _tracePosition.GetValue();
         }
         private void EndTrace()
         {
-            if (!wasTrigger)
+            if (!wasTrace)
                 return;
 
-            wasTrigger = false;
+            wasTrace = false;
 
             _ignoreTransforms.Clear();
         }
 
         private void UpdateTrace()
         {
-            if (!wasTrigger)
+            if (!wasTrace)
                 return;
 
             Vector3 startPosition = _prevPosition;
@@ -156,6 +192,7 @@ namespace StudioScor.Utilities
             _prevPosition = endPosition;
 
             int hitCount = SUtility.Physics.DrawSphereCastAllNonAlloc(startPosition, endPosition, _radius, _hitResults, _layers, useDebug:_debug);
+            bool isHit = false;
 
             for (int i = 0; i < hitCount; i++)
             {
@@ -167,11 +204,39 @@ namespace StudioScor.Utilities
                 {
                     _ignoreTransforms.Add(hitResult.transform);
 
-                    foreach (var actionTask in _onHitActionTasks)
+                    if (!_hitDecorators.CheckAllCondition(actor.gameObject))
+                        continue;
+
+                    isHit = true;
+
+                    if(_onHittingActionTasks is not null && _onHittingActionTasks.Length > 0)
                     {
-                        actionTask.Action(actor.gameObject);
+                        foreach (var actionTask in _onHittingActionTasks)
+                        {
+                            actionTask.Action(actor.gameObject);
+                        }
+                    }
+
+                    if (_onHittingSelfActionTasks is not null && _onHittingSelfActionTasks.Length > 0)
+                    {
+                        foreach (var actionTask in _onHittingSelfActionTasks)
+                        {
+                            actionTask.Action(Owner);
+                        }
                     }
                 }
+            }
+
+            if (isHit)
+            {
+                if (_onHitSelfActionTasks is not null && _onHitSelfActionTasks.Length > 0 )
+                {
+                    foreach (var actionTask in _onHitSelfActionTasks)
+                    {
+                        actionTask.Action(Owner);
+                    }
+                }
+               
             }
         }
     }

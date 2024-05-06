@@ -16,5 +16,4 @@ namespace StudioScor.Utilities
             return Owner;
         }
     }
-
 }
