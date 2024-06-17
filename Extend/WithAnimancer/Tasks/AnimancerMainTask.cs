@@ -1,10 +1,10 @@
-﻿using Animancer;
+﻿#if ANIMANCER
+using Animancer;
 using System;
 using UnityEngine;
 
 namespace StudioScor.Utilities.Extend.Animancer
 {
-#if ANIMANCER
     [Serializable]
     public class AnimancerMainTask : Task, IMainTask
     {
@@ -88,6 +88,6 @@ namespace StudioScor.Utilities.Extend.Animancer
             return;
         }
     }
-#endif
 }
+#endif
 
