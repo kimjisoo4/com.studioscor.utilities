@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+    
 
     public interface ITaskAction
     {
@@ -24,5 +25,9 @@ namespace StudioScor.Utilities
 
         public abstract void Action(GameObject target);
         public abstract ITaskAction Clone();
+        public virtual void Action(RaycastHit hit)
+        {
+            Action(hit.transform.gameObject);
+        }
     }
 }

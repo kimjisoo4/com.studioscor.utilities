@@ -60,7 +60,7 @@ namespace StudioScor.Utilities
                 return;
 
             _isPlaying = false;
-            _taskMachineInstance.EndTask();
+            _taskMachineInstance.ComplateTask();
 
             if (gameObject.activeSelf)
                 gameObject.SetActive(false);

@@ -7,5 +7,6 @@ namespace StudioScor.Utilities
     public class SimpleAimingTargetComponent : BaseMonoBehaviour, ITargeting
     {
         public Transform Point => transform;
+        public bool CanTargeting => enabled;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 namespace StudioScor.Utilities
@@ -33,8 +34,9 @@ namespace StudioScor.Utilities
 
         private Vector3 _aimPosition;
         private ITargeting _target;
-        private Transform _prevHitTransform;
+        private bool _wasLocked;
 
+        public bool WasLocked => _wasLocked;
         public Vector3 AimPosition
         {
             get
@@ -48,7 +50,8 @@ namespace StudioScor.Utilities
 
         public ITargeting Target => _target;
 
-        public event IAimingSystem.AimingSystemEventHandler OnChangedTarget;
+        public event IAimingSystem.AimingSystemTargetEventHandler OnChangedTarget;
+        public event IAimingSystem.AimingSystemStateEventHandler OnChangedLockedState;
 
         private void Reset()
         {
@@ -124,10 +127,32 @@ namespace StudioScor.Utilities
             enabled = false;
         }
 
+        public void SetLockState(bool isLock)
+        {
+            if (isLock && Target is null)
+                return;
+
+            var prev = _wasLocked;
+            _wasLocked = isLock;
+
+            if (prev == _wasLocked)
+                return;
+
+            Invoke_OnChangedLockedState();
+        }
+
         public override void FixedTick(float deltaTime)
         {
             if (!enabled)
                 return;
+
+            if(_wasLocked)
+            {
+                if(Target.CanTargeting)
+                {
+                    return;
+                }
+            }
 
             base.FixedTick(deltaTime);
 
@@ -149,6 +174,8 @@ namespace StudioScor.Utilities
                 default:
                     break;
             }
+
+            
         }
 
         #region Set Aiming Origin
@@ -169,23 +196,23 @@ namespace StudioScor.Utilities
         }
         #endregion
 
-        public void SetTarget(Transform newTarget = null)
+        public void SetTarget(ITargeting newTarget = null)
         {
-            if (_prevHitTransform == newTarget)
+            var prevTarget = _target;
+            _target = newTarget;
+
+            if (prevTarget == _target)
                 return;
 
-            _prevHitTransform = newTarget;
+            Invoke_OnChangedTarget(prevTarget);
 
-            if (_prevHitTransform)
+            if (WasLocked)
             {
-                _prevHitTransform.TryGetComponentInParentOrChildren(out _target);
+                if (Target is null)
+                {
+                    SetLockState(false);
+                }
             }
-            else
-            {
-                _target = null;
-            }
-
-            Invoke_OnChangedTarget();
         }
 
         private void CalcTransformAiming()
@@ -233,27 +260,44 @@ namespace StudioScor.Utilities
 
                 SUtility.Sort.SortRaycastHitByDistance(start, ref _hits);
 
-                var hit = _hits[0].transform;
+                for(int i = 0; i < _hits.Count; i++)
+                {
+                    var hit = _hits[i];
 
-                SetTarget(hit);
+                    if(hit.collider.TryGetComponent(out ITargeting targeting) && targeting.CanTargeting)
+                    {
+                        _aimPosition = start + direction * hit.distance;
+                        SetTarget(targeting);
+                        return;
+                    }
+                }
 
-                _aimPosition = start + direction * _hits[0].distance;
+                _aimPosition = start + direction * _distance;
+                SetTarget(null);
             }
         }
         
 
-        protected void Invoke_OnChangedTarget()
+        protected void Invoke_OnChangedTarget(ITargeting prevTarget)
         {
-            base.Log($"On Changed Target - [ {(_target is null ? "Null" : _target.Point.name)} ] ");
+            Log($"{nameof(OnChangedLockedState)} - [ {(_target is null ? "Null" : _target.Point.name)} ] ");
 
-            Transform target = _target is null ? null : _target.Point;
 
             if(_useUnityEvent)
             {
+                Transform target = _target is null ? null : _target.Point;
+
                 _onChangedTarget?.Invoke(target);
             }
 
-            OnChangedTarget?.Invoke(this, target);
+            OnChangedTarget?.Invoke(this, _target, prevTarget);
+        }
+
+        protected void Invoke_OnChangedLockedState()
+        {
+            Log($"{nameof(OnChangedLockedState)} - [ {WasLocked} ] ");
+
+            OnChangedLockedState?.Invoke(this);
         }
     }
 }

@@ -16,6 +16,7 @@ namespace StudioScor.Utilities.Extend.Animancer
         public float NormalizedTime => _animancerState.NormalizedTime;
 
         private float _endTime;
+
         private HybridAnimancerComponent _animancer;
         private AnimancerLayer _layer;
         private AnimancerState _animancerState;
@@ -54,9 +55,17 @@ namespace StudioScor.Utilities.Extend.Animancer
 
             _animancerState = _layer.Play(_animancerState, animation.FadeDuration, animation.FadeMode);
         }
-        protected override void ExitTask()
+
+        protected override void OnCancelTask()
         {
-            base.ExitTask();
+            base.OnCancelTask();
+
+            _layer.StartFade(0f, 0f);
+        }
+
+        protected override void OnComplateTask()
+        {
+            base.OnComplateTask();
 
             _layer.StartFade(0f, 1f - _endTime);
         }
@@ -71,7 +80,7 @@ namespace StudioScor.Utilities.Extend.Animancer
 
             if (normalizedTime >= _endTime)
             {
-                EndTask();
+                ComplateTask();
             }
         }
         public void FixedUpdateTask(float deltaTime)

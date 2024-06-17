@@ -1,25 +1,21 @@
-﻿using StudioScor.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+
     [Serializable]
     public class TraceTask : Task, ISubTask
     {
         [Header(" [ Trace Action Task ] ")]
         [SerializeField][Range(0f, 1f)] private float _startTime = 0.4f;
         [SerializeField][Range(0f, 1f)] private float _endTime = 0.6f;
-        [SerializeField] private Variable_LayerMask _traceLayer;
 #if SCOR_ENABLE_SERIALIZEREFERENCE
         [SerializeReference, SerializeReferenceDropdown]
 #endif
-        private IPositionVariable _tracePosition = new WorldPositionVariable();
-#if SCOR_ENABLE_SERIALIZEREFERENCE
-        [SerializeReference, SerializeReferenceDropdown]
-#endif
-        private IFloatVariable _traceRadius = new DefaultFloatVariable(1f);
+        private ITrace _trace = new SphereCast();
 
         [Header(" Hit Target Action ")]
 #if SCOR_ENABLE_SERIALIZEREFERENCE
@@ -31,7 +27,7 @@ namespace StudioScor.Utilities
 #if SCOR_ENABLE_SERIALIZEREFERENCE
         [SerializeReference, SerializeReferenceDropdown]
 #endif
-        private ITaskAction[] _onHittingActionTasks;
+        private ITraceTaskAction[] _onHittingActionTasks;
 
 
 #if SCOR_ENABLE_SERIALIZEREFERENCE
@@ -45,20 +41,9 @@ namespace StudioScor.Utilities
 #endif
         private ITaskAction[] _onHitSelfActionTasks;
 
-
-        [Header(" Use Debug ")]
-        [SerializeField] private bool _useDebug = false;
-
-        private RaycastHit[] _hitResults = new RaycastHit[10];
         private List<Transform> _ignoreTransforms = new();
         private float _start;
         private float _end;
-        private float _radius;
-        private LayerMask _layers;
-        private Vector3 _prevPosition;
-        private bool _debug = false;
-
-
         public bool IsFixedUpdate => true;
 
         private TraceTask _original = null;
@@ -69,25 +54,11 @@ namespace StudioScor.Utilities
         {
             base.SetupTask();
 
-            _tracePosition.Setup(Owner);
-            _traceRadius.Setup(Owner);
+            _trace.Setup(Owner);
 
             _onHittingActionTasks.Setup(Owner);
-            if (_onHittingActionTasks is not null && _onHittingActionTasks.Length > 0)
-            {
-            }
-
-
             _onHittingSelfActionTasks.Setup(Owner);
-            if (_onHittingSelfActionTasks is not null && _onHittingSelfActionTasks.Length > 0)
-            {
-            }
-
-
             _onHitSelfActionTasks.Setup(Owner);
-            if (_onHitSelfActionTasks is not null && _onHitSelfActionTasks.Length > 0)
-            {
-            }
 
             _hitDecorators.Setup(Owner);
         }
@@ -98,8 +69,7 @@ namespace StudioScor.Utilities
             var clone = new TraceTask();
 
             clone._original = this;
-            clone._tracePosition = _tracePosition.Clone();
-            clone._traceRadius = _traceRadius.Clone();
+            clone._trace = _trace.Clone();
 
             clone._onHitSelfActionTasks = _onHitSelfActionTasks.CloneTask();
             clone._onHittingActionTasks = _onHittingActionTasks.CloneTask();
@@ -120,11 +90,6 @@ namespace StudioScor.Utilities
 
             _start = hasOriginal ? _original._startTime : _startTime;
             _end = hasOriginal ? _original._endTime : _endTime;
-            _radius = hasOriginal ? _original._traceRadius.GetValue() : _traceRadius.GetValue();
-            _layers = hasOriginal ? _original._traceLayer.Value : _traceLayer.Value;
-
-            _debug = hasOriginal ? _original._useDebug : _useDebug;
-
         }
         protected override void ExitTask()
         {
@@ -157,7 +122,7 @@ namespace StudioScor.Utilities
 
                 if(_end <= normalizedTime)
                 {
-                    EndTask();
+                    ComplateTask();
                 }
             }
         }
@@ -169,7 +134,7 @@ namespace StudioScor.Utilities
             wasTrace = true;
             _ignoreTransforms.Add(Owner.transform);
 
-            _prevPosition = _tracePosition.GetValue();
+            _trace.OnTrace();
         }
         private void EndTrace()
         {
@@ -177,8 +142,9 @@ namespace StudioScor.Utilities
                 return;
 
             wasTrace = false;
-
             _ignoreTransforms.Clear();
+
+            _trace.EndTrace();
         }
 
         private void UpdateTrace()
@@ -186,17 +152,14 @@ namespace StudioScor.Utilities
             if (!wasTrace)
                 return;
 
-            Vector3 startPosition = _prevPosition;
-            Vector3 endPosition = _tracePosition.GetValue();
-
-            _prevPosition = endPosition;
-
-            int hitCount = SUtility.Physics.DrawSphereCastAllNonAlloc(startPosition, endPosition, _radius, _hitResults, _layers, useDebug:_debug);
+            int hitCount = _trace.UpdateTrace();
             bool isHit = false;
+
+            var traceInfo = _trace.TraceInfo;
 
             for (int i = 0; i < hitCount; i++)
             {
-                var hitResult = _hitResults[i];
+                var hitResult = _trace.HitResults.ElementAt(i);
 
                 var actor = hitResult.rigidbody ? hitResult.rigidbody.transform : hitResult.transform;
 
@@ -213,7 +176,7 @@ namespace StudioScor.Utilities
                     {
                         foreach (var actionTask in _onHittingActionTasks)
                         {
-                            actionTask.Action(actor.gameObject);
+                            actionTask.Action(traceInfo, hitResult);
                         }
                     }
 
@@ -236,7 +199,6 @@ namespace StudioScor.Utilities
                         actionTask.Action(Owner);
                     }
                 }
-               
             }
         }
     }

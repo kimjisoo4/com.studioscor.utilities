@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace StudioScor.Utilities
@@ -109,6 +110,31 @@ namespace StudioScor.Utilities
             }
         }
         #endregion
+
+        #region Trace Task Action
+        public static void Setup(this IEnumerable<ITraceTaskAction> originalTasks, GameObject owner)
+        {
+            for (int i = 0; i < originalTasks.Count(); i++)
+            {
+                var originalTask = originalTasks.ElementAt(i);
+
+                originalTask.Setup(owner);
+            }
+        }
+        public static ITraceTaskAction[] CloneTask(this IEnumerable<ITraceTaskAction> originalTasks)
+        {
+            int count = originalTasks.Count();
+            var cloneTasks = new ITraceTaskAction[count];
+
+            for (int i = 0; i < originalTasks.Count(); i++)
+            {
+                cloneTasks[i] = originalTasks.ElementAt(i).Clone() as ITraceTaskAction;
+            }
+
+            return cloneTasks;
+        }
+
+        #endregion
         public static IMainTask CloneTask(this IMainTask mainTask)
         {
             return mainTask.Clone() as IMainTask;
@@ -121,6 +147,15 @@ namespace StudioScor.Utilities
                 var task = subTasks.ElementAt(i);
 
                 task.OnTask();
+            }
+        }
+        public static void CancelTask(this IEnumerable<ISubTask> subTasks)
+        {
+            for (int i = 0; i < subTasks.Count(); i++)
+            {
+                var task = subTasks.ElementAt(i);
+
+                task.CancelTask();
             }
         }
         public static void UpdateSubTask(this IEnumerable<ISubTask> subTasks, float deltaTime, float normalizedTime)
@@ -141,13 +176,13 @@ namespace StudioScor.Utilities
                 task.FixedUpdateSubTask(deltaTime, normalizedTime);
             }
         }
-        public static void EndTask(this IEnumerable<ISubTask> subTasks)
+        public static void ComplateTask(this IEnumerable<ISubTask> subTasks)
         {
             for (int i = 0; i < subTasks.Count(); i++)
             {
                 var task = subTasks.ElementAt(i);
 
-                task.EndTask();
+                task.ComplateTask();
             }
         }
         public static void Setup(this IEnumerable<ISubTask> subTasks, GameObject owner)
@@ -204,15 +239,27 @@ namespace StudioScor.Utilities
             _mainTask.OnTask();
             _subTasks.OnTask();
         }
-        public void EndTask()
+
+        public void CancelTask()
+        {
+            if (!isPlaying)
+                return;
+
+           isPlaying = false;
+
+            _mainTask.CancelTask();
+            _subTasks.CancelTask();
+        }
+
+        public void ComplateTask()
         {
             if (!isPlaying)
                 return;
 
             isPlaying = false;
 
-            _mainTask.EndTask();
-            _subTasks.EndTask();
+            _mainTask.ComplateTask();
+            _subTasks.ComplateTask();
         }
 
         public void UpdateTask(float deltaTime)
@@ -227,7 +274,7 @@ namespace StudioScor.Utilities
             _subTasks.UpdateSubTask(deltaTime, normalizedTime);
 
             if (!_mainTask.IsPlaying)
-                EndTask();
+                ComplateTask();
         }
         public void FixedUpdateTask(float deltaTime)
         {
@@ -241,7 +288,7 @@ namespace StudioScor.Utilities
             _subTasks.FixedUpdateSubTask(deltaTime, normalizedTime);
 
             if (!_mainTask.IsPlaying)
-                EndTask();
+                ComplateTask();
         }
     }
 
@@ -254,7 +301,8 @@ namespace StudioScor.Utilities
         public ITask Clone();
 
         public void OnTask();
-        public void EndTask();
+        public void CancelTask();
+        public void ComplateTask();
     }
     public interface ISubTask : ITask
     {
@@ -295,12 +343,25 @@ namespace StudioScor.Utilities
 
             EnterTask();
         }
-        public void EndTask()
+        public void CancelTask()
         {
             if (!IsPlaying)
                 return;
 
             _isPlaying = false;
+
+            OnCancelTask();
+
+            ExitTask();
+        }
+        public void ComplateTask()
+        {
+            if (!IsPlaying)
+                return;
+
+            _isPlaying = false;
+
+            OnComplateTask();
 
             ExitTask();
         }
@@ -313,6 +374,16 @@ namespace StudioScor.Utilities
         {
 
         }
+
+        protected virtual void OnCancelTask()
+        {
+
+        }
+        protected virtual void OnComplateTask()
+        {
+
+        }
+
         protected virtual void ExitTask()
         {
 

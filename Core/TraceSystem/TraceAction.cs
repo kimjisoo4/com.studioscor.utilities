@@ -8,4 +8,7 @@ namespace StudioScor.Utilities
     {
         public abstract void Action(Transform tracer, ref List<RaycastHit> hits);
     }
+
+    
+
 }

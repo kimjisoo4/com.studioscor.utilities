@@ -75,5 +75,12 @@ namespace StudioScor.InputSystem
                 axisTarget.eulerAngles = new Vector3(pitch, yaw);
             }
         }
+
+        public void SetLookAxis(float pitch, float yaw)
+        {
+            LookAxis.SetLookAxis(pitch, yaw);
+
+            axisTarget.eulerAngles = new Vector3(pitch, yaw);
+        }
     }
 }

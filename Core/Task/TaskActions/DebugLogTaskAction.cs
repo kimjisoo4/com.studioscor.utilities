@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+
     [Serializable]
     public class DebugLogTaskAction : TaskAction
     {

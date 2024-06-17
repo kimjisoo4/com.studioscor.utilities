@@ -54,7 +54,7 @@ namespace StudioScor.Utilities
 
             if (_timer.IsFinished)
             {
-                EndTask();
+                ComplateTask();
             }
         }
         protected override void ExitTask()

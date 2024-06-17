@@ -20,7 +20,7 @@ namespace StudioScor.Utilities
                         UnityEngine.Physics.IgnoreCollision(lhsCollider, rhsCollider, isIgnore);
                     }
                 }
-                
+
             }
 
             #region ConeCast
@@ -80,7 +80,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hitResult)
                         {
-                            Debug.DrawPoint(collider.transform.position,successColor, 0.1f, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -103,7 +103,7 @@ namespace StudioScor.Utilities
                 if (overlapHit.Length == 0)
                 {
 #if UNITY_EDITOR
-                    if(useDebug)
+                    if (useDebug)
                     {
                         Color failedColor = rayColor == default ? Color.red : rayColor;
 
@@ -138,7 +138,7 @@ namespace StudioScor.Utilities
                     }
                 }
 
-#region DEBUG_DRAW
+                #region DEBUG_DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -151,7 +151,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hitResult)
                         {
-                            Debug.DrawPoint(collider.transform.position,  successColor, 0.1f, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -160,7 +160,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return hitResult.Count > 0;
             }
@@ -210,7 +210,7 @@ namespace StudioScor.Utilities
                     }
                 }
 
-#region DEBUG_DRAW
+                #region DEBUG_DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -223,7 +223,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in colliders)
                         {
-                            Debug.DrawPoint(collider.transform.position,  successColor, 0.1f, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -232,7 +232,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return colliders;
             }
@@ -299,9 +299,9 @@ namespace StudioScor.Utilities
 
                 return colliders;
             }
-#endregion
+            #endregion
 
-#region Draw Slice OverlapSphere
+            #region Draw Slice OverlapSphere
 
             public static List<Collider> DrawSliceOverlapSphere(Vector3 position, Quaternion rotation, float radius, float horizontalAngle, float verticalAngle, LayerMask layerMask, List<Transform> ignoreTransforms,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
@@ -346,7 +346,7 @@ namespace StudioScor.Utilities
                     }
                 }
 
-#region DEBUG_DRAW
+                #region DEBUG_DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -368,7 +368,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return Hits;
             }
@@ -410,7 +410,7 @@ namespace StudioScor.Utilities
                     }
                 }
 
-#region DEBUG_DRAW
+                #region DEBUG_DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -423,7 +423,7 @@ namespace StudioScor.Utilities
 
                         foreach (var collider in hits)
                         {
-                            Debug.DrawPoint(collider.transform.position,  successColor, 0.1f, duration);
+                            Debug.DrawPoint(collider.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -432,7 +432,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return Hits;
             }
@@ -444,7 +444,7 @@ namespace StudioScor.Utilities
                                                      int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                                                      bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
-                if(results is null || results.Length <= 0)
+                if (results is null || results.Length <= 0)
                 {
                     Debug.LogError($"[ {nameof(results)} ] is Null or Length is Zero!.", null, NAME_COLOR_RED);
                     return -1;
@@ -478,7 +478,7 @@ namespace StudioScor.Utilities
 
                 return hitCount;
             }
-#endregion
+            #endregion
             #region DrawOverlapSphere
             public static Collider[] DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask,
                     bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
@@ -509,7 +509,7 @@ namespace StudioScor.Utilities
                 return colliders;
             }
 
-            public static bool DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, ref List<Collider> hitResults, List<Transform> ignoreTransform = null, 
+            public static bool DrawOverlapSphere(Vector3 position, float radius, LayerMask layerMask, ref List<Collider> hitResults, List<Transform> ignoreTransform = null,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 Collider[] colliders = UnityEngine.Physics.OverlapSphere(position, radius, layerMask);
@@ -528,7 +528,7 @@ namespace StudioScor.Utilities
                 {
                     foreach (var collider in colliders)
                     {
-                        if (!ignoreTransform.Contains(collider.transform) 
+                        if (!ignoreTransform.Contains(collider.transform)
                             && (!collider.attachedRigidbody || !ignoreTransform.Contains(collider.attachedRigidbody.transform)))
                         {
                             hitResults.Add(collider);
@@ -611,7 +611,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hits)
                         {
-                            Debug.DrawPoint(hit.transform.position,  successColor, 0.1f, duration);
+                            Debug.DrawPoint(hit.transform.position, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -638,10 +638,10 @@ namespace StudioScor.Utilities
                                           bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
                 bool isHit = UnityEngine.Physics.Raycast(position, direction, out hitResult, distance, layerMask, queryTriggerInteraction);
-                
+
                 #region EDITOR ONLY
 #if UNITY_EDITOR
-                if(useDebug)
+                if (useDebug)
                 {
                     Color successColor = hitColor == default ? Color.green : hitColor;
                     Color failedColor = rayColor == default ? Color.red : rayColor;
@@ -660,7 +660,7 @@ namespace StudioScor.Utilities
                 }
 #endif
                 #endregion
-                
+
                 return isHit;
             }
             public static bool DrawRayCast(Ray ray, out RaycastHit hitResult,
@@ -669,11 +669,56 @@ namespace StudioScor.Utilities
             {
                 return DrawRayCast(ray.origin, ray.direction, out hitResult, distance, layerMask, queryTriggerInteraction, useDebug, duration, rayColor, hitColor);
             }
+
+            public static int DrawRayCastNonAlloc(Vector3 position, Vector3 direction, RaycastHit[] hitResult,
+                                          float distance = Mathf.Infinity, int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                          bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                int hitCount = UnityEngine.Physics.RaycastNonAlloc(position, direction, hitResult, distance, layerMask, queryTriggerInteraction);
+                #region EDITOR ONLY
+#if UNITY_EDITOR
+                if (hitCount > 0)
+                {
+                    Vector3 prevPosition = position;
+                    for (int i = 0; i < hitCount; i++)
+                    {
+                        var hit = hitResult[i];
+
+                        Debug.DrawLine(prevPosition, hit.point, hitColor, duration);
+                        Debug.DrawPoint(hit.point, 1f, duration);
+
+                        prevPosition = hit.point;
+                    }
+
+                    Debug.DrawLine(prevPosition, position + direction * distance, rayColor, duration);
+                }
+                else
+                {
+                    Debug.DrawRay(position, direction * distance, rayColor, duration);
+                }
+#endif
+                #endregion
+                return hitCount;
+            }
+
+
+            public static int DrawLineCastNonAlloc(Vector3 startPosition, Vector3 endPosition, RaycastHit[] hitResult,
+                                     int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                                     bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                Vector3 direction = startPosition.Direction(endPosition, false);
+                float distance = direction.magnitude;
+                direction.Normalize();
+
+                int hitCount = DrawRayCastNonAlloc(startPosition, direction, hitResult, distance, layerMask, queryTriggerInteraction);
+
+                return hitCount;
+            }
             #endregion
 
             #region Draw Shpere Cast All Non Alloc
 
-            public static int DrawSphereCastAllNonAlloc(Vector3 start, float radius, Vector3 direction, RaycastHit[] hitResults, 
+            public static int DrawSphereCastAllNonAlloc(Vector3 start, float radius, Vector3 direction, RaycastHit[] hitResults,
                                                        float distance = float.PositiveInfinity, int layerMask = -5, QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                                                        bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {
@@ -705,7 +750,7 @@ namespace StudioScor.Utilities
                 }
 #endif
                 #endregion
-                
+
                 return hitCount;
             }
             public static int DrawSphereCastAllNonAlloc(Ray ray, float radius, RaycastHit[] hitResults,
@@ -723,7 +768,7 @@ namespace StudioScor.Utilities
             {
                 Vector3 direction = start.Direction(end, false);
                 float distance;
-                
+
                 if (direction == Vector3.zero)
                 {
                     direction = Vector3.forward;
@@ -756,7 +801,7 @@ namespace StudioScor.Utilities
 
                 var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layermask);
 
-#region DEBUG DRAW
+                #region DEBUG DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -781,7 +826,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return hits;
             }
@@ -825,14 +870,14 @@ namespace StudioScor.Utilities
             {
                 bool isZero = start.SafeEquals(end);
 
-                Vector3 direction = isZero ?  Vector3.forward : start.Direction(end);
-                float distance = isZero? 0.01f : Vector3.Distance(start, end);
+                Vector3 direction = isZero ? Vector3.forward : start.Direction(end);
+                float distance = isZero ? 0.01f : Vector3.Distance(start, end);
 
                 var hits = UnityEngine.Physics.SphereCastAll(start, radius, direction, distance, layerMask);
 
                 if (hits.Length == 0)
                 {
-#region DEBUG DRAW
+                    #region DEBUG DRAW
 #if UNITY_EDITOR
                     if (useDebug)
                     {
@@ -841,7 +886,7 @@ namespace StudioScor.Utilities
                         Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
                     }
 #endif
-#endregion
+                    #endregion
 
                     return false;
                 }
@@ -849,7 +894,7 @@ namespace StudioScor.Utilities
                 IgnoreHitResultsTransform(hits, ref hitResults, owner);
                 IgnoreHitResultsTransforms(hits, ref hitResults, ignoreTransforms);
 
-#region DEBUG DRAW
+                #region DEBUG DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -865,7 +910,7 @@ namespace StudioScor.Utilities
 
                         foreach (var hit in hitResults)
                         {
-                            Debug.DrawPoint(hit.point,  successColor, 0.1f, duration);
+                            Debug.DrawPoint(hit.point, successColor, 0.1f, duration);
                         }
                     }
                     else
@@ -874,7 +919,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return hitResults.Count > 0;
             }
@@ -904,7 +949,7 @@ namespace StudioScor.Utilities
 
                 if (hits.Length == 0)
                 {
-#region DEBUG DRAW
+                    #region DEBUG DRAW
 #if UNITY_EDITOR
                     if (useDebug)
                     {
@@ -913,14 +958,14 @@ namespace StudioScor.Utilities
                         Debug.DrawCapsule(start, start + direction * distance, radius, failedColor, duration);
                     }
 #endif
-#endregion
+                    #endregion
 
                     return false;
                 }
 
                 IgnoreHitResultsTransforms(hits, ref hitResults, ignoreTransforms);
 
-#region DEBUG DRAW
+                #region DEBUG DRAW
 #if UNITY_EDITOR
                 if (useDebug)
                 {
@@ -945,7 +990,7 @@ namespace StudioScor.Utilities
                     }
                 }
 #endif
-#endregion
+                #endregion
 
                 return hitResults.Count > 0;
             }
@@ -960,9 +1005,9 @@ namespace StudioScor.Utilities
                 return DrawSphereCastAll(ray.origin, ray.origin + ray.direction * distance, radius, layermask, ref hitResults, ignoreTransforms, useDebug, duration, rayColor, hitColor);
             }
 
-#endregion
+            #endregion
 
-#region DrawSphereCast
+            #region DrawSphereCast
             public static bool DrawSphereCast(Vector3 start, Vector3 end, float radius, out RaycastHit hit, LayerMask layerMask,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {

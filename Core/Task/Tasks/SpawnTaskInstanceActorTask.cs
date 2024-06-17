@@ -8,7 +8,7 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Spawn Projectile Task ] ")]
         [SerializeField] private SimplePoolContainer _spawnActor;
-        [SerializeField] private float _spawnTime = 0.2f;
+        [SerializeField][Range(0f, 1f)] private float _instanceSpawnTime = 0.2f;
 
 #if SCOR_ENABLE_SERIALIZEREFERENCE
         [SerializeReference, SerializeReferenceDropdown]
@@ -21,6 +21,7 @@ namespace StudioScor.Utilities
         private IRotationVariable _rotation = new LocalRotationVariable();
 
         private bool _wasSpawn;
+        private float _spawnTime;
         private SpawnTaskInstanceActorTask _original;
 
         protected override void SetupTask()
@@ -46,6 +47,8 @@ namespace StudioScor.Utilities
             base.EnterTask();
 
             _wasSpawn = false;
+
+            _spawnTime = _original is null ? _instanceSpawnTime : _original._instanceSpawnTime;
         }
         public void FixedUpdateSubTask(float deltaTime, float normalizedTime)
         {
