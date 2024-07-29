@@ -1,143 +1,190 @@
 ﻿using UnityEngine;
+using static StudioScor.Utilities.IProjectile;
 
 namespace StudioScor.Utilities
 {
+    public interface IProjectile
+    {
+        public delegate void ProjectileStateHandler(IProjectile projectile);
+
+        public Transform Actor { get; set; }
+        public bool IsPlaying { get; }
+
+        public float StartSpeed { get; set; }
+        public float TargetSpeed { get; set; }
+        public float Acceleration { get; set; }
+        public float Deceleration { get; set; }
+        public Vector3 Direction { get; set; }
+        public Transform Target { get; set; }
+        public float CurrentSpeed { get; set; }
+        public bool UseTurn { get; set; }
+        public float TurnSpeed { get; set; }
+
+        public bool UseGravity { get; set; }
+        public float GravityScale { get; set; }
+
+        public Vector3 Velocity { get; }
+        public void OnProjectile();
+        public void EndProjectile();
+
+        public (Vector3 velocity, Quaternion rotation) UpdateProjectile(float deltaTime);
+
+        public event ProjectileStateHandler OnStartedProjectile;
+        public event ProjectileStateHandler OnEndedProjectile;
+    }
 
     [System.Serializable]
-    public class Projectile
+    public class Projectile : BaseClass, IProjectile
     {
         [Header(" [ Projectile ] ")]
-        [SerializeField] private Transform projectileTarget;
+        [SerializeField] private Transform _actor;
 
-        [Header(" [ Direction ] ")]
-        [SerializeField] private Transform target;
-        [SerializeField] private Vector3 direction = Vector3.forward;
-        [SerializeField] private float turnSpeed = 180f;
+        [Header(" Direction ")]
+        [SerializeField] private Transform _target;
+        [SerializeField] private Vector3 _direction = Vector3.forward;
 
-        [Header(" [ Speed ] ")]
-        [SerializeField] private float startedSpeed = 10f;
-        [SerializeField] private float targetSpeed = 5f;
+        [Header(" Movement ")]
+        [SerializeField] private float _startSpeed = 10f;
+        [SerializeField] private float _targetSpeed = 5f;
         [Space(5f)]
-        [SerializeField] private float acceleration = 20f;
-        [SerializeField] private float deceleration = 10f;
+        [SerializeField] private float _acceleration = 20f;
+        [SerializeField] private float _deceleration = 10f;
 
+        [Header(" Gravity ")]
+        [SerializeField] private bool _useGravity = false;
+        [SerializeField] private float _gravityScale = 1f;
+
+        [Header(" Rotation ")]
+        [SerializeField] private bool _useTurn = true;
+        [SerializeField] private float _turnSpeed = 180f;
         
-        private bool isPlaying;
-        private float currentSpeed;
+        private bool _isPlaying;
+        private float _currentSpeed;
+        private Vector3 _velocity;
+        private float _gravity = 0f;
 
-        private Vector3 moveVelocity;
-        private Vector3 turnRotation;
+        public bool IsPlaying => _isPlaying;
+
+        public Transform Actor { get => _actor; set => _actor = value; }
+        public override Object Context { get => Actor; }
+        public float StartSpeed { get => _startSpeed; set => _startSpeed = value; }
+        public float TargetSpeed { get =>_targetSpeed; set => _targetSpeed = value; }
+        public float CurrentSpeed { get => _currentSpeed; set => _currentSpeed = value; }
+        public float Acceleration { get =>_acceleration; set => _acceleration = value; }
+        public float Deceleration { get => _deceleration; set => _deceleration = value; }
+        public bool UseTurn { get => _useTurn; set => _useTurn = value; }
+        public float TurnSpeed { get => _turnSpeed; set => _turnSpeed = value; }
+        public Vector3 Direction { get => _direction; set => _direction = value; }
+        public Transform Target { get => _target; set => _target = value; }
+        public bool UseGravity { get =>_useGravity; set => _useGravity = value; }
+        public float GravityScale { get => _gravityScale; set => _gravityScale = value; }
+        public Vector3 Velocity => _velocity;
 
 
-        public Transform ProjectileTarget => projectileTarget;
-        public Vector3 Direction => direction;
-        public bool IsPlaying => isPlaying;
-        public Transform Target => target;
-        public bool HasTarget => target;
+        public event ProjectileStateHandler OnStartedProjectile;
+        public event ProjectileStateHandler OnEndedProjectile;
 
-        public float CurrentSpeed => currentSpeed;
-
-        public Vector3 MoveVelocity => moveVelocity;
-        public Vector3 TurnRotation => turnRotation;
-
-        public void SetTarget(Component component)
+        public void SetSpeed(float newSpeed)
         {
-            SetTarget(component.transform);
-        }
-        public void SetTarget(GameObject gameObject)
-        {
-            SetTarget(gameObject.transform);
-        }
-        public void SetTarget(Transform target)
-        {
-            this.target = target;
-        }
-
-        public void SetDirection(Vector3 direction)
-        {
-            this.direction = direction;
+            _currentSpeed = newSpeed;
         }
 
         public void OnProjectile()
         {
-            if (isPlaying)
+            if (_isPlaying)
                 return;
 
-            isPlaying = true;
+            _isPlaying = true;
 
-            currentSpeed = startedSpeed;
-        }
-        public void OnProjectile(Transform target)
-        {
-            if (isPlaying)
-                return;
+            _currentSpeed = _startSpeed;
+            _gravity = 0f;
 
-            SetTarget(target);
-
-            OnProjectile();
-        }
-        public void OnProjectile(Vector3 direction)
-        {
-            if (isPlaying)
-                return;
-
-            SetDirection(direction);
-
-            OnProjectile();
+            Invoke_OnStartedProjectile();
         }
 
         public void EndProjectile()
         {
-            if (!isPlaying)
+            if (!_isPlaying)
                 return;
 
-            isPlaying = false;
+            _isPlaying = false;
 
-            currentSpeed = 0f;
+            _currentSpeed = 0f;
+            _gravity = 0f;
 
-            target = null;
+            _target = null;
+
+            Invoke_OnEndedProjectile();
         }
-        public void UpdateProjectile(float deltaTime)
+        public (Vector3 velocity, Quaternion rotation) UpdateProjectile(float deltaTime)
         {
-            if (!isPlaying)
-                return;
+            if (!_isPlaying)
+                return (default, default);
 
-            UpdateRotation(deltaTime);
-            UpdateMovement(deltaTime);
+            Vector3 velocity = UpdateMovement(deltaTime);
+            Quaternion rotation = UpdateRotation(deltaTime);
+
+            return (velocity, rotation);
         }
 
-        private void UpdateRotation(float deltaTime)
+        private Quaternion UpdateRotation(float deltaTime)
         {
-            if (!target)
-                return;
-            
-            Vector3 direction = projectileTarget.Direction(target);
+            if (!_useTurn)
+                return _actor.rotation;
 
-            Vector3 rotation = projectileTarget.eulerAngles;
-            Vector3 newRotation = Quaternion.LookRotation(direction).eulerAngles;
+            Vector3 direction = _velocity.normalized;
 
-            float angle = Mathf.MoveTowardsAngle(rotation.y, newRotation.y, deltaTime * turnSpeed);
+            if (direction.SafeEquals(Vector3.zero))
+                return _actor.rotation;
 
-            rotation.y = angle;
+            Quaternion currentRotation = _actor.rotation;
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-            turnRotation = rotation;
+            Quaternion newRotation = Quaternion.RotateTowards(currentRotation, targetRotation, deltaTime * _turnSpeed);
+
+            return newRotation;
         }
         
 
-        private void UpdateMovement(float deltaTime)
+        private Vector3 UpdateMovement(float deltaTime)
         {
-            Vector3 direction = this.direction;
+            Vector3 direction = _target ? _actor.Direction(_target) : _actor.TransformDirection(_direction);
 
-            if (currentSpeed < targetSpeed)
+            if (_currentSpeed < _targetSpeed)
             {
-                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * deltaTime);
+                _currentSpeed = Mathf.MoveTowards(_currentSpeed, _targetSpeed, _acceleration * deltaTime);
             }
             else
             {
-                currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, deceleration * deltaTime);
+                _currentSpeed = Mathf.MoveTowards(_currentSpeed, _targetSpeed, _deceleration * deltaTime);
             }
 
-            moveVelocity = currentSpeed * direction;
+            Vector3 velocity = direction * (_currentSpeed * deltaTime);
+
+            if(_useGravity)
+            {
+                var gravityStrength = Physics.gravity.y * _gravityScale * deltaTime;
+                _gravity += gravityStrength * deltaTime;
+
+                velocity += Vector3.up * _gravity;
+            }
+
+            _velocity = velocity;
+
+            return velocity;
+        }
+
+        private void Invoke_OnStartedProjectile()
+        {
+            Log($"{nameof(OnStartedProjectile)}");
+
+            OnStartedProjectile?.Invoke(this);
+        }
+        private void Invoke_OnEndedProjectile()
+        {
+            Log($"{nameof(OnEndedProjectile)}");
+
+            OnEndedProjectile?.Invoke(this);
         }
     }
 }

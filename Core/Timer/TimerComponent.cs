@@ -4,113 +4,180 @@ using UnityEngine.Events;
 namespace StudioScor.Utilities
 {
     [AddComponentMenu("StudioScor/Utilities/Timer/Timer Component", order: 0)]
-    public class TimerComponent : BaseMonoBehaviour
+    public class TimerComponent : BaseMonoBehaviour, ITimer
     {
-        [Header("[ Timer Component ]")]
-        [SerializeField] private Timer timer;
-        [SerializeField] private EExitAction exitAction = EExitAction.Destroy;
+        [System.Serializable]
+        public class UnityEvents
+        {
+            [SerializeField] private UnityEvent _onStartedTimer;
+            [SerializeField] private UnityEvent _onFinishedTimer;
+            [SerializeField] private UnityEvent _onCanceledTimer;
+            [SerializeField] private UnityEvent _onEndedTimer;
+            [SerializeField] private UnityEvent _onPausedTimer;
+            [SerializeField] private UnityEvent _onResumedTimer;
+            public void AddUnityEvent(ITimer timer)
+            {
+                timer.OnStartedTimer += Timer_OnStartedTimer;
+                timer.OnCanceledTimer += Timer_OnCanceledTimer;
+                timer.OnFinishedTimer += Timer_OnFinishedTimer;
+                timer.OnEndedTimer += Timer_OnEndedTimer;
+                timer.OnPausedTimer += Timer_OnPausedTimer;
+                timer.OnResumedTimer += Timer_OnResumedTimer;
+            }
+            public void RemoveUnityEvent(ITimer timer)
+            {
+                timer.OnStartedTimer -= Timer_OnStartedTimer;
+                timer.OnCanceledTimer -= Timer_OnCanceledTimer;
+                timer.OnFinishedTimer -= Timer_OnFinishedTimer;
+                timer.OnEndedTimer -= Timer_OnEndedTimer;
+                timer.OnPausedTimer -= Timer_OnPausedTimer;
+                timer.OnResumedTimer -= Timer_OnResumedTimer;
+            }
 
-        [Header(" [ Play Speed ] ")]
-        [SerializeField] private float playSpeed = 1f;
+            private void Timer_OnResumedTimer(ITimer timer)
+            {
+                _onResumedTimer?.Invoke();
+            }
+
+            private void Timer_OnPausedTimer(ITimer timer)
+            {
+                _onPausedTimer?.Invoke();
+            }
+
+            private void Timer_OnEndedTimer(ITimer timer)
+            {
+                _onEndedTimer?.Invoke();
+            }
+
+            private void Timer_OnFinishedTimer(ITimer timer)
+            {
+                _onFinishedTimer?.Invoke();
+            }
+
+            private void Timer_OnCanceledTimer(ITimer timer)
+            {
+                _onCanceledTimer?.Invoke();
+            }
+
+            private void Timer_OnStartedTimer(ITimer timer)
+            {
+                _onStartedTimer?.Invoke();
+            }
+
+           
+        }
+        
+        [Header("[ Timer Component ]")]
+        [SerializeField] private Timer _timer;
+        [SerializeField] private EExitAction _exitAction = EExitAction.Destroy;
+        [SerializeField][SEnumCondition(nameof(_exitAction), (int)EExitAction.None)] private bool _playExitActionInCancel = false;
 
         [Header(" [ Auto Playing ] ")]
         [SerializeField] private bool isAutoPlaying = true;
 
-        [Header(" [ Events ] ")]
-		[SerializeField] private UnityEvent onStartedTimer;
-		[SerializeField] private UnityEvent onFinishedTimer;
-		[SerializeField] private UnityEvent onCanceledTimer;
+        [Header(" Unity Events ")]
+        [SerializeField] private bool _useUnityEvent = true;
+        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
 
-        public Timer Timer => timer;
+        private bool _wasInitialized = false;
+
+        public event ITimer.TimerStateHandler OnStartedTimer { add => _timer.OnStartedTimer += value; remove => _timer.OnStartedTimer -= value; }
+        public event ITimer.TimerStateHandler OnFinishedTimer { add => _timer.OnFinishedTimer += value; remove => _timer.OnFinishedTimer -= value; }
+        public event ITimer.TimerStateHandler OnCanceledTimer { add => _timer.OnCanceledTimer += value; remove => _timer.OnCanceledTimer -= value; }
+        public event ITimer.TimerStateHandler OnEndedTimer { add => _timer.OnEndedTimer += value; remove => _timer.OnEndedTimer -= value; }
+        public event ITimer.TimerStateHandler OnPausedTimer { add => _timer.OnPausedTimer += value; remove => _timer.OnPausedTimer -= value; }
+        public event ITimer.TimerStateHandler OnResumedTimer { add => _timer.OnResumedTimer += value; remove => _timer.OnResumedTimer -= value; }
+
+        public bool IsPlaying => _timer.IsPlaying;
+        public bool IsStopped => _timer.IsStopped;
+        public bool IsPaused => _timer.IsPaused;
+        public bool IsFinished => _timer.IsFinished;
+        public float Duration => _timer.Duration;
+        public float RemainTime => _timer.RemainTime;
+        public float ElapsedTime => _timer.ElapsedTime;
+        public float NormalizedTime => _timer.NormalizedTime;
 
 
         private void Awake()
         {
-            timer.OnStartedTimer += Timer_OnStartedTimer;
-            timer.OnFinishedTimer += Timer_OnFinishedTimer;
-            timer.OnCanceledTimer += Timer_OnCanceledTimer;
+            Initialization();
         }
+        private void OnDestroy()
+        {
+            if (!_wasInitialized)
+                return;
 
+            _timer.OnEndedTimer -= _timer_OnEndedTimer;
+
+            if (_useUnityEvent)
+            {
+                _unityEvents.RemoveUnityEvent(this);
+            }
+        }
         private void OnEnable()
         {
             if (isAutoPlaying)
                 OnTimer();
         }
 
-        private void OnDisable()
+        private void Initialization()
         {
-            EndTimer();
+            if (_wasInitialized)
+                return;
+
+            _wasInitialized = true;
+            _timer.OnEndedTimer += _timer_OnEndedTimer;
+
+            if (_useUnityEvent)
+            {
+                _unityEvents.AddUnityEvent(this);
+            }
         }
-
-        private void Update()
+        
+        public void OnTimer(float newDuration = -1)
         {
-            float deltaTime = Time.deltaTime * playSpeed;
-
-            UpdateTimer(deltaTime);
-        }
-
-        public void SetPlaySpeed(float newSpeed)
-        {
-            playSpeed = newSpeed;
-        }
-
-        public void SetTimer(float duration)
-        {
-            timer.SetDuration(duration);
-        }
-
-        public void OnTimer()
-        {
-            Log($"On Timer - [ Duration : {timer.Duration:N2} ] ");
-            
-            timer.OnTimer(timer.Duration);
-        }
-        public void EndTimer()
-        {
-            Log($"End Timer - [ {(timer.IsFinished ? "Finished" : "Canceled")} ] ");
-
-            timer.EndTimer();
-        }
-        public void OnPauseTimer()
-        {
-            Log($"On Pause Timer - [ RemainTime : {timer.RemainTime:N2} ] ");
-
-            timer.OnPauseTimer();
-        }
-        public void OnResumeTimer()
-        {
-            Log($"On Resume Timer - [ RemainTime : {timer.RemainTime:N2} ] ");
-
-            timer.OnResumeTimer();
+            _timer.OnTimer(newDuration);
         }
 
         public void UpdateTimer(float deltaTime)
         {
-            timer.UpdateTimer(deltaTime);
+            _timer.UpdateTimer(deltaTime);
         }
 
-        private void Timer_OnStartedTimer(Timer timer)
+        public void JumpTime(float newTime)
         {
-            Log(" On Started Timer ");
-
-            onStartedTimer?.Invoke();
+            _timer.JumpTime(newTime);
         }
 
-        private void Timer_OnCanceledTimer(Timer timer)
+        public void PauseTimer()
         {
-            Log(" On Canceled Timer ");
-
-            onCanceledTimer?.Invoke();
+            _timer.PauseTimer();
         }
-        
 
-        private void Timer_OnFinishedTimer(Timer timer)
+        public void ResumeTimer()
         {
-            Log($" On Finished Timer - [ ExieAction : {exitAction} ]");
+            _timer.ResumeTimer();
+        }
 
-            onFinishedTimer?.Invoke();
+        public void FinishTimer()
+        {
+            _timer.FinishTimer();
+        }
 
-            switch (exitAction)
+        public void CancelTimer()
+        {
+            _timer.CancelTimer();
+        }
+
+        private void _timer_OnEndedTimer(ITimer timer)
+        {
+            if (_exitAction != EExitAction.None)
+                return;
+
+            if (!_playExitActionInCancel && !timer.IsFinished)
+                return;
+
+            switch (_exitAction)
             {
                 case EExitAction.None:
                     break;

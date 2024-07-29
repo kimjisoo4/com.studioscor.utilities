@@ -1,71 +1,147 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using static StudioScor.Utilities.ChargeableObject;
 
 namespace StudioScor.Utilities
 {
-    public class ChargeableObject : BaseMonoBehaviour
+    public class ChargeableObject : BaseMonoBehaviour, IChargeable
     {
-        [Header(" [ Charageable Object ] ")]
-        [SerializeField] private Chargeable chargeable;
-        [SerializeField][SRange(0f, 1f)] private float offset = 0f;
-        [SerializeField] private bool isAutoPlaying = true;
+        [System.Serializable]
+        public class UnityEvents
+        {
+            [SerializeField] private UnityEvent _onStartedCharging;
+            [SerializeField] private UnityEvent _onCancededCharging;
+            [SerializeField] private UnityEvent<int> _onChangedChargeLevel;
+            [SerializeField] private UnityEvent _onFulledCharging;
+            [SerializeField] private UnityEvent _onFinishedCharging;
+            [SerializeField] private UnityEvent _onEndedCharging;
 
-        [Header(" [ Events ] ")]
-        [SerializeField] private UnityEvent onStartedCharging;
-        [SerializeField] private UnityEvent onFinishedCharging;
-        [SerializeField] private UnityEvent onReachedCharging;
-        public Chargeable Chargeable => chargeable;
+            public void AddUnityEvent(IChargeable chargeable)
+            {
+                chargeable.OnStartedCharge += ChargeableObject_OnStartedCharging;
+                chargeable.OnEndedCharge += ChargeableObject_OnEndedCharging;
+                chargeable.OnCanceledCharge += ChargeableObject_OnCanceledCharging;
+                chargeable.OnFinishedCharge += ChargeableObject_OnFinishedCharging;
+                chargeable.OnFulledCharge += ChargeableObject_OnReachedCharging;
+                chargeable.OnChangedChargeLevel += Chargeable_OnChangedChargeLevel;
+            }
+
+            public void RemoveUnityEvent(IChargeable chargeable)
+            {
+                chargeable.OnStartedCharge -= ChargeableObject_OnStartedCharging;
+                chargeable.OnEndedCharge -= ChargeableObject_OnEndedCharging;
+                chargeable.OnCanceledCharge -= ChargeableObject_OnCanceledCharging;
+                chargeable.OnFinishedCharge -= ChargeableObject_OnFinishedCharging;
+                chargeable.OnFulledCharge -= ChargeableObject_OnReachedCharging;
+                chargeable.OnChangedChargeLevel -= Chargeable_OnChangedChargeLevel;
+            }
+
+            private void Chargeable_OnChangedChargeLevel(IChargeable chargeable, int currentLevel, int prevLevel)
+            {
+                _onChangedChargeLevel?.Invoke(currentLevel);
+            }
+            private void ChargeableObject_OnFinishedCharging(IChargeable chargeable)
+            {
+                _onFinishedCharging?.Invoke();
+            }
+
+            private void ChargeableObject_OnEndedCharging(IChargeable chargeable)
+            {
+                _onEndedCharging?.Invoke();
+            }
+
+            private void ChargeableObject_OnReachedCharging(IChargeable chargeable)
+            {
+                _onFulledCharging?.Invoke();
+            }
+
+            private void ChargeableObject_OnCanceledCharging(IChargeable chargeable)
+            {
+                _onCancededCharging?.Invoke();
+            }
+
+            private void ChargeableObject_OnStartedCharging(IChargeable chargeable)
+            {
+                _onStartedCharging?.Invoke();
+            }
+        }
+
+        [Header(" [ Charageable Object ] ")]
+        [SerializeField] private Chargeable _chargeable;
+
+        [Header(" Events ")]
+        [SerializeField] private bool _useUnityEvent = true;
+        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
+
+        public event IChargeable.ChargingLevelStateHandler OnChangedChargeLevel { add => _chargeable.OnChangedChargeLevel += value; remove => _chargeable.OnChangedChargeLevel -= value; }
+        public event IChargeable.ChargingStateHander OnStartedCharge { add { _chargeable.OnStartedCharge += value; } remove { _chargeable.OnStartedCharge -= value; } }
+        public event IChargeable.ChargingStateHander OnEndedCharge { add { _chargeable.OnEndedCharge += value; } remove { _chargeable.OnEndedCharge -= value; } }
+        public event IChargeable.ChargingStateHander OnCanceledCharge { add { _chargeable.OnCanceledCharge += value; } remove { _chargeable.OnCanceledCharge -= value; } }
+        public event IChargeable.ChargingStateHander OnFinishedCharge { add { _chargeable.OnFinishedCharge += value; } remove { _chargeable.OnFinishedCharge -= value; } }
+        public event IChargeable.ChargingStateHander OnFulledCharge { add { _chargeable.OnFulledCharge += value; } remove { _chargeable.OnFulledCharge -= value; } }
+
+        public float Strength => _chargeable.Strength;
+
+        public bool IsPlaying => _chargeable.IsPlaying;
+
+        public bool IsFulled => _chargeable.IsFulled;
+
+        public int MaxChargeLevel => _chargeable.MaxChargeLevel;
+
+        public int CurrentChargeLevel => _chargeable.CurrentChargeLevel;
+
+        private bool _wasInitialized;
+
+
         private void Awake()
         {
-            chargeable.OnStartedCharging += Callback_OnStartedCharging;
-            chargeable.OnFinishedCharging += Callback_OnFinishedCharging;
-            chargeable.OnReachedCharging += Callback_OnReachedCharging;
+            Initialization();
+        }
+        private void OnDestroy()
+        {
+            if (_useUnityEvent)
+            {
+                _unityEvents.RemoveUnityEvent(this);
+            }
         }
 
-        private void OnEnable()
+        private void Initialization()
         {
-            if (isAutoPlaying)
-                OnCharging();
+            if (_wasInitialized)
+                return;
+
+            _wasInitialized = true;
+
+            if (_useUnityEvent)
+            {
+                _unityEvents.AddUnityEvent(this);
+            }
         }
-        private void OnDisable()
+        public void OnCharging(float startOffset = -1f)
         {
-            EndCharging();
+            Initialization();
+
+            _chargeable.OnCharging(startOffset);
         }
 
-        private void Update()
+        public void FinishCharging()
         {
-            float deltaTime = Time.deltaTime;
-
-            UpdateCharging(deltaTime);
+            _chargeable.FinishCharging();
         }
 
-        public void OnCharging()
+        public void CancelCharging()
         {
-            chargeable.OnCharging(chargedOffset : offset);
+            _chargeable.CancelCharging();
         }
 
-        public void EndCharging()
+        public void SetStrength(float newStrenth)
         {
-            chargeable.EndCharging();
-        }
-        public void UpdateCharging(float deltaTime)
-        {
-            chargeable.UpdateCharging(deltaTime);
+            _chargeable.SetStrength(newStrenth);
         }
 
-        protected virtual void Callback_OnStartedCharging(Chargeable chargeable)
+        public void SetChargeLevel(int newLevel)
         {
-            onStartedCharging?.Invoke();
-        }
-
-        protected virtual void Callback_OnReachedCharging(Chargeable chargeable)
-        {
-            onReachedCharging?.Invoke();
-        }
-
-        protected virtual void Callback_OnFinishedCharging(Chargeable chargeable)
-        {
-            onFinishedCharging?.Invoke();
+            _chargeable.SetChargeLevel(newLevel);
         }
     }
 

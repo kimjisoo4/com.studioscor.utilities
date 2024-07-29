@@ -14,6 +14,7 @@ namespace StudioScor.Utilities
 
         public override Scene GetScene => scene.GetScene();
 
+
         private void OnValidate()
         {
 #if UNITY_EDITOR
@@ -33,18 +34,28 @@ namespace StudioScor.Utilities
 
         public override void LoadScene()
         {
+            IsPlaying = true;
+
             var async = scene.LoadScene(loadSceneMode);
 
             Callback_OnStarted();
 
             if (async is not null)
+            {
                 async.completed += Async_completed;
+            }
             else
+            {
+                IsPlaying = false;
+
                 Callback_OnFinished();
+            }
         }
 
         private void Async_completed(AsyncOperation async)
         {
+            IsPlaying = false;
+
             Callback_OnFinished();
         }
 

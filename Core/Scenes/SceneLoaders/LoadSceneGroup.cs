@@ -23,6 +23,8 @@ namespace StudioScor.Utilities
 
         public override void LoadScene()
         {
+            IsPlaying = true;
+
             mainScene.OnFinished += MainScene_OnFinished;
 
             mainScene.LoadScene();
@@ -51,7 +53,11 @@ namespace StudioScor.Utilities
             _Count--;
 
             if (_Count <= 0)
+            {
+                IsPlaying = false;
+
                 Callback_OnFinished();
+            }
         }
 
         public override void UnLoadScene()

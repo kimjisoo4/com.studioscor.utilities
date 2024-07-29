@@ -5,7 +5,7 @@ namespace StudioScor.Utilities
     public class Singleton<T> : BaseMonoBehaviour where T : Singleton<T>
 	{
         [Header(" [ Singleton ] ")]
-		[SerializeField] private bool useDontDestroy = false;
+		[SerializeField] private bool _useDontDestroy = false;
 
 		private static T instance = default;
 
@@ -49,7 +49,7 @@ namespace StudioScor.Utilities
         {
 			Log("Initialization", SUtility.NAME_COLOR_GREEN);
 
-			if (useDontDestroy)
+			if (_useDontDestroy)
             {
 				Log("Don't Destroy On Load", SUtility.NAME_COLOR_GREEN);
 

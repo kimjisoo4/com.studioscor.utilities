@@ -24,6 +24,8 @@ namespace StudioScor.Utilities
 
         public override void LoadScene()
         {
+            IsPlaying = true;
+
             Callback_OnStarted();
 
             var async = loadingScene.LoadScene(LoadSceneMode.Additive);
@@ -41,6 +43,8 @@ namespace StudioScor.Utilities
         private void LoadingScene_completed(AsyncOperation async)
         {
             UnLoadOtherScenes();
+            
+            IsPlaying = false;
         }
 
         public override void UnLoadScene()
@@ -62,7 +66,9 @@ namespace StudioScor.Utilities
             OnUnLoadOtherScenes();
 
             if (count == 0)
+            {
                 OnFinishedUnloadOtherScene();
+            }
         }
 
         private void OnUnLoadOtherScenes()
@@ -111,6 +117,8 @@ namespace StudioScor.Utilities
 
         private void OnFinishedUnloadOtherScene()
         {
+            IsPlaying = false;
+
             Callback_OnFinished();
         }
     }

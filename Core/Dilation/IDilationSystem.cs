@@ -9,6 +9,7 @@ namespace StudioScor.Utilities
         public Transform transform { get; }
         public GameObject gameObject { get; }
         public float Speed { get; }
+        public bool WasChangedSpeed { get; }
         public void ResetDilation();
         public void SetDilation(float newDilation);
 

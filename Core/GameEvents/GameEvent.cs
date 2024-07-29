@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
         [SerializeField, TextArea] protected string description;
 
         [SerializeField][SReadOnly] private List<GameEventListner> eventList = new List<GameEventListner>();
-        public event Action Events;
+        public event Action OnTriggerEvent;
 
         public void OnBeforeSerialize()
         {
@@ -25,7 +25,7 @@ namespace StudioScor.Utilities
         protected override void OnReset()
         {
             eventList = new();
-            Events = null;
+            OnTriggerEvent = null;
         }
 
         public int GetEventListCount()
@@ -42,7 +42,7 @@ namespace StudioScor.Utilities
                 eventList[i].OnGameEvent();
             }
 
-            Events?.Invoke();
+            OnTriggerEvent?.Invoke();
         }
 
         public void AddListner(GameEventListner listner)

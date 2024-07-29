@@ -37,32 +37,29 @@ namespace StudioScor.Utilities
             Callback_OnChanged();
         }
 
-        public void SetFadeIn()
+        public void SetFadeOut()
         {
             SetFadeAmount(1);
 
             OnSetFadeIn();
-
         }
 
-        
-
-        public void SetFadeOut()
+        public void SetFadeIn()
         {
             SetFadeAmount(0);
         }
 
-        public void FadeIn()
-        {
-            TransitionState(EFadeState.FadeIn);
-
-            OnFadeIn();
-        }
         public void FadeOut()
         {
             TransitionState(EFadeState.FadeOut);
 
             OnFadeOut();
+        }
+        public void FadeIn()
+        {
+            TransitionState(EFadeState.FadeIn);
+
+            OnFadeIn();
         }
         public void EndFade()
         {

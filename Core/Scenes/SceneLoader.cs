@@ -5,9 +5,9 @@ namespace StudioScor.Utilities
 {
     public abstract class SceneLoader : BaseScriptableObject
     {
+        public bool IsPlaying { get; protected set; }
         public abstract void LoadScene();
         public abstract void UnLoadScene();
-
         public abstract Scene GetScene { get; }
 
         public event UnityAction<SceneLoader> OnStarted;

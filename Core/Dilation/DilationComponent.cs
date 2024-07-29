@@ -9,6 +9,7 @@ namespace StudioScor.Utilities
         [SerializeField] private float _speed = 1f;
 
         private float _defaultSpeed;
+        public bool WasChangedSpeed => _speed.SafeEquals(_defaultSpeed);
         public float Speed => _speed;
 
         public event IDilationSystem.DilationEventHandler OnChangedDilation;

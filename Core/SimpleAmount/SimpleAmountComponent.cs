@@ -9,8 +9,8 @@ namespace StudioScor.Utilities
     public class SimpleAmountComponent : BaseMonoBehaviour, ISimpleAmount
     {
         [Header(" [ Simple Amount ] ")]
-        [SerializeField] private float currentValue;
-        [SerializeField] private float maxValue;
+        [SerializeField] private float _currentValue;
+        [SerializeField] private float _maxValue;
 
         private readonly List<ISimpleAmountModifier> modifiers = new();
 
@@ -19,8 +19,8 @@ namespace StudioScor.Utilities
         private float prevValue;
 
         public float PrevValue => prevValue;
-        public float CurrentValue => currentValue;
-        public float MaxValue => maxValue;
+        public float CurrentValue => _currentValue;
+        public float MaxValue => _maxValue;
         public float NormalizedValue => normalizedValue;
 
         public void AddModifier(ISimpleAmountModifier modifier)
@@ -37,28 +37,28 @@ namespace StudioScor.Utilities
 
         public void SetMaxValue(float maxValue)
         {
-            this.maxValue = maxValue;
+            _maxValue = maxValue;
 
-            normalizedValue = currentValue / this.maxValue;
+            normalizedValue = _currentValue.SafeDivide(_maxValue);
 
             needUpdate = true;
         }
         public void SetCurrentValue(float currentValue)
         {
-            prevValue = this.currentValue;
-            this.currentValue = currentValue;
+            prevValue = _currentValue;
+            _currentValue = currentValue;
 
-            normalizedValue = this.currentValue / maxValue;
+            normalizedValue = _currentValue.SafeDivide(_maxValue);
 
             needUpdate = true;
         }
-        public void SetValue(float maxValue, float currentValue)
+        public void SetValue(float currentValue, float maxValue)
         {
-            prevValue = this.currentValue;
-            this.currentValue = currentValue;
-            this.maxValue = maxValue;
+            prevValue = _currentValue;
+            _currentValue = currentValue;
+            _maxValue = maxValue;
 
-            normalizedValue = this.currentValue.SafeDivide(this.maxValue);
+            normalizedValue = _currentValue.SafeDivide(_maxValue);
 
             needUpdate = true;
         }
@@ -77,6 +77,8 @@ namespace StudioScor.Utilities
         {
             foreach (var modifier in modifiers)
             {
+                Log($"{nameof(UpdateAmount)} :: {modifier}");
+
                 modifier.UpdateModifier();
             }
         }

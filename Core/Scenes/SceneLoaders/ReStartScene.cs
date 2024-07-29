@@ -13,6 +13,8 @@ namespace StudioScor.Utilities
         public override Scene GetScene => SceneManager.GetActiveScene();
         public override void LoadScene()
         {
+            IsPlaying = true;
+
             var async = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name, loadSceneMode);
 
             Callback_OnStarted();
@@ -20,11 +22,17 @@ namespace StudioScor.Utilities
             if (async is not null)
                 async.completed += Async_completed;
             else
+            {
+                IsPlaying = false;
+
                 Callback_OnFinished();
+            }
         }
 
         private void Async_completed(AsyncOperation obj)
         {
+            IsPlaying = false;
+
             Callback_OnFinished();
         }
 

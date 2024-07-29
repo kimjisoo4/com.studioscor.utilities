@@ -33,7 +33,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3676797122855019013}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -57,8 +56,8 @@ CanvasGroup:
   m_GameObject: {fileID: 3676797122498729517}
   m_Enabled: 1
   m_Alpha: 0
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &3676797122498729519
 MonoBehaviour:
@@ -156,7 +155,6 @@ RectTransform:
   m_Children:
   - {fileID: 3676797122498729518}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -180,7 +178,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 10
   m_TargetDisplay: 0
@@ -219,11 +219,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
+  m_IgnoreReversedGraphics: 0
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 503
+    m_Bits: 0
 --- !u!114 &37037329898543848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,10 +237,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseDebug: 0
-  _StateMachine:
-    _DefaultState: {fileID: 5560642117346415572}
-  _FadeInState: {fileID: 92008119039587708}
-  _FadeOutState: {fileID: 1852928850355086204}
+  stateMachine:
+    defaultState: {fileID: 5560642117346415572}
+  fade: {fileID: 11400000, guid: 6cfaa5b930e592544b72acce6512a0c0, type: 2}
+  fadeInState: {fileID: 1852928850355086204}
+  fadeOutState: {fileID: 92008119039587708}
 --- !u!114 &5560642117346415572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,7 +255,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseDebug: 0
-  _Fade: {fileID: 11400000, guid: 6cfaa5b930e592544b72acce6512a0c0, type: 2}
+  useUnityEvent: 0
+  unityEvents:
+    OnEnteredState:
+      m_PersistentCalls:
+        m_Calls: []
+    OnExitedState:
+      m_PersistentCalls:
+        m_Calls: []
+  _SimpleFade: {fileID: 37037329898543848}
 --- !u!114 &92008119039587708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,8 +277,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseDebug: 0
-  _Fade: {fileID: 11400000, guid: 6cfaa5b930e592544b72acce6512a0c0, type: 2}
-  _Duration: 1
+  useUnityEvent: 0
+  unityEvents:
+    OnEnteredState:
+      m_PersistentCalls:
+        m_Calls: []
+    OnExitedState:
+      m_PersistentCalls:
+        m_Calls: []
+  _SimpleFade: {fileID: 37037329898543848}
+  _duration: 1
 --- !u!114 &1852928850355086204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,5 +300,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseDebug: 0
-  _Fade: {fileID: 11400000, guid: 6cfaa5b930e592544b72acce6512a0c0, type: 2}
-  _Duration: 1
+  useUnityEvent: 0
+  unityEvents:
+    OnEnteredState:
+      m_PersistentCalls:
+        m_Calls: []
+    OnExitedState:
+      m_PersistentCalls:
+        m_Calls: []
+  _SimpleFade: {fileID: 37037329898543848}
+  duration: 1

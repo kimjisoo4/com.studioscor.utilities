@@ -4,6 +4,7 @@
     {
         Current,
         Max,
+        CurrentAndMax,
         Normalized,
     }
 

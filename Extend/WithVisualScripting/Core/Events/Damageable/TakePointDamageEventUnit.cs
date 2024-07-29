@@ -38,13 +38,13 @@ namespace StudioScor.Utilities.VisualScripting
             Direction = ValueOutput<Vector3>(nameof(Direction));
         }
 
-        protected override void AssignArguments(Flow flow, FDamageInfo damageInfo)
+        protected override void AssignArguments(Flow flow, DamageInfoData damageInfo)
         {
             base.AssignArguments(flow, damageInfo);
 
             flow.SetValue(HitPoint, damageInfo.HitPoint);
             flow.SetValue(HitNormal, damageInfo.HitNormal);
-            flow.SetValue(HitTransform, damageInfo.HitTransform);
+            flow.SetValue(HitTransform, damageInfo.HitCollider);
             flow.SetValue(Direction, damageInfo.Direction);
         }
     }

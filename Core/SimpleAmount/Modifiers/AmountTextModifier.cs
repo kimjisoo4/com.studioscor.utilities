@@ -29,8 +29,11 @@ namespace StudioScor.Utilities
                 case EAmountValueType.Max:
                     _Text.text = SimpleAmount.MaxValue.ToString("F0");
                     break;
+                case EAmountValueType.CurrentAndMax:
+                    _Text.text = $"{SimpleAmount.CurrentValue:F0}/{SimpleAmount.MaxValue:F0}";
+                    break;
                 case EAmountValueType.Normalized:
-                    _Text.text = (SimpleAmount.NormalizedValue * 100).ToString("F0");
+                    _Text.text = (SimpleAmount.NormalizedValue * 100).ToString("P0");
                     break;
                 default:
                     break;

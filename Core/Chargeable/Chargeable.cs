@@ -1,119 +1,211 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using static StudioScor.Utilities.IChargeable;
 
 namespace StudioScor.Utilities
 {
-    [System.Serializable]
-    public class Chargeable : BaseClass
+    public interface IChargeable
     {
-        public delegate void ChargingStateHander(Chargeable chargeable);
+        public delegate void ChargingStateHander(IChargeable chargeable);
+        public delegate void ChargingLevelStateHandler(IChargeable chargeable, int currentLevel, int prevLevel);
 
+        public float Strength { get; }
+        public bool IsPlaying { get; }
+        public bool IsFulled { get; }
+        public int MaxChargeLevel { get; }
+        public int CurrentChargeLevel { get; }
+
+        public void OnCharging(float startOffset);
+        public void FinishCharging();
+        public void CancelCharging();
+        public void SetChargeLevel(int newLevel);
+        public void SetStrength(float newStrenth);
+
+        public event ChargingStateHander OnStartedCharge;
+        public event ChargingStateHander OnEndedCharge;
+        public event ChargingStateHander OnCanceledCharge;
+        public event ChargingStateHander OnFinishedCharge;
+        public event ChargingStateHander OnFulledCharge;
+        public event ChargingLevelStateHandler OnChangedChargeLevel;
+    }
+
+    [System.Serializable]
+    public class Chargeable : BaseClass, IChargeable
+    {
         [Header(" [ Chargeable ] ")]
-        [SerializeField] private float duration;
-        [SerializeField][SReadOnly][SRange(0f,1f)] private float chargeStrength;
-        [SerializeField][SReadOnly] private bool isPlaying;
-        [SerializeField][SReadOnly] private bool isFulled;
-        
-        
-        private float elapsedTime;
-        public float ChargeStrength => chargeStrength;
-        public float Duration => duration;
-        public float ElapsedTime => elapsedTime;
-        public bool IsPlaying => isPlaying;
-        public bool IsFulled => isFulled;
+        [SerializeField] private float[] _chargeValues = new float[] { 1f };
+        [SerializeField][SReadOnly][SRange(0f,1f)] private float _strength;
+        [SerializeField][SReadOnly] private bool _isPlaying;
+        [SerializeField][SReadOnly] private bool _isFulled;
+        [SerializeField][SReadOnly] private int _currentChargeLevel;
+        public float Strength => _strength;
+        public bool IsPlaying => _isPlaying;
+        public bool IsFulled => _isFulled;
+        public IReadOnlyCollection<float> ChargeValues => _chargeValues;
+        public int CurrentChargeLevel => _currentChargeLevel;
+        public int MaxChargeLevel => _chargeValues.Length;
 
-        public event ChargingStateHander OnStartedCharging;
-        public event ChargingStateHander OnFinishedCharging;
-        public event ChargingStateHander OnReachedCharging;
+        public event ChargingStateHander OnStartedCharge;
+        public event ChargingStateHander OnEndedCharge;
+        public event ChargingStateHander OnCanceledCharge;
+        public event ChargingStateHander OnFinishedCharge;
+        public event ChargingStateHander OnFulledCharge;
+        public event ChargingLevelStateHandler OnChangedChargeLevel;
 
         public Chargeable()
         {
         }
-        public Chargeable(float duration)
+
+        public void OnCharging(float startOffset = -1f)
         {
-            this.duration = duration;
-        }
-        public void OnCharging(float duration = -1f, float chargedOffset = -1f)
-        {
-            if (isPlaying)
+            if (_isPlaying)
                 return;
 
-            isPlaying = true;
-            isFulled = false;
+            _isPlaying = true;
+            _isFulled = false;
+            _currentChargeLevel = 0;
 
-            SetDuration(duration);
-            SetCharged(chargedOffset);
+            SetStrength(startOffset);
 
-            Callback_OnStartedCharging();
+            Invoke_OnStartedCharging();
         }
 
-        public void SetDuration(float duration)
+        public void CancelCharging()
         {
-            if (duration < 0f)
+            if (!IsPlaying)
                 return;
 
-            this.duration = duration;
+            _isPlaying = false;
 
-            chargeStrength = Mathf.Min(1f, elapsedTime.SafeDivide(this.duration));
+            Invoke_OnCanceledCharging();
+            Invoke_OnEndedCharging();
         }
 
-        public void SetCharged(float charged)
+        public void FinishCharging()
+        {
+            if (!_isPlaying)
+                return;
+
+            _isPlaying = false;
+
+            Invoke_OnFinishedCharging();
+            Invoke_OnEndedCharging();
+        }
+
+        public void SetStrength(float charged)
         {
             if (charged < 0f)
-            {
-                this.chargeStrength = 0f;
-                elapsedTime = 0f;
+                _strength = 0f;
+            else
+                _strength = charged;
 
+            UpdateChargeLevel();
+            UpdateFulledState();
+        }
+        public void SetChargeLevel(int newLevel)
+        {
+            if (_currentChargeLevel == newLevel)
                 return;
+
+            _currentChargeLevel = newLevel;
+
+            if (_currentChargeLevel == 0)
+                _strength = 0;
+            else
+                _strength = _chargeValues[_currentChargeLevel - 1];
+
+            UpdateFulledState();
+        }
+
+        private void UpdateChargeLevel()
+        {
+            var prevLevel = _currentChargeLevel;
+
+            if (_strength <= 0f)
+            {
+                _currentChargeLevel = 0;
+            }
+            else
+            {
+                for (int i = 0; i < _chargeValues.Length; i++)
+                {
+                    var chargeValue = _chargeValues[i];
+
+                    if (_strength >= chargeValue)
+                    {
+                        _currentChargeLevel = i + 1;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
 
-            this.chargeStrength = charged;
-            elapsedTime = this.chargeStrength * duration;
-        }
-
-        public void EndCharging()
-        {
-            if (!isPlaying)
-                return;
-
-            isPlaying = false;
-
-            Callback_OnFinishedCharging();
-        }
-
-        public void UpdateCharging(float deltaTime) 
-        {
-            if (!isPlaying || isFulled)
-                return;
-
-            elapsedTime += deltaTime;
-
-            chargeStrength = Mathf.Min(1, elapsedTime.SafeDivide(duration));
-
-            if (chargeStrength >= 1f)
+            if (prevLevel != _currentChargeLevel)
             {
-                isFulled = true;
-
-                Callback_OnReachedCharging();
+                Invoke_OnChangedChargeLevel(prevLevel);
             }
         }
 
-        protected virtual void Callback_OnStartedCharging()
+        private void UpdateFulledState()
         {
-            Log("On Started Charging ");
+            if (_strength >= 1f)
+            {
+                if(!_isFulled)
+                {
+                    _isFulled = true;
 
-            OnStartedCharging?.Invoke(this);
+                    Invoke_OnFulledCharging();
+                }
+            }
+            else
+            {
+                if(_isFulled)
+                {
+                    _isFulled = false;
+                }
+            }
         }
-        protected virtual void Callback_OnFinishedCharging()
-        {
-            Log("On Finished Charging");
 
-            OnFinishedCharging?.Invoke(this);
+        
+        
+        protected virtual void Invoke_OnStartedCharging()
+        {
+            Log($"{nameof(OnStartedCharge)}");
+
+            OnStartedCharge?.Invoke(this);
         }
-        protected virtual void Callback_OnReachedCharging()
+        protected virtual void Invoke_OnFinishedCharging()
         {
-            Log("On Reached Charging");
+            Log($"{nameof(OnFinishedCharge)}");
 
-            OnReachedCharging?.Invoke(this);
+            OnFinishedCharge?.Invoke(this);
+        }
+        protected virtual void Invoke_OnFulledCharging()
+        {
+            Log($"{nameof(OnFulledCharge)}");
+
+            OnFulledCharge?.Invoke(this);
+        }
+        protected virtual void Invoke_OnCanceledCharging()
+        {
+            Log($"{nameof(OnCanceledCharge)}");
+
+            OnCanceledCharge?.Invoke(this);
+        }
+        protected virtual void Invoke_OnEndedCharging()
+        {
+            Log($"{nameof(OnEndedCharge)}");
+
+            OnEndedCharge?.Invoke(this);
+        }
+
+        protected virtual void Invoke_OnChangedChargeLevel(int prevLevel)
+        {
+            Log($"{nameof(OnChangedChargeLevel)} :: Current Level - {_currentChargeLevel} ||  Prev Level - {prevLevel}");
+
+            OnChangedChargeLevel?.Invoke(this, _currentChargeLevel, prevLevel);
         }
     }
 

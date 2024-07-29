@@ -23,12 +23,12 @@ namespace StudioScor.Utilities.VisualScripting
             }
         }
 
-        private void Damageable_TakeDamage(IDamageableSystem damageable, FDamageInfo damageInfo)
+        private void Damageable_TakeDamage(IDamageableSystem damageable, DamageInfoData damageInfo)
         {
             EventBus.Trigger(new EventHook(DamageableWithVisualScripting.TAKE_ANY_DAMAGE, damageable), damageInfo);
         }
 
-        private void Damageable_TakePointDamage(IDamageableSystem damageable, FDamageInfo damageInfo)
+        private void Damageable_TakePointDamage(IDamageableSystem damageable, DamageInfoData damageInfo)
         {
             EventBus.Trigger(new EventHook(DamageableWithVisualScripting.TAKE_POINT_DAMAGE, damageable), damageInfo);
         }

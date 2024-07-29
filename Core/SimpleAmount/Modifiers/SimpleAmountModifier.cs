@@ -13,36 +13,36 @@ namespace StudioScor.Utilities
         }
 
         [Header(" [ Simple Amount Modifier ] ")]
-        [SerializeField] private GameObject _Target;
-        [SerializeField] private EAutoPlayState _AutoPlay = EAutoPlayState.Create;
+        [SerializeField] private GameObject _target;
+        [SerializeField] private EAutoPlayState _autoPlay = EAutoPlayState.Create;
         
-        private ISimpleAmount _SimpleAmount;
-        protected ISimpleAmount SimpleAmount => _SimpleAmount;
+        private ISimpleAmount _simpleAmount;
+        protected ISimpleAmount SimpleAmount => _simpleAmount;
 
         protected virtual void Reset()
         {
 #if UNITY_EDITOR
-            _Target = gameObject;
+            _target = gameObject;
 
-            if(_Target.TryGetComponentInParentOrChildren(out _SimpleAmount))
+            if(_target.TryGetComponentInParentOrChildren(out _simpleAmount))
             {
-                var target = _SimpleAmount as MonoBehaviour;
+                var target = _simpleAmount as MonoBehaviour;
 
-                _Target = target.gameObject;
+                _target = target.gameObject;
             }
 #endif
         }
 
         private void Awake()
         {
-            if (_AutoPlay.Equals(EAutoPlayState.Create))
+            if (_autoPlay.Equals(EAutoPlayState.Create))
             {
                 OnAddModifier();
             }
         }
         private void OnDestroy()
         {
-            if (_AutoPlay.Equals(EAutoPlayState.Create) && _SimpleAmount is not null)
+            if (_autoPlay.Equals(EAutoPlayState.Create) && _simpleAmount is not null)
             {
                 OnRemoveModifier();
             }
@@ -50,14 +50,14 @@ namespace StudioScor.Utilities
 
         private void OnEnable()
         {
-            if (_AutoPlay.Equals(EAutoPlayState.Enable))
+            if (_autoPlay.Equals(EAutoPlayState.Enable))
             {
                 OnAddModifier();
             }
         }
         private void OnDisable()
         {
-            if (_AutoPlay.Equals(EAutoPlayState.Enable))
+            if (_autoPlay.Equals(EAutoPlayState.Enable))
             {
                 OnRemoveModifier();
             }
@@ -65,20 +65,18 @@ namespace StudioScor.Utilities
 
         private void OnAddModifier()
         {
-            if(!_Target.TryGetComponentInParentOrChildren(out _SimpleAmount))
+            if(!_target.TryGetComponentInParentOrChildren(out _simpleAmount))
                 LogError(" Simple Amount Is Null!");
 
-            _SimpleAmount.AddModifier(this);
+            _simpleAmount.AddModifier(this);
         }
 
         private void OnRemoveModifier()
         {
-            if (!_Target.TryGetComponentInParentOrChildren(out _SimpleAmount))
-                LogError(" Simple Amount Is Null!");
-
-            _SimpleAmount.RemoveModifier(this);
-
+            if(_simpleAmount is not null)
+                _simpleAmount.RemoveModifier(this);
         }
+
         public abstract void UpdateModifier();
     }
 

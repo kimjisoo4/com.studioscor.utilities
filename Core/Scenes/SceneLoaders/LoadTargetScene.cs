@@ -37,6 +37,8 @@ namespace StudioScor.Utilities
 
         public override void LoadScene()
         {
+            IsPlaying = true;
+
             runtimeTarget.OnStarted += Target_OnStarted;
             runtimeTarget.OnFinished += Target_OnFinished;
 
@@ -52,6 +54,8 @@ namespace StudioScor.Utilities
         private void Target_OnFinished(SceneLoader scene)
         {
             scene.OnFinished -= Target_OnFinished;
+
+            IsPlaying = false;
 
             Callback_OnFinished();
         }

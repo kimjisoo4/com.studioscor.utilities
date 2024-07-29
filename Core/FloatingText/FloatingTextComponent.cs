@@ -9,42 +9,42 @@ namespace StudioScor.Utilities
     public class FloatingTextComponent : BaseMonoBehaviour
 	{
         [Header(" [ Floating Damage Text ] ")]
-		[SerializeField] private TMP_Text _TMP;
-        [SerializeField] private UnityEvent _OnFloatingText;
-        [SerializeField] private UnityEvent _OnReleased;
+		[SerializeField] private TMP_Text _textArea;
+        [SerializeField] private UnityEvent _onFloatingText;
+        [SerializeField] private UnityEvent _onReleased;
 
-        private IObjectPool<FloatingTextComponent> _FloatingDamagePool;
+        private IObjectPool<FloatingTextComponent> _floatingDamagePool;
 
-        private bool _IsRelease = false;
+        private bool _isRelease = false;
 
         private void Reset()
         {
 #if UNITY_EDITOR
-            transform.TryGetComponentInParentOrChildren(out _TMP);
+            transform.TryGetComponentInParentOrChildren(out _textArea);
 #endif
         }
         public void Create(IObjectPool<FloatingTextComponent> pool)
         {
             Log(" Create ");
 
-            _FloatingDamagePool = pool;
+            _floatingDamagePool = pool;
         }
         public void Activate()
         {
             Log(" Activate ");
 
-            _IsRelease = true;
+            _isRelease = true;
         }
         public void Release()
         {
-            if (!_IsRelease)
+            if (!_isRelease)
                 return;
 
             Log(" Release ");
 
-            _IsRelease = true;
+            _isRelease = true;
 
-            _FloatingDamagePool.Release(this);
+            _floatingDamagePool.Release(this);
 
             Callback_OnReleased();
 
@@ -60,7 +60,7 @@ namespace StudioScor.Utilities
 		{
             Log($" On Text - [ {damage} ] ");
 
-            _TMP.text = damage.ToString();
+            _textArea.text = damage.ToString();
 
 			gameObject.SetActive(true);
 
@@ -71,13 +71,13 @@ namespace StudioScor.Utilities
         {
             Log("On Floating Text");
 
-            _OnFloatingText?.Invoke();
+            _onFloatingText?.Invoke();
         }
         private void Callback_OnReleased()
         {
             Log("On Released");
 
-            _OnReleased?.Invoke();
+            _onReleased?.Invoke();
         }
     }
 

@@ -4,53 +4,58 @@ using UnityEngine.Pool;
 
 namespace StudioScor.Utilities
 {
-    [CreateAssetMenu(menuName = "StudioScor/New FloatingTextContainer", fileName = "FloatingTextContainer_")]
+    [CreateAssetMenu(menuName = "StudioScor/Utilities/New FloatingTextContainer", fileName = "FloatingTextContainer_")]
     public class FloatingTextContainer : BaseScriptableObject
     {
         [Header(" [ Floating Text Container ] ")]
-        [SerializeField] private FloatingTextComponent _FloatingDamageText;
-        [SerializeField] private Canvas _Container;
+        [SerializeField] private FloatingTextComponent _floatingDamageText;
+        [SerializeField] private Canvas _container;
+        [SerializeField] private int _capacity = 10;
+        [SerializeField] private int _maxSize = 100;
 
-        [SerializeField] private int _Capacity = 10;
-        [SerializeField] private int _MaxSize = 100;
-
-        private Canvas _InstContainer;
-        private IObjectPool<FloatingTextComponent> _Pool;
+        private Canvas _instContainer;
+        private IObjectPool<FloatingTextComponent> _pool;
 
 
         protected override void OnReset()
         {
             base.OnReset();
 
-            _InstContainer = null;
-            _Pool = null;
+            _instContainer = null;
+            _pool = null;
         }
 
         public void SpawnFloatingDamage(Vector3 position, float damage)
         {
-            if (!_InstContainer || _Pool is null)
+            if (!_instContainer || _pool is null)
                 SetupPool();
 
-            var floatingText = _Pool.Get();
+            var floatingText = _pool.Get();
 
             floatingText.transform.position = position;
+
             floatingText.OnText(damage);
         }
 
-        private void SetupPool()
+        public void SetupPool(Canvas container = null)
         {
-            if(!_InstContainer)
-                _InstContainer = Instantiate(_Container);
-
-            if(_Pool is null)
+            if(!_instContainer)
             {
-                _Pool = new ObjectPool<FloatingTextComponent>(CreatePool, actionOnGet: Getted, collectionCheck: true, defaultCapacity: _Capacity, maxSize: _MaxSize);
+                if (container)
+                    _instContainer = container;
+                else
+                    _instContainer = Instantiate(_container);
+            }
+
+            if(_pool is null)
+            {
+                _pool = new ObjectPool<FloatingTextComponent>(CreatePool, actionOnGet: Getted, collectionCheck: true, defaultCapacity: _capacity, maxSize: _maxSize);
 
                 var poolObjects = new List<FloatingTextComponent>();
 
-                for (int i = 0; i < _Capacity; i++)
+                for (int i = 0; i < _capacity; i++)
                 {
-                    poolObjects.Add(_Pool.Get());
+                    poolObjects.Add(_pool.Get());
                 }
 
                 foreach (var poolObject in poolObjects)
@@ -67,9 +72,9 @@ namespace StudioScor.Utilities
 
         private FloatingTextComponent CreatePool()
         {
-            var text = Instantiate(_FloatingDamageText, _InstContainer.transform);
+            var text = Instantiate(_floatingDamageText, _instContainer.transform);
 
-            text.Create(_Pool);
+            text.Create(_pool);
 
             text.gameObject.SetActive(false);
 

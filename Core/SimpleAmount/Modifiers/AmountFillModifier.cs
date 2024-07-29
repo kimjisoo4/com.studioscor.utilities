@@ -8,19 +8,19 @@ namespace StudioScor.Utilities
     public class AmountFillModifier : SimpleAmountModifier
     {
         [Header(" [ Amount Fill Modifier ] ")]
-        [SerializeField] private Image _Fill;
+        [SerializeField] private Image _fill;
 
         protected override void Reset()
         {
 #if UNITY_EDITOR
             base.Reset();
 
-            gameObject.TryGetComponentInParentOrChildren(out _Fill);
+            gameObject.TryGetComponentInParentOrChildren(out _fill);
 #endif
         }
         public override void UpdateModifier()
         {
-            _Fill.fillAmount = SimpleAmount.NormalizedValue;
+            _fill.fillAmount = SimpleAmount.NormalizedValue;
         }
     }
 }

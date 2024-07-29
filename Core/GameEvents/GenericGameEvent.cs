@@ -9,7 +9,7 @@ namespace StudioScor.Utilities
     {
         [SerializeField][SReadOnly] private List<GenericGameEventListner<T>> genericEventList = new List<GenericGameEventListner<T>>();
 
-        public event UnityAction<T> OnGenericEvent;
+        public event UnityAction<T> OnTriggerGenericEvent;
 
         public int GetGenericEventListCount()
         {
@@ -27,7 +27,7 @@ namespace StudioScor.Utilities
                 genericEventList[i].TryActiveGameEvent(data);
             }
 
-            OnGenericEvent?.Invoke(data);
+            OnTriggerGenericEvent?.Invoke(data);
 
         }
         public void AddListner(GenericGameEventListner<T> listner)

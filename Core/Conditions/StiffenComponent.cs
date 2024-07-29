@@ -34,7 +34,7 @@ namespace StudioScor.Utilities
             timer.OnCanceledTimer += Timer_OnFinishedTimer;
         }
 
-        private void Timer_OnFinishedTimer(Timer timer)
+        private void Timer_OnFinishedTimer(ITimer timer)
         {
             Invoke_OnFinishedStiffen();
         }

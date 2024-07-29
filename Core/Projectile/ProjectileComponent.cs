@@ -1,59 +1,130 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-    public class ProjectileComponent : BaseMonoBehaviour
+    public class ProjectileComponent : BaseMonoBehaviour, IProjectile
     {
-        [field: Header(" [ Projectile ] ")]
-        [field: SerializeField] public Rigidbody RigidBody { get; protected set; }
-
-        [field: Header(" Move")]
-        [field: SerializeField] public AccelerateMove AccelerateMove { get; protected set; }
-
-        [field: Header(" Gravity ")]
-        [field: SerializeField] public bool UseGravity { get; protected set; } = false;
-        [field: SerializeField] public GravityMove GravityMove { get; protected set; }
-
-        [field: Header(" Direction ")]
-        [field: SerializeField] public LookAtDirection LookAtDirection { get; protected set; }
-
-
-        private void OnEnable()
+        [System.Serializable]
+        public class UnityEvents
         {
-            OnProjectile();
-        }
-        private void OnDisable()
-        {
-            EndProjectile();
+            [SerializeField]private UnityEvent _onStartedProjectile;
+            [SerializeField]private UnityEvent _onEndedProjectile;
+
+            public void AddUnityEvent(IProjectile projectile)
+            {
+                projectile.OnStartedProjectile += Projectile_OnStartedProjectile;
+                projectile.OnEndedProjectile += Projectile_OnEndedProjectile;
+            }
+            public void RemoveUnityEvent(IProjectile projectile)
+            {
+                projectile.OnStartedProjectile -= Projectile_OnStartedProjectile;
+                projectile.OnEndedProjectile -= Projectile_OnEndedProjectile;
+            }
+            
+
+            private void Projectile_OnStartedProjectile(IProjectile projectile)
+            {
+                _onStartedProjectile?.Invoke();
+            }
+            private void Projectile_OnEndedProjectile(IProjectile projectile)
+            {
+                _onEndedProjectile?.Invoke();
+            }
         }
 
+        [Header(" [ Projectile ] ")]
+        [SerializeField] private Projectile _projectile;
+
+        [Header(" Unity Events ")]
+        [SerializeField] private bool _useUnityEvent = true;
+        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
+
+        public event IProjectile.ProjectileStateHandler OnStartedProjectile { add => _projectile.OnStartedProjectile += value; remove => _projectile.OnStartedProjectile -= value; }
+        public event IProjectile.ProjectileStateHandler OnEndedProjectile { add => _projectile.OnEndedProjectile += value; remove => _projectile.OnEndedProjectile -= value; }
+
+        public bool IsPlaying => _projectile.IsPlaying;
+        public float StartSpeed { get => _projectile.StartSpeed; set => _projectile.StartSpeed = value; }
+        public float TargetSpeed { get => _projectile.TargetSpeed; set => _projectile.TargetSpeed = value; }
+        public float Acceleration { get => _projectile.Acceleration; set => _projectile.Acceleration = value; }
+        public float Deceleration { get => _projectile.Deceleration; set => _projectile.Deceleration = value; }
+        public Vector3 Direction { get => _projectile.Direction; set => _projectile.Direction = value; }
+        public Transform Target { get => _projectile.Target; set => _projectile.Target = value; }
+        public float CurrentSpeed { get => _projectile.CurrentSpeed; set => _projectile.CurrentSpeed = value; }
+        public bool UseTurn { get => _projectile.UseTurn; set => _projectile.UseTurn = value; }
+        public float TurnSpeed { get => _projectile.TurnSpeed; set => _projectile.TurnSpeed = value; }
+        public bool UseGravity { get => _projectile.UseGravity; set => _projectile.UseGravity = value; }
+        public float GravityScale { get => _projectile.GravityScale; set => _projectile.GravityScale = value; }
+
+        public Vector3 Velocity => _projectile.Velocity;
+        public Transform Actor { get => _projectile.Actor; set => _projectile.Actor = value; }
+
+        private bool _wasInitialized = false;
+
+        private void Reset()
+        {
+            EditorSetup();
+        }
+        private void OnValidate()
+        {
+            EditorSetup();
+        }
+
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        private void EditorSetup()
+        {
+#if UNITY_EDITOR
+            if (_projectile is not null && !_projectile.Actor)
+            {
+                _projectile.Actor = transform;
+            }
+#endif
+        }
+
+        private void Awake()
+        {
+            Initialization();
+        }
+        private void OnDestroy()
+        {
+            if (_useUnityEvent)
+            {
+                _unityEvents.RemoveUnityEvent(this);
+            }
+        }
+
+        private void Initialization()
+        {
+            if (_wasInitialized)
+                return;
+
+            _wasInitialized = true;
+
+            if (_useUnityEvent)
+            {
+                _unityEvents.AddUnityEvent(this);
+            }
+        }
+
+        [ContextMenu(nameof(OnProjectile))]
         public void OnProjectile()
         {
-            AccelerateMove.OnAccelerate();
-            
-            if(UseGravity)
-                GravityMove.OnGravity();
+            Initialization();
 
-            LookAtDirection.OnLookAtDirection();
+            _projectile.OnProjectile();
         }
+
+        [ContextMenu(nameof(EndProjectile))]
         public void EndProjectile()
         {
-            AccelerateMove.EndAccelerate();
-
-            if (UseGravity)
-                GravityMove.EndGravity();
-
-            LookAtDirection.EndLookAtDirection();
+            _projectile.EndProjectile();
         }
 
-        public void UpdateProjectile(float deltaTime)
-        {
-            AccelerateMove.UpdateAccelerate(deltaTime);
-            GravityMove.UpdateGravity(deltaTime);
-            LookAtDirection.UpdateRotation(deltaTime);
+        
 
-            RigidBody.rotation = LookAtDirection.Rotation;
-            RigidBody.velocity = transform.forward * AccelerateMove.Speed + GravityMove.Velocity;
+        public (Vector3 velocity, Quaternion rotation) UpdateProjectile(float deltaTime)
+        {
+            return _projectile.UpdateProjectile(deltaTime);
         }
     }
 }

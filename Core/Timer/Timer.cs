@@ -1,168 +1,236 @@
 ﻿using UnityEngine;
+using static StudioScor.Utilities.ITimer;
 
 namespace StudioScor.Utilities
 {
+	public interface ITimer
+	{
+		public delegate void TimerStateHandler(ITimer timer);
+		public void OnTimer(float newDuration = -1f);
+
+		public void UpdateTimer(float deltaTime);
+		public void JumpTime(float newTime);
+		public void PauseTimer();
+		public void ResumeTimer();
+		public void FinishTimer();
+		public void CancelTimer();
+
+		public bool IsPlaying { get; }
+		public bool IsStopped { get; }
+		public bool IsPaused { get; }
+		public bool IsFinished { get; }
+		public float Duration { get; }
+		public float RemainTime { get; }
+		public float ElapsedTime { get; }
+		public float NormalizedTime { get; }
+
+        public event TimerStateHandler OnStartedTimer;
+        public event TimerStateHandler OnFinishedTimer;
+        public event TimerStateHandler OnCanceledTimer;
+		public event TimerStateHandler OnEndedTimer;
+		public event TimerStateHandler OnPausedTimer;
+		public event TimerStateHandler OnResumedTimer;
+    }
+
     [System.Serializable]
-    public class Timer : BaseClass
+    public class Timer : BaseClass, ITimer
     {
-		public delegate void TimerHandler(Timer timer);
-
-		[SerializeField] private float duration;
+		[SerializeField] private float _duration;
 		
-		private float remainTime;
-		private float elapsedTime;
-		private float normalizedTime;
+		private float _remainTime;
+		private float _elapsedTime;
+		private float _normalizedTime;
 
-		private bool isPlaying;
-		private bool isFinished;
+		private bool _isPlaying;
+		private bool _isPaused;
+		private bool _isFinished;
 
-		public event TimerHandler OnStartedTimer;
-		public event TimerHandler OnFinishedTimer;
-		public event TimerHandler OnCanceledTimer;
+		public event TimerStateHandler OnStartedTimer;
+		public event TimerStateHandler OnFinishedTimer;
+		public event TimerStateHandler OnCanceledTimer;
+        public event TimerStateHandler OnEndedTimer;
+        public event TimerStateHandler OnPausedTimer;
+        public event TimerStateHandler OnResumedTimer;
 
-		public float Duration => duration;
-		public float RemainTime => IsPlaying ? remainTime : 0f;
-		public float ElapsedTime => isPlaying ?  elapsedTime : 0f;
-		public float NormalizedTime => normalizedTime;
-		public bool IsPlaying => isPlaying;
-		public bool IsStopped => !isPlaying;
-		public bool IsFinished => isFinished;
+        public float Duration => _duration;
+		public float RemainTime => IsPlaying ? _remainTime : 0f;
+		public float ElapsedTime => _isPlaying ?  _elapsedTime : 0f;
+		public float NormalizedTime => _normalizedTime;
+		public bool IsPlaying => _isPlaying;
+		public bool IsPaused => _isPlaying && _isPaused;
+		public bool IsStopped => !_isPlaying;
+		public bool IsFinished => _isFinished;
 
 		public Timer()
         {
-			duration = 0.2f;
-			remainTime = duration;
-			elapsedTime = 0;
-			isPlaying = false;
-			isFinished = false;
+			_duration = 0.2f;
+			_remainTime = _duration;
+			_elapsedTime = 0;
+			_isPlaying = false;
+			_isFinished = false;
 		}
-
 		public Timer(float time, bool isPlaying = false)
         {
-			duration = time;
-			remainTime = duration;
-			elapsedTime = 0;
-			this.isPlaying = isPlaying;
-			isFinished = false;
+			_duration = time;
+			_remainTime = _duration;
+			_elapsedTime = 0;
+			this._isPlaying = isPlaying;
+			_isFinished = false;
 		}
+
 		public void OnResetTimer()
         {
-			remainTime = duration;
-			elapsedTime = 0;
-			isFinished = false;
+			_remainTime = _duration;
+			_elapsedTime = 0;
+			_isFinished = false;
+			_isPaused = false;
 		}
-		public void OnTimer(float duration)
-        {
-			this.duration = duration;
 
-			OnTimer();
+		public void OnTimer(float duration = -1f)
+        {
+            if (IsPlaying)
+                return;
+
+			if (duration > 0)
+				_duration = duration;
+
+            _isPlaying = true;
+
+            OnResetTimer();
+
+            Invoke_OnStartedTimer();
         }
-		public void OnTimer()
-        {
-			if (IsPlaying)
-				return;
-
-			isPlaying = true;
-			
-			OnResetTimer();
-
-			Invoke_OnStartedTimer();
-		}
 
 		public void SetDuration(float duration)
         {
-			this.duration = duration;
+			this._duration = duration;
         }
-		public void JumpTimer(float time)
+		public void JumpTime(float time)
         {
-			remainTime -= time;
-			elapsedTime = time;
+			if (time < 0)
+				time = 0;
+
+            _remainTime = _duration - time;
+			_elapsedTime = time;
         }
 
-		public void OnFinisheTimer()
+		public void FinishTimer()
 		{
-			isPlaying = false;
-			remainTime = 0;
-			elapsedTime = duration;
-			isFinished = true;
-			normalizedTime = 1;
+			if (!_isPlaying)
+				return;
+
+			_isPlaying = false;
+			_remainTime = 0;
+			_elapsedTime = _duration;
+			_isFinished = true;
+			_normalizedTime = 1;
 
 			Invoke_OnFinishedTimer();
+
+			Invoke_OnEndedTimer();
 		}
-		private void OnCancelTimer()
+		public void CancelTimer()
         {
-			isPlaying = false;
-			isFinished = false;
+            if (!_isPlaying)
+                return;
+
+            _isPlaying = false;
+			_isFinished = false;
 
 			Invoke_OnCanceledTimer();
+
+			Invoke_OnEndedTimer();
 		}
-		public void OnPauseTimer()
+		public void PauseTimer()
         {
-			if (!isPlaying)
+			if (!_isPlaying || _isPaused)
 				return;
 
-			isPlaying = false;
+            _isPaused = true;
+
+			Invoke_OnPausedTimer();
         }
-		public void OnResumeTimer()
+		public void ResumeTimer()
         {
-			if (isPlaying)
+			if (!_isPlaying || !_isPaused)
 				return;
 
-			isPlaying = true;
+            _isPaused = false;
+
+			Invoke_OnResumedTimer();
 		}
 
 		public void EndTimer()
         {
-			if (!isPlaying)
+			if (!_isPlaying)
 				return;
 
-            if (remainTime <= 0f)
+            if (_remainTime <= 0f)
             {
-				OnFinisheTimer();
+				FinishTimer();
 			}
             else
             {
-				OnCancelTimer();
+				CancelTimer();
 			}
 		}
 		
 		public void UpdateTimer(float deltaTime)
         {
-			if (isFinished || !isPlaying)
+			if (_isFinished || !_isPlaying || _isPaused)
 				return;
 
-			remainTime -= deltaTime;
-			elapsedTime = duration - remainTime;
+			_remainTime -= deltaTime;
+			_elapsedTime = _duration - _remainTime;
 
-            if (remainTime <= 0)
+            if (_remainTime <= 0)
             {
-				OnFinisheTimer();
+				FinishTimer();
 
 				return;
 			}
 
-			normalizedTime = elapsedTime / duration;
+			_normalizedTime = _elapsedTime / _duration;
         }
 
 
         private void Invoke_OnStartedTimer()
         {
-            Log("On Started Timer");
+            Log($"{nameof(OnStartedTimer)} :: Duration - {Duration:f0}");
 
             OnStartedTimer?.Invoke(this);
         }
         private void Invoke_OnFinishedTimer()
         {
-            Log("On Finished Timer");
+            Log($"{nameof(OnFinishedTimer)}");
 
             OnFinishedTimer?.Invoke(this);
         }
+        private void Invoke_OnEndedTimer()
+        {
+            Log($"{nameof(OnEndedTimer)} :: {(IsFinished ? "FInished" : "Canceled" )}");
+
+            OnEndedTimer?.Invoke(this);
+        }
         private void Invoke_OnCanceledTimer()
         {
-            Log("On Canceled Timer");
+            Log($"{nameof(OnCanceledTimer)} :: Remain Time - {RemainTime:f0}");
 
             OnCanceledTimer?.Invoke(this);
         }
+        private void Invoke_OnPausedTimer()
+        {
+            Log($"{nameof(OnPausedTimer)} :: Remain Time - {RemainTime:f0}");
+
+            OnPausedTimer?.Invoke(this);
+        }
+        private void Invoke_OnResumedTimer()
+        {
+            Log($"{nameof(OnResumedTimer)} :: Remain Time - {RemainTime:f0}");
+
+            OnResumedTimer?.Invoke(this);
+        }
+
     }
 
 }

@@ -23,15 +23,10 @@ namespace StudioScor.Utilities
         private void Awake()
         {
             stateMachine.Setup();
-        }
 
-        private void Start()
-        {
             Fade_OnChangedFadeState(fade.State);
-
             fade.OnChangedFadeState += Fade_OnChangedFadeState;
         }
-
         private void OnDestroy()
         {
             fade.OnChangedFadeState -= Fade_OnChangedFadeState;

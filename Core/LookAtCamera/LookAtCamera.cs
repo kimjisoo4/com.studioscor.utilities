@@ -6,42 +6,27 @@ namespace StudioScor.Utilities
     public class LookAtCamera : BaseStateMono
     {
         [Header(" [ Look At Camera Component ] ")]
-        [SerializeField] private RotationConstraint constraint;
-        [SerializeField] private Camera targetCamera;
-
+        [SerializeField] private RotationConstraint _constraint;
+        [SerializeField] private Camera _targetCamera;
         protected override void Reset()
         {
 #if UNITY_EDITOR
             base.Reset();
 
-            if(gameObject.TryGetComponentInParentOrChildren(out constraint))
+            if (gameObject.TryGetComponentInParentOrChildren(out _constraint))
             {
-                constraint.constraintActive = true;
+                _constraint.constraintActive = true;
             }
 #endif
         }
 
         private void OnEnable()
         {
-            TryEnterState();
+            EnterLookAtCamera();
         }
 
         private void OnDisable()
         {
-            TryExitState();
-        }
-
-        protected override void EnterState()
-        {
-            base.EnterState();
-
-            EnterLookAtCamera();
-        }
-
-        protected override void ExitState()
-        {
-            base.ExitState();
-
             ExitLookAtCamera();
         }
 
@@ -58,32 +43,31 @@ namespace StudioScor.Utilities
 
         protected virtual void EnterLookAtCamera()
         {
-            if (!targetCamera)
-                targetCamera = Camera.main;
+            if (!_targetCamera)
+                _targetCamera = Camera.main;
 
             ConstraintSource source = new()
             {
-                sourceTransform = targetCamera.transform,
+                sourceTransform = _targetCamera.transform,
                 weight = 1f,
             };
 
-            if (constraint.sourceCount > 0)
+            if (_constraint.sourceCount > 0)
             {
-                constraint.SetSource(0, source);
+                _constraint.SetSource(0, source);
             }
             else
             {
-                constraint.AddSource(source);
+                _constraint.AddSource(source);
             }
         }
 
         protected virtual void ExitLookAtCamera()
         {
-            if (constraint.sourceCount > 0)
+            if (_constraint.sourceCount > 0)
             {
-                constraint.RemoveSource(0);
+                _constraint.RemoveSource(0);
             }
         }
     }
-
 }

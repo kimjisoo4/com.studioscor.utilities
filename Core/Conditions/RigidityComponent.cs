@@ -29,7 +29,7 @@ namespace StudioScor.Utilities
             timer.OnFinishedTimer += Timer_OnFinishedTimer;
         }
 
-        private void Timer_OnFinishedTimer(Timer timer)
+        private void Timer_OnFinishedTimer(ITimer timer)
         {
             Invoke_OnFinishedRigidity();
         }
