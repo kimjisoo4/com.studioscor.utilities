@@ -78,7 +78,7 @@ namespace StudioScor.Utilities
         }
         public void AddIgnoreTarget(Transform add)
         {
-            Log($" Add Ignore Transform {add.gameObject.name}", SUtility.NAME_COLOR_GREEN);
+            Log($" Add Ignore Transform {add.gameObject.name}", SUtility.STRING_COLOR_GREEN);
 
             _ignoreTransforms.Add(add);
         }
@@ -98,7 +98,7 @@ namespace StudioScor.Utilities
 
         public void RemoveIgnoreTarget(Transform remove)
         {
-            Log($" Remove Ignore Transform {remove.gameObject.name}", SUtility.NAME_COLOR_GRAY);
+            Log($" Remove Ignore Transform {remove.gameObject.name}", SUtility.STRING_COLOR_GREY);
 
             _ignoreTransforms.Remove(remove);
         }

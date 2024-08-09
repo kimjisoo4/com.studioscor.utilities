@@ -134,40 +134,17 @@ namespace StudioScor.Utilities
             }
         }
         
-        public void OnTimer(float newDuration = -1)
-        {
-            _timer.OnTimer(newDuration);
-        }
+        public void OnTimer(float newDuration = -1) => _timer.OnTimer(newDuration);
+        public void EndTimer() => _timer.EndTimer();
+        public void UpdateTimer(float deltaTime) => _timer.UpdateTimer(deltaTime);
+        public void JumpTime(float newTime) => _timer.JumpTime(newTime);
+        public void PauseTimer() => _timer.PauseTimer();
 
-        public void UpdateTimer(float deltaTime)
-        {
-            _timer.UpdateTimer(deltaTime);
-        }
+        public void ResumeTimer() => _timer.ResumeTimer();
 
-        public void JumpTime(float newTime)
-        {
-            _timer.JumpTime(newTime);
-        }
+        public void FinishTimer() => _timer.FinishTimer();
 
-        public void PauseTimer()
-        {
-            _timer.PauseTimer();
-        }
-
-        public void ResumeTimer()
-        {
-            _timer.ResumeTimer();
-        }
-
-        public void FinishTimer()
-        {
-            _timer.FinishTimer();
-        }
-
-        public void CancelTimer()
-        {
-            _timer.CancelTimer();
-        }
+        public void CancelTimer() => _timer.CancelTimer();
 
         private void _timer_OnEndedTimer(ITimer timer)
         {

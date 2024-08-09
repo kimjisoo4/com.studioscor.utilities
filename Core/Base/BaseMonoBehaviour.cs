@@ -18,7 +18,7 @@ namespace StudioScor.Utilities
 #endif
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, string color = "gray")
+        protected virtual void Log(object log, string color = SUtility.STRING_COLOR_GREY)
         {
 #if UNITY_EDITOR
             if (UseDebug)
@@ -27,7 +27,7 @@ namespace StudioScor.Utilities
         }
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void LogError(object log, string color = "red")
+        protected virtual void LogError(object log, string color = SUtility.STRING_COLOR_GREY)
         {
 #if UNITY_EDITOR
             SUtility.Debug.LogError($"{GetType().Name} [{name}] : {log}", this, color);

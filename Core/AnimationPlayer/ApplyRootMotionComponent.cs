@@ -78,7 +78,7 @@ namespace StudioScor.Utilities
 
         protected virtual void Invoke_OnChangedRootMotionState()
         {
-            Log($"On Changed RootMotion State : {Animator.applyRootMotion}", Animator.applyRootMotion ? SUtility.NAME_COLOR_GREEN : SUtility.NAME_COLOR_GRAY);
+            Log($"On Changed RootMotion State : {Animator.applyRootMotion}", Animator.applyRootMotion ? SUtility.STRING_COLOR_GREEN : SUtility.STRING_COLOR_GREY);
 
             if(_UseUnityEvent)
             {

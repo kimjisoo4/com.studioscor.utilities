@@ -11,19 +11,19 @@ namespace StudioScor.Utilities
 
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, string color = "gray")
+        protected virtual void Log(object log, string color = SUtility.STRING_COLOR_GREY)
         {
 #if UNITY_EDITOR
             if (UseDebug)
-                SUtility.Debug.Log($"{GetType().Name} [ {(Context ? Context.name : "Empty")} ] : {log}", Context);
+                SUtility.Debug.Log($"{GetType().Name} [ {(Context ? Context.name : "Empty")} ] : {log}", Context, color);
 #endif
         }
 
         [Conditional("UNITY_EDITOR")]
-        protected virtual void LogError(object log, string color = "red")
+        protected virtual void LogError(object log, string color = SUtility.STRING_COLOR_GREY)
         {
 #if UNITY_EDITOR
-            SUtility.Debug.LogError($"{GetType().Name} [ {(Context ? Context.name : "Empty")} ] : {log}", Context);
+            SUtility.Debug.LogError($"{GetType().Name} [ {(Context ? Context.name : "Empty")} ] : {log}", Context, color);
 #endif
         }
     }

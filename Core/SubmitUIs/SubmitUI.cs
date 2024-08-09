@@ -36,7 +36,7 @@ namespace StudioScor.Utilities
 
             if (!CanSubmitUI())
             {
-                Log(" Can Not Submit", SUtility.NAME_COLOR_RED);
+                Log(" Can Not Submit", SUtility.STRING_COLOR_RED);
 
                 return false;
             }

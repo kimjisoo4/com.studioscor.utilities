@@ -24,8 +24,6 @@ namespace StudioScor.Utilities
                 sphereCast.OnEndedRaycast -= SphereCast_OnEndedRaycast;
             }
 
-            
-
             private void SphereCast_OnStartedRaycast(IRaycast raycast)
             {
                 _onStartedRaycast?.Invoke();
@@ -41,7 +39,12 @@ namespace StudioScor.Utilities
 
         [Header(" Unity Event ")]
         [SerializeField] private bool _useUnityEvent;
-        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
+        [SerializeField]private UnityEvents _unityEvents;
+
+        [Header(" Debug ")]
+        [SerializeField] private bool _useAlwaysDrawGizmos = false;
+        [SerializeField] private bool _isWire = true;
+        [SerializeField] private Color _gizmosColor = Color.red;
 
         public GameObject Owner => _trailSphereCast.Owner;
         public bool IsPlaying => _trailSphereCast.IsPlaying;
@@ -59,6 +62,45 @@ namespace StudioScor.Utilities
 
         public event IRaycast.RaycastStateHandler OnStartedRaycast { add => _trailSphereCast.OnStartedRaycast += value; remove => _trailSphereCast.OnStartedRaycast -= value; }
         public event IRaycast.RaycastStateHandler OnEndedRaycast { add => _trailSphereCast.OnEndedRaycast += value; remove => _trailSphereCast.OnEndedRaycast -= value; }
+
+        private void OnDrawGizmos()
+        {
+#if UNITY_EDITOR
+            if (_useAlwaysDrawGizmos)
+                DrawGizmos();
+#endif
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+#if UNITY_EDITOR
+            if(!_useAlwaysDrawGizmos)
+                DrawGizmos();
+#endif
+        }
+
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        private void DrawGizmos()
+        {
+#if UNITY_EDITOR
+
+            if (_trailSphereCast is null)
+                return;
+
+            var matrix = Gizmos.matrix;
+
+            matrix.SetTRS(transform.position, transform.rotation, transform.localScale);
+
+            Gizmos.matrix = matrix;
+
+            Gizmos.color = _gizmosColor;
+
+            if(_isWire)
+                Gizmos.DrawWireSphere(Vector3.zero, _trailSphereCast.TraceRadius);
+            else
+                Gizmos.DrawSphere(Vector3.zero, _trailSphereCast.TraceRadius);
+#endif
+        }
 
         private void Awake()
         {

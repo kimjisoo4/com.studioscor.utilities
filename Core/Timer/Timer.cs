@@ -7,7 +7,7 @@ namespace StudioScor.Utilities
 	{
 		public delegate void TimerStateHandler(ITimer timer);
 		public void OnTimer(float newDuration = -1f);
-
+		public void EndTimer();
 		public void UpdateTimer(float deltaTime);
 		public void JumpTime(float newTime);
 		public void PauseTimer();

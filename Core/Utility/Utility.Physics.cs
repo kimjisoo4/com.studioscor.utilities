@@ -446,7 +446,7 @@ namespace StudioScor.Utilities
             {
                 if (results is null || results.Length <= 0)
                 {
-                    Debug.LogError($"[ {nameof(results)} ] is Null or Length is Zero!.", null, NAME_COLOR_RED);
+                    Debug.LogError($"[ {nameof(results)} ] is Null or Length is Zero!.", null, STRING_COLOR_RED);
                     return -1;
                 }
 

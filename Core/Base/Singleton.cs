@@ -15,7 +15,11 @@ namespace StudioScor.Utilities
 			{
 				if (!instance)
 				{
+#if UNITY_6000_0_OR_NEWER
+					instance = FindAnyObjectByType<T>();
+#else
 					instance = FindObjectOfType<T>();
+#endif
 
 					if (instance)
 						instance.Initialization();
@@ -39,7 +43,7 @@ namespace StudioScor.Utilities
 			}
             else if(instance != this)
             {
-				Log("Initialization - Destory", SUtility.NAME_COLOR_RED);
+				Log("Initialization - Destory", SUtility.STRING_COLOR_RED);
 
 				Destroy(gameObject);
             }
@@ -47,11 +51,11 @@ namespace StudioScor.Utilities
 
 		private void Initialization()
         {
-			Log("Initialization", SUtility.NAME_COLOR_GREEN);
+			Log("Initialization", SUtility.STRING_COLOR_GREEN);
 
 			if (_useDontDestroy)
             {
-				Log("Don't Destroy On Load", SUtility.NAME_COLOR_GREEN);
+				Log("Don't Destroy On Load", SUtility.STRING_COLOR_GREEN);
 
 				DontDestroyOnLoad(gameObject);
 			}

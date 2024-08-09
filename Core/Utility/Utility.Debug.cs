@@ -7,11 +7,13 @@ namespace StudioScor.Utilities
 
     public static partial class SUtility
     {
-        public const string NAME_COLOR_RED = "red";
-        public const string NAME_COLOR_YELLOW = "yellow";
-        public const string NAME_COLOR_BLUE = "blue";
-        public const string NAME_COLOR_GREEN = "green";
-        public const string NAME_COLOR_GRAY = "gray";
+        public const string STRING_COLOR_FAIL = "red";
+        public const string STRING_COLOR_SUCCESS = "green";
+        public const string STRING_COLOR_RED = "red";
+        public const string STRING_COLOR_YELLOW = "yellow";
+        public const string STRING_COLOR_BLUE = "blue";
+        public const string STRING_COLOR_GREEN = "green";
+        public const string STRING_COLOR_GREY = "grey";
 
         public static class Debug
         {
@@ -73,16 +75,16 @@ namespace StudioScor.Utilities
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void Log(object message, Object context = null, string color = NAME_COLOR_GRAY)
+            public static void Log(object message, Object context = null, string color = STRING_COLOR_GREY)
             {
                 if (!UseDebug)
                     return;
 
-                UnityEngine.Debug.Log($"<color={color}>{ message}</color>", context);
+                UnityEngine.Debug.Log($"<color={color}>{message}</color>", context);
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void LogError(object message, Object context = null, string color = NAME_COLOR_GRAY)
+            public static void LogError(object message, Object context = null, string color = STRING_COLOR_GREY)
             {
                 UnityEngine.Debug.LogError($"<color={color}>{message}</color>", context);
             }
