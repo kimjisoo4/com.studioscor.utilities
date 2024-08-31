@@ -66,7 +66,7 @@ namespace StudioScor.Utilities
 
            
         }
-        
+
         [Header("[ Timer Component ]")]
         [SerializeField] private Timer _timer;
         [SerializeField] private EExitAction _exitAction = EExitAction.Destroy;
@@ -77,16 +77,7 @@ namespace StudioScor.Utilities
 
         [Header(" Unity Events ")]
         [SerializeField] private bool _useUnityEvent = true;
-        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
-
-        private bool _wasInitialized = false;
-
-        public event ITimer.TimerStateHandler OnStartedTimer { add => _timer.OnStartedTimer += value; remove => _timer.OnStartedTimer -= value; }
-        public event ITimer.TimerStateHandler OnFinishedTimer { add => _timer.OnFinishedTimer += value; remove => _timer.OnFinishedTimer -= value; }
-        public event ITimer.TimerStateHandler OnCanceledTimer { add => _timer.OnCanceledTimer += value; remove => _timer.OnCanceledTimer -= value; }
-        public event ITimer.TimerStateHandler OnEndedTimer { add => _timer.OnEndedTimer += value; remove => _timer.OnEndedTimer -= value; }
-        public event ITimer.TimerStateHandler OnPausedTimer { add => _timer.OnPausedTimer += value; remove => _timer.OnPausedTimer -= value; }
-        public event ITimer.TimerStateHandler OnResumedTimer { add => _timer.OnResumedTimer += value; remove => _timer.OnResumedTimer -= value; }
+        [SerializeField] private UnityEvents _unityEvents;
 
         public bool IsPlaying => _timer.IsPlaying;
         public bool IsStopped => _timer.IsStopped;
@@ -97,6 +88,16 @@ namespace StudioScor.Utilities
         public float ElapsedTime => _timer.ElapsedTime;
         public float NormalizedTime => _timer.NormalizedTime;
 
+        
+        private bool _wasInitialized = false;
+
+
+        public event ITimer.TimerStateHandler OnStartedTimer { add => _timer.OnStartedTimer += value; remove => _timer.OnStartedTimer -= value; }
+        public event ITimer.TimerStateHandler OnFinishedTimer { add => _timer.OnFinishedTimer += value; remove => _timer.OnFinishedTimer -= value; }
+        public event ITimer.TimerStateHandler OnCanceledTimer { add => _timer.OnCanceledTimer += value; remove => _timer.OnCanceledTimer -= value; }
+        public event ITimer.TimerStateHandler OnEndedTimer { add => _timer.OnEndedTimer += value; remove => _timer.OnEndedTimer -= value; }
+        public event ITimer.TimerStateHandler OnPausedTimer { add => _timer.OnPausedTimer += value; remove => _timer.OnPausedTimer -= value; }
+        public event ITimer.TimerStateHandler OnResumedTimer { add => _timer.OnResumedTimer += value; remove => _timer.OnResumedTimer -= value; }
 
         private void Awake()
         {

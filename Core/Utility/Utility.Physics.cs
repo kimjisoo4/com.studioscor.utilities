@@ -24,6 +24,72 @@ namespace StudioScor.Utilities
             }
 
             #region ConeCast
+
+            public static int DrawConeCastNonAlloc(Vector3 position, Vector3 direction, float angle, float distance, LayerMask layerMask, Collider[] hitResult,
+                bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
+            {
+                int hitCount = UnityEngine.Physics.OverlapSphereNonAlloc(position, distance, hitResult, layerMask);
+
+
+
+                if (hitCount == 0)
+                {
+#if UNITY_EDITOR
+                    if (useDebug)
+                    {
+                        Color failedColor = rayColor == default ? Color.red : rayColor;
+
+                        Debug.DrawCone(position, direction, distance, angle, failedColor, duration);
+                    }
+#endif
+                    return 0;
+                }
+
+                float halfAngle = angle * 0.5f;
+                int offsetCount = 0;
+
+                for(int i = 0; i < hitCount; i++)
+                {
+                    var hit = hitResult[i];
+
+                    Vector3 targetDirection = position.Direction(hit.transform.position);
+
+                    float hitAngle = Vector3.Angle(direction, targetDirection);
+
+                    if (hitAngle > 180)
+                        hitAngle -= 360f;
+
+                    if (!hitAngle.InRange(-halfAngle, halfAngle))
+                    {
+                        offsetCount++;
+                    }
+                    else
+                    {
+                        if (offsetCount > 0)
+                        {
+                            hitResult[i - offsetCount] = hitResult[i];
+                        }
+                    }
+                }
+
+#if UNITY_EDITOR
+                if (useDebug)
+                {
+                    Color successColor = rayColor == default ? Color.green : rayColor;
+
+                    Debug.DrawCone(position, direction, distance, angle, successColor, duration);
+
+                    for(int i = 0; i < hitCount - offsetCount; i++)
+                    {
+                        var hit = hitResult[i];
+
+                        Debug.DrawPoint(hit.transform.position, successColor, 1, duration);
+                    }
+                }
+#endif
+
+                return hitCount - offsetCount;
+            }
             public static bool DrawConeCast(Vector3 position, Vector3 direction, float angle, float distance, LayerMask layerMask, ref List<Collider> hitResult, List<Transform> ignoreTransform,
                 bool useDebug = false, float duration = 0.2f, Color rayColor = default, Color hitColor = default)
             {

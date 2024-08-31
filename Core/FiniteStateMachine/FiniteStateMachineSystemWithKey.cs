@@ -39,21 +39,10 @@ namespace StudioScor.Utilities
         
         public FiniteStateMachineSystemWithKey(TKey key, TState defaultState) : base(defaultState)
         {
-            states = new();
-
-            states.Add(key, defaultState);
-        }
-        public FiniteStateMachineSystemWithKey() : base()
-        {
-            states = new();
-        }
-
-        public override void Setup()
-        {
-            if (defaultStateKey != null && defaultState != null)
-                AddState(defaultStateKey, defaultState);
-
-            base.Setup();
+            states = new()
+            {
+                { key, defaultState }
+            };
         }
 
         public void SetDefaultState(TKey key, TState state)

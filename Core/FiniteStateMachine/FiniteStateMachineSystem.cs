@@ -10,10 +10,12 @@ namespace StudioScor.Utilities
         [Header(" [ Default State ] ")]
         [SerializeField] protected T defaultState;
 
+        private bool _isPlaying;
         protected T currentState;
         protected T prevState;
         protected T nextState;
 
+        public bool IsPlaying => _isPlaying;
         public T CurrentState => currentState;
         public T PrevState => prevState;
         public T NextState => nextState;
@@ -22,24 +24,37 @@ namespace StudioScor.Utilities
 
         public event OnChangedStateHandler<T> OnChangedState;
 
-        public FiniteStateMachineSystem()
-        {
-
-        }
+        public FiniteStateMachineSystem() { }
         public FiniteStateMachineSystem(T defaultState)
         {
             this.defaultState = defaultState;
         }
 
+        
         public void SetDefaultState(T defaultState)
         {
             this.defaultState = defaultState;
         }
-
-        public virtual void Setup()
+        public virtual void Start()
         {
-            ForceSetState(defaultState);
+            if (_isPlaying)
+                return;
+
+            _isPlaying = true;
+
+            ForceSetDefaultState();
         }
+
+        public virtual void End()
+        {
+            if (!_isPlaying)
+                return;
+
+            _isPlaying = false;
+
+            ForceSetState(null);
+        }
+
         public bool TrySetDefaultState()
         {
             return TrySetState(defaultState);

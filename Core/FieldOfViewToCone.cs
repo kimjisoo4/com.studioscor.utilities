@@ -15,14 +15,15 @@
         [SerializeField]
         private LayerMask _LayerMask;
 
+#if UNITY_EDITOR
         [Header("[ Debug ]")]
-        [SerializeField]
-        private bool _UseDrawGizmo = true;
+        [SerializeField] private bool _UseDrawGizmo = true;
+#endif
 
         #region Draw Gizmose
-#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
+#if UNITY_EDITOR
             if (!_UseDrawGizmo)
                 return;
 
@@ -101,10 +102,10 @@
                     Gizmos.DrawLine(startPosition, endPosition);
                 }
             }
+#endif
         }
 
-#endif
-        #endregion
+#endregion
         
         public bool Cast(out List<Collider> Hits)
         {

@@ -5,22 +5,23 @@ using UnityEngine.EventSystems;
 
 namespace StudioScor.Utilities
 {
-    public class SubmitEventListener : BaseMonoBehaviour, ISubmitHandler, ISubmitEventListenner
+    public class SubmitEventListener : BaseMonoBehaviour, ISubmitHandler, IPointerClickHandler, ISubmitEventListener
     {
+
         [System.Serializable]
         public class UnityEvents
         {
             [SerializeField] private UnityEvent _onSubmited;
-            public void AddUnityEvent(ISubmitEventListenner submitEventHandler)
+            public void AddUnityEvent(ISubmitEventListener submitEventHandler)
             {
                 submitEventHandler.OnSubmited += SubmitEventHandler_OnSubmited;
             }
-            public void RemoveUnityEvent(ISubmitEventListenner submitEventHandler)
+            public void RemoveUnityEvent(ISubmitEventListener submitEventHandler)
             {
                 submitEventHandler.OnSubmited -= SubmitEventHandler_OnSubmited;
             }
 
-            private void SubmitEventHandler_OnSubmited(BaseEventData obj)
+            private void SubmitEventHandler_OnSubmited(ISubmitEventListener submitEventListener,BaseEventData obj)
             {
                 _onSubmited?.Invoke();
             }
@@ -28,12 +29,13 @@ namespace StudioScor.Utilities
 
         [Header(" [ Submit Event Listner ] ")]
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private EInputHandlerType _inputType = EInputHandlerType.Both;
 
         [Header(" Unity Event ")]
         [SerializeField] private bool _useUnityEvent = false;
         [SerializeField] private UnityEvents _unityEvents;
 
-        public event Action<BaseEventData> OnSubmited;
+        public event ISubmitEventListener.SubmitEventHandler OnSubmited;
 
         protected virtual void OnValidate()
         {
@@ -66,14 +68,31 @@ namespace StudioScor.Utilities
 
             return true;
         }
+
         public void OnSubmit(BaseEventData eventData)
         {
+            if (_inputType == EInputHandlerType.Pointer)
+                return;
+
             if (!CanSubmit())
                 return;
 
             Log($"{nameof(OnSubmited)}");
 
-            OnSubmited?.Invoke(eventData);
+            OnSubmited?.Invoke(this, eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (_inputType == EInputHandlerType.Button)
+                return;
+
+            if (!CanSubmit())
+                return;
+
+            Log($"{nameof(OnSubmited)}");
+
+            OnSubmited?.Invoke(this,eventData);
         }
     }
 }

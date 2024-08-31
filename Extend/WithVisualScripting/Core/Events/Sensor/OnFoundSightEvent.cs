@@ -9,7 +9,7 @@ namespace StudioScor.Utilities.VisualScripting
     [UnitShortTitle("OnFoundSight")]
     [UnitSubtitle("Events")]
     [UnitCategory("Events\\StudioScor\\Sensor")]
-    public class OnFoundSightEvent : CustomInterfaceEventUnit<ISight, Collider>
+    public class OnFoundSightEvent : CustomInterfaceEventUnit<ISightSensor, ISightTarget>
     {
         public override Type MessageListenerType => typeof(SightMessageListener);
         protected override string HookName => SightWithVisualScripting.ON_FOUND_SIGHT;
@@ -25,7 +25,7 @@ namespace StudioScor.Utilities.VisualScripting
             Sight = ValueOutput<Collider>(nameof(Sight));
         }
 
-        protected override void AssignArguments(Flow flow, Collider sight)
+        protected override void AssignArguments(Flow flow, ISightTarget sight)
         {
             base.AssignArguments(flow, sight);
 

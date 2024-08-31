@@ -41,10 +41,12 @@ namespace StudioScor.Utilities
         [SerializeField] private bool _useUnityEvent;
         [SerializeField]private UnityEvents _unityEvents;
 
+#if UNITY_EDITOR
         [Header(" Debug ")]
         [SerializeField] private bool _useAlwaysDrawGizmos = false;
         [SerializeField] private bool _isWire = true;
         [SerializeField] private Color _gizmosColor = Color.red;
+#endif
 
         public GameObject Owner => _trailSphereCast.Owner;
         public bool IsPlaying => _trailSphereCast.IsPlaying;

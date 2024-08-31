@@ -20,6 +20,9 @@ namespace StudioScor.Utilities
             [Header("Land")]
             [SerializeField] private UnityEvent _onLand;
 
+            [Header("Shoot")]
+            [SerializeField] private UnityEvent _onShoot;
+
             public void AddUnityEvent(ExplosiveLLCEventListener explosive)
             {
                 if (!explosive)
@@ -29,6 +32,7 @@ namespace StudioScor.Utilities
                 explosive.OnFootR += Explosive_OnFootR;
                 explosive.OnHit += Explosive_OnHit;
                 explosive.OnLand += Explosive_OnLand;
+                explosive.OnShoot += Explosive_OnShoot;
             }
             public void RemoveUnityEvent(ExplosiveLLCEventListener explosive)
             {
@@ -39,6 +43,7 @@ namespace StudioScor.Utilities
                 explosive.OnFootR -= Explosive_OnFootR;
                 explosive.OnHit -= Explosive_OnHit;
                 explosive.OnLand -= Explosive_OnLand;
+                explosive.OnShoot -= Explosive_OnShoot;
             }
 
 
@@ -62,16 +67,20 @@ namespace StudioScor.Utilities
                 _onFootL?.Invoke();
             }
 
-            
+            private void Explosive_OnShoot()
+            {
+                _onShoot?.Invoke();
+            }
         }
         [Header(" [ Explosive LLC Event Listener ] ")]
-        [SerializeField] private bool _useUnityEvent = true;
-        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
+        [SerializeField] private bool _useUnityEvent = false;
+        [SerializeField] private UnityEvents _unityEvents;
 
         public event UnityAction OnFootR;
         public event UnityAction OnFootL;
         public event UnityAction OnHit;
         public event UnityAction OnLand;
+        public event UnityAction OnShoot;
 
         private void Awake()
         {
@@ -96,10 +105,13 @@ namespace StudioScor.Utilities
         {
             Invoke_OnHit();
         }
-
         public void Land()
         {
             Invoke_OnLand();
+        }
+        public void Shoot()
+        {
+            Invoke_OnShoot();
         }
         protected virtual void Inovke_OnFootR()
         {
@@ -124,6 +136,12 @@ namespace StudioScor.Utilities
             Log($"{nameof(OnLand)}");
 
             OnLand?.Invoke();
+        }
+        protected virtual void Invoke_OnShoot()
+        {
+            Log($"{nameof(OnShoot)}");
+
+            OnShoot?.Invoke();
         }
     }
 }

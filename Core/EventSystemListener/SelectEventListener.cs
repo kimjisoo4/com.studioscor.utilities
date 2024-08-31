@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace StudioScor.Utilities
 {
-    public class SelectEventListener : BaseMonoBehaviour, ISelectHandler, ISelectEventListener
+    public class SelectEventListener : BaseMonoBehaviour, ISelectHandler, IPointerEnterHandler, ISelectEventListener
     {
         [System.Serializable]
         public class UnityEvents
@@ -20,7 +20,7 @@ namespace StudioScor.Utilities
                 submitEventHandler.OnSelected -= SubmitEventHandler_OnSubmited;
             }
 
-            private void SubmitEventHandler_OnSubmited(BaseEventData obj)
+            private void SubmitEventHandler_OnSubmited(ISelectEventListener selectEventListener, BaseEventData eventData)
             {
                 _onSelected?.Invoke();
             }
@@ -28,12 +28,13 @@ namespace StudioScor.Utilities
 
         [Header(" [ Select Event Listner ] ")]
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private EInputHandlerType _inputType = EInputHandlerType.Both;
 
         [Header(" Unity Event ")]
         [SerializeField] private bool _useUnityEvent = false;
         [SerializeField] private UnityEvents _unityEvents;
 
-        public event Action<BaseEventData> OnSelected;
+        public event ISelectEventListener.SelectEventHandler OnSelected;
 
         protected virtual void OnValidate()
         {
@@ -69,12 +70,37 @@ namespace StudioScor.Utilities
         }
         public void OnSelect(BaseEventData eventData)
         {
+            if (_inputType == EInputHandlerType.Pointer)
+                return;
+
+            Select(eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            switch (_inputType)
+            {
+                case EInputHandlerType.Both:
+                    EventSystem.current.SetSelectedGameObject(gameObject);
+                    break;
+                case EInputHandlerType.Button:
+                    break;
+                case EInputHandlerType.Pointer:
+                    Select(eventData);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Select(BaseEventData eventData)
+        {
             if (!CanSelect())
                 return;
 
             Log($"{nameof(OnSelect)}");
 
-            OnSelected?.Invoke(eventData);
+            OnSelected?.Invoke(this, eventData);
         }
     }
 }

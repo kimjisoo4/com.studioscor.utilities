@@ -168,7 +168,7 @@ namespace StudioScor.Utilities
 
             EnterState();
 
-            OnEnterState();
+            Invoke_OnEnteredState();
         }
         public void ForceExitState()
         {
@@ -179,21 +179,21 @@ namespace StudioScor.Utilities
 
             ExitState();
 
-            OnExitState();
+            Invoke_OnExitedState();
         }
 
         protected abstract void EnterState();
         protected virtual void ExitState() { }
 
-        private void OnEnterState()
+        private void Invoke_OnEnteredState()
         {
-            Log("Enter State");
+            Log($"{nameof(OnEnteredState)}");
 
             OnEnteredState?.Invoke(this);
         }
-        private void OnExitState()
+        private void Invoke_OnExitedState()
         {
-            Log("Exit State");
+            Log($"{nameof(OnExitedState)}");
 
             OnExitedState?.Invoke(this);
         }

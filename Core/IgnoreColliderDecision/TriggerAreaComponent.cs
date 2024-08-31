@@ -10,6 +10,10 @@ namespace StudioScor.Utilities
     {
         public delegate void TriggerStateHandler(ITriggerArea triggerArea);
         public delegate void TriggerEventHandler(ITriggerArea triggerArea, Collider collider);
+
+        public GameObject gameObject { get; }
+        public Transform transform { get; }
+
         public bool UseTriggerEnter { get; }
         public bool UseTriggerExit { get; }
         public bool UseTriggerStay { get; }
@@ -21,7 +25,7 @@ namespace StudioScor.Utilities
         public event TriggerStateHandler OnStayedTrigger;
     }
 
-    public class OnTriggerComponent : BaseMonoBehaviour, ITriggerArea
+    public class TriggerAreaComponent : BaseMonoBehaviour, ITriggerArea
     {
         [System.Serializable]
         public class UnityEvents
@@ -37,7 +41,7 @@ namespace StudioScor.Utilities
             }
             public void RemoveUnityEvent(ITriggerArea triggerArea)
             {
-                if(triggerArea is not null)
+                if (triggerArea is not null)
                 {
                     triggerArea.OnEnteredTrigger -= TriggerArea_OnEnteredTrigger;
                     triggerArea.OnExitedTrigger -= TriggerArea_OnExitedTrigger;
@@ -60,9 +64,7 @@ namespace StudioScor.Utilities
             }
         }
 
-        [Header(" [ On Trigger Component ] ")]
-        [SerializeField] private IgnoreColliderDecision[] _ignoreDecisions;
-
+        [Header(" [ Trigger Area Component ] ")]
         [Header(" Trigger Enter & Exit ")]
         [SerializeField] private bool _useTriggerEnter = true;
         [SerializeField] private bool _isOnceEnter = false;
@@ -108,12 +110,12 @@ namespace StudioScor.Utilities
             if (_useUnityEvent)
                 _unityEvents.AddUnityEvent(this);
 
-            if(_useTriggerStay)
+            if (_useTriggerStay)
                 _stayedColliders = new();
         }
         private void OnDestroy()
         {
-            if(_useUnityEvent)
+            if (_useUnityEvent)
                 _unityEvents.RemoveUnityEvent(this);
         }
 
@@ -132,15 +134,6 @@ namespace StudioScor.Utilities
 
         protected virtual bool CanTrigger(Collider other)
         {
-            if (_ignoreDecisions is null || _ignoreDecisions.Length == 0)
-                return true;
-
-            foreach (var ignoreDecision in _ignoreDecisions)
-            {
-                if (!ignoreDecision.Decision(other))
-                    return false;
-            }
-
             return true;
         }
 
@@ -151,7 +144,7 @@ namespace StudioScor.Utilities
 
             if (_isOnceEnter && _wasEnterTrigger)
                 return;
-            
+
             if (!CanTrigger(other))
                 return;
 
@@ -204,7 +197,7 @@ namespace StudioScor.Utilities
             DrawSphere(other.bounds.center, Color.red);
         }
 
-        
+
         protected virtual void TriggerEnter(Collider other)
         {
 

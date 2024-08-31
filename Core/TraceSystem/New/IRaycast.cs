@@ -169,8 +169,6 @@ namespace StudioScor.Utilities
         public event IRaycast.RaycastStateHandler OnStartedRaycast;
         public event IRaycast.RaycastStateHandler OnEndedRaycast;
 
-        public override Object Context => _owner;
-
         public void SetOwner(GameObject newOwner)
         {
             _owner = newOwner;

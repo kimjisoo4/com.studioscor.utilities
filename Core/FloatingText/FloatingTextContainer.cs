@@ -15,8 +15,6 @@ namespace StudioScor.Utilities
 
         private Canvas _instContainer;
         private IObjectPool<FloatingTextComponent> _pool;
-
-
         protected override void OnReset()
         {
             base.OnReset();
@@ -41,28 +39,36 @@ namespace StudioScor.Utilities
         {
             if(!_instContainer)
             {
+                if(_pool is not null)
+                {
+                    _pool.Clear();
+                    _pool = null;
+                }
+
                 if (container)
                     _instContainer = container;
                 else
                     _instContainer = Instantiate(_container);
             }
 
-            if(_pool is null)
+            _pool = new ObjectPool<FloatingTextComponent>(CreatePool, actionOnGet: Getted, collectionCheck: true, defaultCapacity: _capacity, maxSize: _maxSize);
+
+            var poolObjects = new List<FloatingTextComponent>();
+
+            for (int i = 0; i < _capacity; i++)
             {
-                _pool = new ObjectPool<FloatingTextComponent>(CreatePool, actionOnGet: Getted, collectionCheck: true, defaultCapacity: _capacity, maxSize: _maxSize);
-
-                var poolObjects = new List<FloatingTextComponent>();
-
-                for (int i = 0; i < _capacity; i++)
-                {
-                    poolObjects.Add(_pool.Get());
-                }
-
-                foreach (var poolObject in poolObjects)
-                {
-                    poolObject.Release();
-                }
+                poolObjects.Add(_pool.Get());
             }
+
+            foreach (var poolObject in poolObjects)
+            {
+                poolObject.Release();
+            }
+        }
+
+        public void Clear()
+        {
+            _pool.Clear();
         }
 
         private void Getted(FloatingTextComponent floatingDamageText)

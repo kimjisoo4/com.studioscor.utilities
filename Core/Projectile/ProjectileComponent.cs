@@ -38,7 +38,7 @@ namespace StudioScor.Utilities
 
         [Header(" Unity Events ")]
         [SerializeField] private bool _useUnityEvent = true;
-        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
+        [SerializeField] private UnityEvents _unityEvents;
 
         public event IProjectile.ProjectileStateHandler OnStartedProjectile { add => _projectile.OnStartedProjectile += value; remove => _projectile.OnStartedProjectile -= value; }
         public event IProjectile.ProjectileStateHandler OnEndedProjectile { add => _projectile.OnEndedProjectile += value; remove => _projectile.OnEndedProjectile -= value; }

@@ -1,6 +1,5 @@
 ﻿#if SCOR_ENABLE_VISUALSCRIPTING
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace StudioScor.Utilities.VisualScripting
 {
@@ -8,7 +7,7 @@ namespace StudioScor.Utilities.VisualScripting
     {
         private void Awake()
         {
-            if (TryGetComponent(out ISight sight))
+            if (TryGetComponent(out ISightSensor sight))
             {
                 sight.OnFoundSight += Sight_OnFoundSight;
                 sight.OnLostedSight += Sight_OnLostedSight;
@@ -16,19 +15,19 @@ namespace StudioScor.Utilities.VisualScripting
         }
         private void OnDestroy()
         {
-            if (TryGetComponent(out ISight sight))
+            if (TryGetComponent(out ISightSensor sight))
             {
                 sight.OnFoundSight -= Sight_OnFoundSight;
                 sight.OnLostedSight -= Sight_OnLostedSight;
             }
         }
 
-        private void Sight_OnLostedSight(ISight aiSencer, Collider sight)
+        private void Sight_OnLostedSight(ISightSensor aiSencer, ISightTarget sight)
         {
             EventBus.Trigger(new EventHook(SightWithVisualScripting.ON_LOSTED_SIGHT, aiSencer), sight);
         }
 
-        private void Sight_OnFoundSight(ISight aiSencer, Collider sight)
+        private void Sight_OnFoundSight(ISightSensor aiSencer, ISightTarget sight)
         {
             EventBus.Trigger(new EventHook(SightWithVisualScripting.ON_FOUND_SIGHT, aiSencer), sight);
         }

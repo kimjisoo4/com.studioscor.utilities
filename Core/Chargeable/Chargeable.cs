@@ -15,7 +15,7 @@ namespace StudioScor.Utilities
         public int MaxChargeLevel { get; }
         public int CurrentChargeLevel { get; }
 
-        public void OnCharging(float startOffset);
+        public void OnCharging(float startOffset = 0f);
         public void FinishCharging();
         public void CancelCharging();
         public void SetChargeLevel(int newLevel);

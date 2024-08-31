@@ -52,7 +52,8 @@ namespace StudioScor.Utilities
         public event TimerStateHandler OnPausedTimer;
         public event TimerStateHandler OnResumedTimer;
 
-        public float Duration => _duration;
+		public float Duration => _duration;
+
 		public float RemainTime => IsPlaying ? _remainTime : 0f;
 		public float ElapsedTime => _isPlaying ?  _elapsedTime : 0f;
 		public float NormalizedTime => _normalizedTime;

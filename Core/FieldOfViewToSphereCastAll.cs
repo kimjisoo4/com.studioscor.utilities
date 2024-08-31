@@ -19,13 +19,15 @@ namespace StudioScor.Utilities
         [SerializeField]
         private LayerMask _LayerMask;
 
+#if UNITY_EDITOR
         [Header("[ Debug ]")]
         [SerializeField]
         private bool _UseDrawGizmo = true;
+#endif
 
-#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
+#if UNITY_EDITOR
             if (!_UseDrawGizmo)
                 return;
 
@@ -68,10 +70,13 @@ namespace StudioScor.Utilities
 
 
             DrawArc();
+#endif
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         private void DrawArc()
         {
+#if UNITY_EDITOR
             Vector3 endDistance = new Vector3(0, 0, _Radius);
 
             int horizontalCount = Mathf.RoundToInt(_HorizontalAngle / 10f);
@@ -110,8 +115,9 @@ namespace StudioScor.Utilities
                                     endPosition);
                 }
             }
-        }
 #endif
+        }
+
 
         public bool Cast(out List<Collider> Hits)
         {
