@@ -7,6 +7,8 @@ namespace StudioScor.Utilities
 
     public static partial class SUtility
     {
+        public const string STRING_COLOR_ADD = "grenn";
+        public const string STRING_COLOR_REMOVE = "red";
         public const string STRING_COLOR_FAIL = "red";
         public const string STRING_COLOR_SUCCESS = "green";
         public const string STRING_COLOR_RED = "red";

@@ -1,24 +1,20 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Pool;
+﻿using UnityEngine;
 
 namespace StudioScor.Utilities
 {
     public class DamageableComponent : BaseMonoBehaviour, IDamageableSystem
     {
 		[Header(" [ Damageable Component ] ")]
-		[Header(" [ Auto Playing ] ")]
+		[Header(" Auto Playing ")]
 		[SerializeField] private bool _autoPlaying = true;
 
-		private DamageInfoData _lastDamageInfo;
 		private bool _isPlaying;
-		private readonly Queue<DamageInfoData> _damageInfoDataPool = new();
+
+		public bool IsPlaying => _isPlaying;
 
 		public event TakeDamageEventHandler OnTakeAnyDamage;
 		public event TakeDamageEventHandler OnTakePointDamage;
 		public event TakeDamageEventHandler OnAfterDamage;
-		public bool IsPlaying => _isPlaying;
-		public DamageInfoData LastDamageInfo => _lastDamageInfo;
 
 
         private void OnEnable()
@@ -53,61 +49,40 @@ namespace StudioScor.Utilities
 			if (!_isPlaying)
 				return -1f;
 
-			DamageInfoData damageInfoData;
-
-			if(_damageInfoDataPool.Count == 0)
-			{
-                damageInfoData = new DamageInfoData();
-            }
-			else
-			{
-				damageInfoData = _damageInfoDataPool.Dequeue();
-
-            }
-
-			damageInfoData.Setup(damage, damageType, damageCauser, instigator);
-            _lastDamageInfo = damageInfoData;
+			DamageInfoData damageInfoData = DamageInfoData.Get(damage, damageType, damageCauser, instigator);
 
             Invoke_TakeAnyDamage(damageInfoData);
             Invoke_AfterDamage(damageInfoData);
 
-            _damageInfoDataPool.Enqueue(damageInfoData);
+			float appliedDamage = damageInfoData.AppliedDamage;
+            damageInfoData.Release();
 
-            return damageInfoData.AppliedDamage;
-		}
+			return appliedDamage;
+
+        }
 		public float ApplyPointDamage(float damage, DamageType damageType, 
-								Vector3 hitPoint, Vector3 hitNormal, Collider hitCollider,
+								Vector3 hitPoint, Vector3 hitNormal, Transform hitTransform,
 								Vector3 direction, GameObject damageCauser, GameObject instigator)
         {
 			if (!_isPlaying)
 				return -1f;
 
-            DamageInfoData damageInfoData;
 
-            if (_damageInfoDataPool.Count == 0)
-            {
-                damageInfoData = new DamageInfoData();
-            }
-            else
-            {
-                damageInfoData = _damageInfoDataPool.Dequeue();
-
-            }
-
-            damageInfoData.Setup(damage, damageType, hitPoint, hitNormal, hitCollider, direction, damageCauser, instigator);
-            _lastDamageInfo = damageInfoData;
+            var damageInfoData = DamageInfoData.Get(damage, damageType, hitPoint, hitNormal, hitTransform, direction, damageCauser, instigator);
 
 			Invoke_TakeAnyDamage(damageInfoData);
 			Invoke_TakePointDamage(damageInfoData);
 			Invoke_AfterDamage(damageInfoData);
-            _damageInfoDataPool.Enqueue(damageInfoData);
 
-            return damageInfoData.AppliedDamage;
+			float appliedDamage = damageInfoData.Damage;
+			damageInfoData.Release();
+
+            return appliedDamage;
         }
 
 		private void Invoke_TakeAnyDamage(DamageInfoData damageInfoData)
 		{
-			Log($"{nameof(OnTakeAnyDamage)} - [ Damage : {damageInfoData.Damage} | DamageCauser : {damageInfoData.Causer} | Instigator : {damageInfoData.Instigator}]");
+			Log($"{nameof(OnTakeAnyDamage)} - [ Damage : {damageInfoData.Damage}  DamageCauser : {damageInfoData.Causer} | Instigator : {damageInfoData.Instigator}]");
 
 			OnTakeAnyDamage?.Invoke(this, damageInfoData);
 		}

@@ -1,24 +1,20 @@
 ﻿#if SCOR_ENABLE_VISUALSCRIPTING
 using Unity.VisualScripting;
-using System;
+using UnityEngine;
 
 namespace StudioScor.Utilities.VisualScripting
 {
-    [UnitTitle("Cast")]
-    [UnitCategory("Nulls\\StudioScor")]
-    public class CastingUnit : Unit
+    [UnitTitle("Try Get Actor")]
+    [UnitCategory("StudioScor\\Actor")]
+    public class TryGetActor : Unit
     {
-        [Serialize]
-        [Inspectable]
-        [UnitHeaderInspectable]
-        public Type CastType = typeof(object);
-
         [DoNotSerialize]
         [PortLabelHidden]
         public ControlInput Enter { get; private set; }
 
         [DoNotSerialize]
         [PortLabelHidden]
+        [NullMeansSelf]
         public ValueInput Target { get; private set; }
 
 
@@ -37,31 +33,35 @@ namespace StudioScor.Utilities.VisualScripting
 
         protected override void Definition()
         {
-            Enter = ControlInput(nameof(Enter), TryCasting);
-            Target = ValueInput<object>(nameof(Target));
+            Enter = ControlInput(nameof(Enter), GetActor);
+            Target = ValueInput<GameObject>(nameof(Target), null).NullMeansSelf();
             IsNotNull = ControlOutput(nameof(IsNotNull));
             IsNull = ControlOutput(nameof(IsNull));
 
-            Result = ValueOutput(CastType, nameof(Result), (flow) => flow.GetValue(Target));
+            Result = ValueOutput(typeof(IActor), nameof(Result), (flow) => flow.GetValue(Target));
 
             Succession(Enter, IsNull);
             Succession(Enter, IsNotNull);
         }
 
 
-        private ControlOutput TryCasting(Flow flow)
+        private ControlOutput GetActor(Flow flow)
         {
-            var obj = flow.GetValue(Target).ConvertTo(CastType);
+            var obj = flow.GetValue<GameObject>(Target);
 
-            if (obj is null)
+
+            if (obj is null || !obj.TryGetActor(out IActor actor))
             {
+                flow.SetValue(Result, null);
                 return IsNull;
             }
             else
             {
+                flow.SetValue(Result, actor);
                 return IsNotNull;
             }
         }
     }
+
 }
 #endif

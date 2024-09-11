@@ -44,8 +44,8 @@ namespace StudioScor.Utilities.VisualScripting
 
             flow.SetValue(HitPoint, damageInfo.HitPoint);
             flow.SetValue(HitNormal, damageInfo.HitNormal);
-            flow.SetValue(HitTransform, damageInfo.HitCollider);
-            flow.SetValue(Direction, damageInfo.Direction);
+            flow.SetValue(HitTransform, damageInfo.HitTransform);
+            flow.SetValue(Direction, damageInfo.AttackDirection);
         }
     }
 }

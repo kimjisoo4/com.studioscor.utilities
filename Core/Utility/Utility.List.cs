@@ -1,13 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine;
 
 namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static int IndexOf<T>(this IReadOnlyCollection<T> array, T findItem)
+        {
+            for(int i =0; i < array.Count; i++)
+            {
+                var arrayItem = array.ElementAt(i);
+
+                if (Equals(arrayItem, findItem))
+                    return i;
+            }
+
+            return -1;
+        }
+
         public static int LastIndex<T>(this IReadOnlyCollection<T> array)
         {
             return array.Count - 1;

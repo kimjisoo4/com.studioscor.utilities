@@ -3,45 +3,73 @@
 namespace StudioScor.Utilities
 {
 
-    public interface IStiffen
+    public interface IStiffenSystem
     {
-        public delegate void StiffenHandler(IStiffen stiffen);
+        public delegate void StiffenHandler(IStiffenSystem stiffen);
 
+        public bool IsPlaying { get; }
         public bool IsStiffen { get; }
         public float RemainTime { get; }
 
-        public event StiffenHandler OnFinishedStiffen;
-        public event StiffenHandler OnStartedStiffen;
         public bool TryTakeStiffen(float duration);
-        public bool CanStiffen(float duration);
+        public bool CanStiffen();
         public void TakeStiffen(float duration);
+        public void CancelStiffen();
+
+        public void Tick(float deltaTime);
+
+        public void OnStiffen();
+        public void EndStiffen();
+
+
+        public event StiffenHandler OnStartedStiffen;
+        public event StiffenHandler OnTriggeredStiffen;
+        public event StiffenHandler OnFinishedStiffen;
     }
     
 
-    public class StiffenComponent : BaseMonoBehaviour, IStiffen
+    public class StiffenComponent : BaseMonoBehaviour, IStiffenSystem
     {
-        private readonly Timer timer = new();
+        [Header(" [ Stiffen Component ] ")]
+        [SerializeField] private bool _autoPlaying = true;
 
-        public bool IsStiffen => timer.IsPlaying;
-        public float RemainTime => timer.RemainTime;
+        private float _remainTime;
+        private bool _isStiffen;
+        private bool _isPlaying;
 
-        public event IStiffen.StiffenHandler OnFinishedStiffen;
-        public event IStiffen.StiffenHandler OnStartedStiffen;
+        public bool IsPlaying => _isPlaying;
+        public bool IsStiffen => _isStiffen;
+        public float RemainTime => _remainTime;
 
-        void Awake()
+        public event IStiffenSystem.StiffenHandler OnFinishedStiffen;
+        public event IStiffenSystem.StiffenHandler OnStartedStiffen;
+        public event IStiffenSystem.StiffenHandler OnTriggeredStiffen;
+
+
+        private void OnEnable()
         {
-            timer.OnFinishedTimer += Timer_OnFinishedTimer;
-            timer.OnCanceledTimer += Timer_OnFinishedTimer;
+            if (_autoPlaying)
+                OnStiffen();
         }
-
-        private void Timer_OnFinishedTimer(ITimer timer)
+        public void OnStiffen()
         {
-            Invoke_OnFinishedStiffen();
-        }
+            if (IsPlaying)
+                return;
 
+            _isPlaying = true;
+        }
+        public void EndStiffen()
+        {
+            if (!IsPlaying)
+                return;
+
+            _isPlaying = false;
+
+            CancelStiffen();
+        }
         public bool TryTakeStiffen(float duration)
         {
-            if (!CanStiffen(duration))
+            if (!CanStiffen())
                 return false;
 
             TakeStiffen(duration);
@@ -49,43 +77,68 @@ namespace StudioScor.Utilities
             return true;
         }
 
-        public bool CanStiffen(float duration)
+        public virtual bool CanStiffen()
         {
-            return !timer.IsPlaying || timer.RemainTime < duration;
+            return _isPlaying;
         }
 
         public void TakeStiffen(float duration)
         {
-            timer.OnTimer(duration);
+            if (!_isStiffen)
+            {
+                _isStiffen = true;
+                _remainTime = duration;
 
-            Invoke_OnStartedStiffen();
+                Invoke_OnStartedStiffen();
+            }
+            else if(_remainTime < duration)
+            {
+                _remainTime = duration;
+            }
+
+            Invoke_OnTriggeredStiffen();
         }
 
-        public void EndStiffen()
+        public void CancelStiffen()
         {
-            timer.EndTimer();
-        }
-
-        void Update()
-        {
-            if (!timer.IsPlaying)
+            if (!_isStiffen)
                 return;
 
-            float deltaTime = Time.deltaTime;
+            _remainTime = 0f;
+            _isStiffen = false;
 
-            timer.UpdateTimer(deltaTime);
+            Invoke_OnFinishedStiffen();
+        }
+
+        public override void Tick(float deltaTime)
+        {
+            if (!IsPlaying || !_isStiffen)
+                return;
+
+            _remainTime -= deltaTime;
+
+            if(_remainTime <= 0f)
+            {
+                CancelStiffen();
+            }
         }
 
         #region Callback
         private void Invoke_OnStartedStiffen()
         {
-            Log("On Started Stiffen ");
+            Log($"{nameof(OnStartedStiffen)}");
 
             OnStartedStiffen?.Invoke(this);
         }
+        private void Invoke_OnTriggeredStiffen()
+        {
+            Log($"{nameof(OnTriggeredStiffen)}");
+
+            OnTriggeredStiffen?.Invoke(this);
+        }
         private void Invoke_OnFinishedStiffen()
         {
-            Log("On Finished Stiffen ");
+            Log($"{nameof(OnFinishedStiffen)}");
 
             OnFinishedStiffen?.Invoke(this);
         }

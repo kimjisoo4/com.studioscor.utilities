@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace StudioScor.Utilities
 {
@@ -12,23 +13,31 @@ namespace StudioScor.Utilities
         public class UnityEvents
         {
             [SerializeField] private UnityEvent _onSubmited;
+            [SerializeField] private UnityEvent _onFailedSubmited;
             public void AddUnityEvent(ISubmitEventListener submitEventHandler)
             {
                 submitEventHandler.OnSubmited += SubmitEventHandler_OnSubmited;
+                submitEventHandler.OnFailedSubmited += SubmitEventHandler_OnFailedSubmited;
             }
             public void RemoveUnityEvent(ISubmitEventListener submitEventHandler)
             {
                 submitEventHandler.OnSubmited -= SubmitEventHandler_OnSubmited;
+                submitEventHandler.OnFailedSubmited -= SubmitEventHandler_OnFailedSubmited;
             }
 
             private void SubmitEventHandler_OnSubmited(ISubmitEventListener submitEventListener,BaseEventData obj)
             {
                 _onSubmited?.Invoke();
             }
+            private void SubmitEventHandler_OnFailedSubmited(ISubmitEventListener submitEventListener, BaseEventData eventData)
+            {
+                _onFailedSubmited?.Invoke();
+            }
         }
 
         [Header(" [ Submit Event Listner ] ")]
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private Selectable _selectable;
         [SerializeField] private EInputHandlerType _inputType = EInputHandlerType.Both;
 
         [Header(" Unity Event ")]
@@ -36,6 +45,7 @@ namespace StudioScor.Utilities
         [SerializeField] private UnityEvents _unityEvents;
 
         public event ISubmitEventListener.SubmitEventHandler OnSubmited;
+        public event ISubmitEventListener.SubmitEventHandler OnFailedSubmited;
 
         protected virtual void OnValidate()
         {
@@ -43,6 +53,10 @@ namespace StudioScor.Utilities
             if (!_canvasGroup)
             {
                 _canvasGroup = GetComponentInParent<CanvasGroup>();
+            }
+            if(!_selectable)
+            {
+                _selectable = GetComponent<Selectable>();
             }
 #endif
         }
@@ -60,10 +74,14 @@ namespace StudioScor.Utilities
             {
                 _unityEvents.RemoveUnityEvent(this);
             }
+
+            OnSubmited = null;
+            OnFailedSubmited = null;
         }
         public virtual bool CanSubmit()
         {
-            if (_canvasGroup && !_canvasGroup.interactable)
+            if ((_canvasGroup && !_canvasGroup.interactable)
+                || (!_selectable.interactable))
                 return false;
 
             return true;
@@ -75,7 +93,11 @@ namespace StudioScor.Utilities
                 return;
 
             if (!CanSubmit())
+            {
+                Log($"{nameof(OnFailedSubmited)}");
+                OnFailedSubmited?.Invoke(this, eventData);
                 return;
+            }
 
             Log($"{nameof(OnSubmited)}");
 
@@ -88,7 +110,11 @@ namespace StudioScor.Utilities
                 return;
 
             if (!CanSubmit())
+            {
+                Log($"{nameof(OnFailedSubmited)}");
+                OnFailedSubmited?.Invoke(this, eventData);
                 return;
+            }
 
             Log($"{nameof(OnSubmited)}");
 

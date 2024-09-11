@@ -1,32 +1,28 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace StudioScor.Utilities
 {
-
-
-
-    public class SelectEventListener : BaseMonoBehaviour, ISelectHandler, IPointerEnterHandler, ISelectEventListener
+    public class DeselectEventListener : BaseMonoBehaviour, IDeselectHandler, IPointerExitHandler, IDeselectEventListener
     {
         [System.Serializable]
         public class UnityEvents
         {
-            [SerializeField] private UnityEvent _onSelected;
-            public void AddUnityEvent(ISelectEventListener selectEventHandler)
+            [SerializeField] private UnityEvent _onDeselected;
+            public void AddUnityEvent(IDeselectEventListener selectEventHandler)
             {
-                selectEventHandler.OnSelected += SubmitEventHandler_OnSubmited;
+                selectEventHandler.OnDeselected += DeselectEventHandler_OnDeselect;
             }
-            public void RemoveUnityEvent(ISelectEventListener submitEventHandler)
+            public void RemoveUnityEvent(IDeselectEventListener submitEventHandler)
             {
-                submitEventHandler.OnSelected -= SubmitEventHandler_OnSubmited;
+                submitEventHandler.OnDeselected -= DeselectEventHandler_OnDeselect;
             }
 
-            private void SubmitEventHandler_OnSubmited(ISelectEventListener selectEventListener, BaseEventData eventData)
+            private void DeselectEventHandler_OnDeselect(IDeselectEventListener selectEventListener, BaseEventData eventData)
             {
-                _onSelected?.Invoke();
+                _onDeselected?.Invoke();
             }
         }
 
@@ -39,7 +35,7 @@ namespace StudioScor.Utilities
         [SerializeField] private bool _useUnityEvent = false;
         [SerializeField] private UnityEvents _unityEvents;
 
-        public event ISelectEventListener.SelectEventHandler OnSelected;
+        public event IDeselectEventListener.DeselectEventHandler OnDeselected;
 
         protected virtual void OnValidate()
         {
@@ -48,7 +44,7 @@ namespace StudioScor.Utilities
             {
                 _canvasGroup = GetComponentInParent<CanvasGroup>();
             }
-            if(!_selectable)
+            if (!_selectable)
             {
                 _selectable = GetComponent<Selectable>();
             }
@@ -69,10 +65,10 @@ namespace StudioScor.Utilities
                 _unityEvents.RemoveUnityEvent(this);
             }
 
-            OnSelected = null;
+            OnDeselected = null;
         }
 
-        public virtual bool CanSelect()
+        public virtual bool CanDeselect()
         {
             if ((_canvasGroup && !_canvasGroup.interactable)
                 || (!_selectable.interactable))
@@ -80,39 +76,39 @@ namespace StudioScor.Utilities
 
             return true;
         }
-        public void OnSelect(BaseEventData eventData)
+        public void OnDeselect(BaseEventData eventData)
         {
             if (_inputType == EInputHandlerType.Pointer)
                 return;
 
-            Select(eventData);
+            Deselect(eventData);
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerExit(PointerEventData eventData)
         {
             switch (_inputType)
             {
                 case EInputHandlerType.Both:
-                    EventSystem.current.SetSelectedGameObject(gameObject);
+                    Deselect(eventData);
                     break;
                 case EInputHandlerType.Button:
                     break;
                 case EInputHandlerType.Pointer:
-                    Select(eventData);
+                    Deselect(eventData);
                     break;
                 default:
                     break;
             }
         }
 
-        private void Select(BaseEventData eventData)
+        private void Deselect(BaseEventData eventData)
         {
-            if (!CanSelect())
+            if (!CanDeselect())
                 return;
 
-            Log($"{nameof(OnSelect)}");
+            Log($"{nameof(OnDeselected)}");
 
-            OnSelected?.Invoke(this, eventData);
+            OnDeselected?.Invoke(this, eventData);
         }
     }
 }

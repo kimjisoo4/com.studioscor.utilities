@@ -11,6 +11,7 @@ namespace StudioScor.Utilities
         public bool CanSubmit();
 
         public event SubmitEventHandler OnSubmited;
+        public event SubmitEventHandler OnFailedSubmited;
     }
 }
 
