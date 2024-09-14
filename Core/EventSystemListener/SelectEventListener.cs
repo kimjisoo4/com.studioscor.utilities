@@ -57,6 +57,14 @@ namespace StudioScor.Utilities
 
         protected virtual void Awake()
         {
+            if (!_canvasGroup)
+            {
+                _canvasGroup = GetComponentInParent<CanvasGroup>();
+            }
+            if (!_selectable)
+            {
+                _selectable = GetComponent<Selectable>();
+            }
             if (_useUnityEvent)
             {
                 _unityEvents.AddUnityEvent(this);

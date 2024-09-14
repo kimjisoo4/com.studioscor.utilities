@@ -14,8 +14,27 @@ namespace StudioScor.Utilities
 		[SerializeField] protected List<T> _initialValues;
 		[SerializeField][SReadOnly] protected List<T> _runtimeValues;
 
-		public IReadOnlyList<T> InitialValues => _initialValues;
-		public IReadOnlyList<T> Values => _runtimeValues;
+		public IReadOnlyList<T> InitialValues
+		{
+			get
+			{
+				if (_initialValues is null)
+					_initialValues = new();
+
+				return _initialValues;
+            }
+		}
+		public IReadOnlyList<T> Values
+		{
+			get
+            {
+				if (_runtimeValues is null)
+					_runtimeValues = new();
+
+				return _runtimeValues;
+            }
+		}
+		
 
 
 		public event ListMemberEventHandler OnAdded;

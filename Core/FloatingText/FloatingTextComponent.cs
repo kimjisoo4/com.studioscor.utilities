@@ -13,6 +13,9 @@ namespace StudioScor.Utilities
         [SerializeField] private UnityEvent _onFloatingText;
         [SerializeField] private UnityEvent _onReleased;
 
+        public event UnityAction<FloatingTextComponent> OnFlaotingText;
+        public event UnityAction<FloatingTextComponent> OnReleased;
+
         private IObjectPool<FloatingTextComponent> _floatingDamagePool;
 
         private bool _isRelease = false;
@@ -46,7 +49,7 @@ namespace StudioScor.Utilities
 
             _floatingDamagePool.Release(this);
 
-            Callback_OnReleased();
+            Invoke_OnReleased();
 
             gameObject.SetActive(false);
         }
@@ -64,20 +67,22 @@ namespace StudioScor.Utilities
 
 			gameObject.SetActive(true);
 
-            Callback_OnFloatingText();
+            Invoke_OnFloatingText();
         }
 
-        private void Callback_OnFloatingText()
+        private void Invoke_OnFloatingText()
         {
-            Log("On Floating Text");
+            Log($"{nameof(OnFlaotingText)}");
 
             _onFloatingText?.Invoke();
+            OnFlaotingText?.Invoke(this);
         }
-        private void Callback_OnReleased()
+        private void Invoke_OnReleased()
         {
-            Log("On Released");
+            Log($"{nameof(OnReleased)}");
 
             _onReleased?.Invoke();
+            OnReleased?.Invoke(this);
         }
     }
 

@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-using StudioScor.Utilities;
-
-namespace CuBattle
+namespace StudioScor.Utilities
 {
     [CreateAssetMenu(menuName = "StudioScor/Utilities/KeepSystem/new Keep Group", fileName = "Keep_Group_")]
     public class KeepGroup : KeepData

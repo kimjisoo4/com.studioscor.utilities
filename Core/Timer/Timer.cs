@@ -181,7 +181,7 @@ namespace StudioScor.Utilities
 			if (_isFinished || !_isPlaying || _isPaused)
 				return;
 
-			_remainTime -= deltaTime;
+			_remainTime = Mathf.Clamp(_remainTime - deltaTime, 0f, _duration);
 			_elapsedTime = _duration - _remainTime;
 
             if (_remainTime <= 0)

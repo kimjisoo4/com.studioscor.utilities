@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Animations;
 
-using StudioScor.Utilities;
-
-namespace CuBattle
+namespace StudioScor.Utilities
 {
     [AddComponentMenu("StudioScor/Utilities/Constraint/Set Target To Constraint Component", order: 0)]
     public class SetTargetToConstraintComponent : BaseMonoBehaviour

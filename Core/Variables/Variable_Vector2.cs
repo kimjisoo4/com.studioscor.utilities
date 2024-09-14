@@ -2,6 +2,7 @@
 
 namespace StudioScor.Utilities
 {
+
     [CreateAssetMenu(menuName = "StudioScor/Utilities/Variable/new Vector2 Variable", fileName = "Variable_Vector2_")]
     public class Variable_Vector2 : VariableObject<Vector2>
     {
