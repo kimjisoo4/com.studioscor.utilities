@@ -969,7 +969,7 @@ namespace StudioScor.Utilities
 
                     if (hitResults.Count > 0)
                     {
-                        SUtility.Sort.SortRaycastHitByDistance(start, ref hitResults);
+                        SUtility.Sort.SortDistanceToPointByRaycastHit(start, hitResults);
 
                         Debug.DrawCapsule(start, start + direction * hitResults[0].distance, radius, failedColor, duration);
                         Debug.DrawCapsule(start + direction * hitResults[0].distance, start + direction * distance, radius, successColor, duration);
@@ -1040,7 +1040,7 @@ namespace StudioScor.Utilities
 
                     if (hitResults.Count > 0)
                     {
-                        SUtility.Sort.SortRaycastHitByDistance(start, ref hitResults);
+                        SUtility.Sort.SortDistanceToPointByRaycastHit(start, hitResults);
 
                         Debug.DrawCapsule(start, start + direction * hitResults[0].distance, radius, failedColor, duration);
                         Debug.DrawCapsule(start + direction * hitResults[0].distance, start + direction * distance, radius, successColor, duration);

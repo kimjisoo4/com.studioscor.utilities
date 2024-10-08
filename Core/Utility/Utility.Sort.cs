@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 namespace StudioScor.Utilities
@@ -9,271 +10,150 @@ namespace StudioScor.Utilities
     {
         public static class Sort
         {
-            private static Vector3 _position;
-            private static Quaternion _rotation;
-
             // RaycastHit
             #region Distance
-            public static void SortRaycastHitByDistance(Transform target, ref List<RaycastHit> hits)
+            public static void SortDistanceToPointByRaycastHit(Vector3 position, List<RaycastHit> hits)
             {
-                SortRaycastHitByDistance(target.position, ref hits);
+                hits.Sort((a, b) => CompareDistanceToPosition(position, a.point, b.point));
             }
-            public static void SortRaycastHitByDistance(Vector3 position, ref List<RaycastHit> hits)
+            public static void SortDistanceToPointByRaycastHit(Transform target, List<RaycastHit> hits)
             {
-                _position = position;
+                hits.Sort((a, b) => CompareDistanceToPosition(target.position, a.point, b.point));
+            }
 
-                hits.Sort(CompareRaycastHitByDistance);
-
-                _position = default;
-            }
-            private static int CompareRaycastHitByDistance(RaycastHit a, RaycastHit b)
+            public static void SortDistanceToPointByBoundsCenter(Vector3 position, List<Collider> colliders)
             {
-                if (a.distance < b.distance)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
+                colliders.Sort((a, b) => CompareDistanceToPosition(position, a.bounds.center, b.bounds.center));
             }
+
+            public static void SortDistanceToPointByBoundsCenter(Transform target, List<Collider> colliders)
+            {
+                colliders.Sort((a, b) => CompareDistanceToPosition(target.position, a.bounds.center, b.bounds.center));
+            }
+
+            public static void SortDistanceToPoint(Vector3 position, List<Transform> transforms)
+            {
+                transforms.Sort((a, b) => CompareDistanceToPosition(position, a.position, b.position));
+            }
+
+            public static void SortDistanceToPoint(Transform target, List<Transform> transforms)
+            {
+                transforms.Sort((a, b) => CompareDistanceToPosition(target.position, a.position, b.position));
+            }
+
+
+            private static int CompareDistanceToPosition(Vector3 position, Vector3 lhs, Vector3 rhs)
+            {
+                float distanceLhs = Vector3.Distance(position, lhs);
+                float distanceRhs = Vector3.Distance(position, rhs);
+
+                return distanceLhs.CompareTo(distanceRhs);
+            }
+
+
+            public static void SortDistance2DToPointByRaycastHit(Vector2 position, List<RaycastHit2D> hits)
+            {
+                hits.Sort((a, b) => CompareDistance2DToPosition(position, a.point, b.point));
+            }
+            public static void SortDistance2DToPointByRaycastHit(Transform target, List<RaycastHit> hits)
+            {
+                hits.Sort((a, b) => CompareDistance2DToPosition(target.position, a.point, b.point));
+            }
+
+            public static void SortDistance2DToPointByBoundsCenter(Vector2 position, List<Collider> colliders)
+            {
+                colliders.Sort((a, b) => CompareDistance2DToPosition(position, a.bounds.center, b.bounds.center));
+            }
+
+            public static void SortDistance2DToPointByBoundsCenter(Transform target, List<Collider> colliders)
+            {
+                colliders.Sort((a, b) => CompareDistance2DToPosition(target.position, a.bounds.center, b.bounds.center));
+            }
+
+            public static void SortDistance2DToPoint(Vector2 position, List<Transform> transforms)
+            {
+                transforms.Sort((a, b) => CompareDistance2DToPosition(position, a.position, b.position));
+            }
+
+            public static void SortDistance2DToPoint(Transform target, List<Transform> transforms)
+            {
+                transforms.Sort((a, b) => CompareDistance2DToPosition(target.position, a.position, b.position));
+            }
+
+            public static void SortDistance2DToPoint(Vector2 position, List<GameObject> transforms)
+            {
+                transforms.Sort((a, b) => CompareDistance2DToPosition(position, a.transform.position, b.transform.position));
+            }
+
+            public static void SortDistance2DToPoint(Transform target, List<GameObject> transforms)
+            {
+                transforms.Sort((a, b) => CompareDistance2DToPosition(target.position, a.transform.position, b.transform.position));
+            }
+
+
+            private static int CompareDistance2DToPosition(Vector2 position, Vector2 lhs, Vector2 rhs)
+            {
+                float distanceLhs = Vector2.Distance(position, lhs);
+                float distanceRhs = Vector2.Distance(position, rhs);
+
+                return distanceLhs.CompareTo(distanceRhs);
+            }
+
             #endregion
 
             #region Nearst Angle
-            public static void SortRaycastHitPointByNearstAngle(Vector3 position, Quaternion rotation, ref List<RaycastHit> hits)
+            public static void SortAngleToPointByRaycastHit(Vector3 position, Quaternion rotation, List<RaycastHit> hits)
             {
-                _position = position;
-                _rotation = rotation;
-
-                hits.Sort(CompareRaycastHitPointByNearstAngle);
-
-                _position = default;
-                _rotation = default;
+                hits.Sort((a, b) => CompareAngleToPoint(position, rotation, a.point, b.point));
             }
-            public static void SortRaycastHitPointByNearstAngle(Transform target, ref List<RaycastHit> hits)
+            public static void SortAngleToPointByRaycastHit(Transform target, List<RaycastHit> hits)
             {
-                SortRaycastHitPointByNearstAngle(target.position, target.rotation, ref hits);
+                hits.Sort((a, b) => CompareAngleToPoint(target.position, target.rotation, a.point, b.point));
             }
-            public static void SortRaycastHitPointByNearstAngle(Vector3 position, Vector3 direction, ref List<RaycastHit> hits)
+            public static void SortAngleToPointByRaycastHit(Vector3 position, Vector3 direction, List<RaycastHit> hits)
             {
-                SortRaycastHitPointByNearstAngle(position, Quaternion.Euler(direction), ref hits);
-            }
-            private static int CompareRaycastHitPointByNearstAngle(RaycastHit a, RaycastHit b)
-            {
-                if (Mathf.Abs(AngleOnForward(_position, _rotation, a.point)) > Mathf.Abs(AngleOnForward(_position, _rotation, b.point)))
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            #endregion
+                Quaternion rotation = Quaternion.Euler(direction);
 
-            // Collider
-            #region Distance
-            public static void SortTransformByDistance(Vector3 position, ref List<Collider> transforms)
-            {
-                _position = position;
-
-                transforms.Sort(CompareTransformByDistance);
-
-                _position = default;
+                hits.Sort((a, b) => CompareAngleToPoint(position, rotation, a.point, b.point));
             }
 
-            public static void SortTransformByDistance(Transform target, ref List<Collider> transforms)
+            public static void SortAngleToPointByBounceCenter(Vector3 position, Quaternion rotation, List<Collider> transforms)
             {
-                SortTransformByDistance(target.position, ref transforms);
+                transforms.Sort((a, b) => CompareAngleToPoint(position, rotation, a.bounds.center, b.bounds.center));
             }
-            private static int CompareTransformByDistance(Component a, Component b)
+            public static void SortAngleToPointByBounceCenter(Vector3 position, Vector3 direction, List<Collider> transforms)
             {
-                if (a == null)
-                {
-                    if (b == null)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-                }
-                else
-                {
-                    if (b == null)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        if (Vector3.Distance(_position, a.transform.position) < Vector3.Distance(_position, b.transform.position))
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return 1;
-                        }
-                    }
-                }
+                Quaternion rotation = Quaternion.Euler(direction);
+
+                transforms.Sort((a, b) => CompareAngleToPoint(position, rotation, a.bounds.center, b.bounds.center));
             }
-            #endregion
-
-            #region Nearst Angle
-            public static void SortTransformByNearstAngle(Vector3 position, Quaternion rotation, ref List<Collider> transforms)
+            public static void SortAngleToPointByBounceCenter(Transform target, List<Collider> transforms)
             {
-                _position = position;
-                _rotation = rotation;
-
-                transforms.Sort(CompareTransformByNearstAngle);
-
-                _position = default;
-                _rotation = default;
-            }
-            public static void SortTransformByNearstAngle(Vector3 position, Vector3 direction, ref List<Collider> transforms)
-            {
-                SortTransformByNearstAngle(position, Quaternion.Euler(direction), ref transforms);
-            }
-            public static void SortTransformByNearstAngle(Transform target, ref List<Collider> transforms)
-            {
-                SortTransformByNearstAngle(target.position, target.rotation, ref transforms);
-            }
-            private static int CompareTransformByNearstAngle(Collider a, Collider b)
-            {
-                if (a == null)
-                {
-                    if (b == null)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-                }
-                else
-                {
-                    if (b == null)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        if (Mathf.Abs(AngleOnForward(_position, _rotation, a.transform.position)) > Mathf.Abs(AngleOnForward(_position, _rotation, b.transform.position)))
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return 1;
-                        }
-                    }
-                }
-            }
-            #endregion
-
-
-
-            // Transform
-            #region Distance
-            public static void SortTransformByDistance(Vector3 position, ref List<Transform> transforms)
-            {
-                _position = position;
-
-                transforms.Sort(CompareTransformByDistance);
-
-                _position = default;
+                transforms.Sort((a, b) => CompareAngleToPoint(target.position, target.rotation, a.bounds.center, b.bounds.center));
             }
 
-            public static void SortTransformByDistance(Transform target, ref List<Transform> transforms)
-            {
-                SortTransformByDistance(target.position, ref transforms);
-            }
-            private static int CompareTransformByDistance(Transform a, Transform b)
-            {
-                if (a == null)
-                {
-                    if (b == null)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-                }
-                else
-                {
-                    if (b == null)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        if (Vector3.Distance(_position, a.position) < Vector3.Distance(_position, b.position))
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return 1;
-                        }
-                    }
-                }
-            }
-            #endregion
 
-            #region Nearst Angle
-            public static void SortTransformByNearstAngle(Vector3 position, Quaternion rotation, ref List<Transform> transforms)
+            public static void SortAngleToPoint(Vector3 position, Quaternion rotation, List<Transform> transforms)
             {
-                _position = position;
-                _rotation = rotation;
+                transforms.Sort((a, b) => CompareAngleToPoint(position, rotation, a.position, b.position));
+            }
+            public static void SortAngleToPoint(Vector3 position, Vector3 direction, List<Transform> transforms)
+            {
+                Quaternion rotation = Quaternion.Euler(direction);
 
-                transforms.Sort(CompareTransformByNearstAngle);
+                transforms.Sort((a, b) => CompareAngleToPoint(position, rotation, a.position, b.position));
+            }
+            public static void SortAngleToPoint(Transform target, List<Transform> transforms)
+            {
+                transforms.Sort((a, b) => CompareAngleToPoint(target.position, target.rotation, a.position, b.position));
+            }
 
-                _position = default;
-                _rotation = default;
-            }
-            public static void SortTransformByNearstAngle(Vector3 position, Vector3 direction, ref List<Transform> transforms)
+            private static int CompareAngleToPoint(Vector3 position, Quaternion rotation, Vector3 lhs, Vector3 rhs)
             {
-                SortTransformByNearstAngle(position, Quaternion.Euler(direction), ref transforms);
-            }
-            public static void SortTransformByNearstAngle(Transform target, ref List<Transform> transforms)
-            {
-                SortTransformByNearstAngle(target.position, target.rotation, ref transforms);
-            }
-            private static int CompareTransformByNearstAngle(Transform a, Transform b)
-            {
-                if (a == null)
-                {
-                    if (b == null)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-                }
-                else
-                {
-                    if (b == null)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        if (Mathf.Abs(AngleOnForward(_position, _rotation, a.position)) > Mathf.Abs(AngleOnForward(_position, _rotation, b.position)))
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            return 1;
-                        }
-                    }
-                }
+                var angleLhs = Mathf.Abs(AngleOnForward(position, rotation, lhs));
+                var angleRhs = Mathf.Abs(AngleOnForward(position, rotation, rhs));
+
+                return angleLhs.CompareTo(angleRhs);
             }
             #endregion
         }

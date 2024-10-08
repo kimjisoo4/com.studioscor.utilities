@@ -6,13 +6,13 @@ namespace StudioScor.Utilities
     [System.Serializable]
     public struct FPooledObject
     {
-        public SimplePooledObject PooledObject;
+        public PooledObject PooledObject;
         public Transform Container;
         public int StartSize;
         public int Capacity;
         public int MaxSize;
 
-        public FPooledObject(SimplePooledObject pooledObject = null, Transform container = null,int startSize = 5, int capacity = 10, int maxSize = 10)
+        public FPooledObject(PooledObject pooledObject = null, Transform container = null,int startSize = 5, int capacity = 10, int maxSize = 10)
         {
             PooledObject = pooledObject;
             Container = container;
@@ -26,7 +26,7 @@ namespace StudioScor.Utilities
     {
         [Header(" Simple Pooling Manager ")]
         [SerializeField] private List<FPooledObject> pooledObjects;
-        private readonly Dictionary<SimplePooledObject, SimplePool> pools = new();
+        private readonly Dictionary<PooledObject, SimplePool> pools = new();
 
         protected override void Setup()
         {
@@ -38,12 +38,12 @@ namespace StudioScor.Utilities
             }
         }
 
-        public bool HasPool(SimplePooledObject pooledObject)
+        public bool HasPool(PooledObject pooledObject)
         {
             return pools.ContainsKey(pooledObject);
         }
 
-        public SimplePooledObject Get(SimplePooledObject pooledObject)
+        public PooledObject Get(PooledObject pooledObject)
         {
             if (!pooledObject)
                 return null;
@@ -61,7 +61,7 @@ namespace StudioScor.Utilities
                 return Get(pooledObject);
             }
         }
-        public void Add(SimplePooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 10)
+        public void Add(PooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 10)
         {
             if(pools.ContainsKey(pooledObject))
             {

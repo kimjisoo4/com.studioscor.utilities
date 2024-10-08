@@ -7,7 +7,7 @@ namespace StudioScor.Utilities
     public class SpawnTaskInstanceActorTask : Task, ISubTask
     {
         [Header(" [ Spawn Projectile Task ] ")]
-        [SerializeField] private SimplePoolContainer _spawnActor;
+        [SerializeField] private PoolContainer _spawnActor;
         [SerializeField][Range(0f, 1f)] private float _instanceSpawnTime = 0.2f;
 
 #if SCOR_ENABLE_SERIALIZEREFERENCE
@@ -76,7 +76,7 @@ namespace StudioScor.Utilities
             Vector3 spawnPosition = _position.GetValue();
             Quaternion spawnRotation = _rotation.GetValue();
 
-            projectile.SetPositionAndRotation(spawnPosition, spawnRotation);
+            projectile.transform.SetPositionAndRotation(spawnPosition, spawnRotation);
 
             var slash = projectile.GetComponent<ITaskInstanceActor>();
 

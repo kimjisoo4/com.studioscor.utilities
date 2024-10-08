@@ -7,35 +7,32 @@ namespace StudioScor.Utilities
 {
     public class SimplePool
     {
-        public SimplePool(SimplePooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 20)
+        public SimplePool(PooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 20)
         {
-            this._pooledObject = pooledObject;
-            this._container = container;
+            _pooledObject = pooledObject;
+            _container = container;
 
-            _pool = new ObjectPool<SimplePooledObject>(Create, actionOnGet: Getted , actionOnRelease : Released, actionOnDestroy: Destroyed, defaultCapacity : capacity, maxSize: maxSize);
+            _pool = new ObjectPool<PooledObject>(OnCreated, actionOnGet: OnGetted , actionOnRelease : OnReleased, actionOnDestroy: OnDestroyed, defaultCapacity : capacity, maxSize: maxSize);
 
-            var poolObjects = new List<SimplePooledObject>();
-
-            for (int i = 0; i < startSize; i++)
+            for(int i = 0; i < startSize; i++)
             {
-                poolObjects.Add(Get());
-            }
+                var startPooledObject = OnCreated();
 
-            foreach (var poolObject in poolObjects)
-            {
-                poolObject.Release();
+                startPooledObject.gameObject.SetActive(false);
+
+                _pool.Release(startPooledObject);
             }
         }
 
-        private readonly SimplePooledObject _pooledObject;
+        private readonly PooledObject _pooledObject;
         private readonly Transform _container;
-        private readonly ObjectPool<SimplePooledObject> _pool;
+        private readonly ObjectPool<PooledObject> _pool;
 
-        public SimplePooledObject PooledObject => _pooledObject;
-        public ObjectPool<SimplePooledObject> Pool => _pool;
+        public PooledObject PooledObject => _pooledObject;
+        public ObjectPool<PooledObject> Pool => _pool;
         public Transform Container => _container;
 
-        protected virtual void Destroyed(SimplePooledObject pooledObject)
+        protected virtual void OnDestroyed(PooledObject pooledObject)
         {
             if (!pooledObject)
                 return;
@@ -43,17 +40,17 @@ namespace StudioScor.Utilities
             UnityEngine.Object.Destroy(pooledObject.gameObject);
         }
 
-        protected virtual SimplePooledObject Create()
+        protected virtual PooledObject OnCreated()
         {
-            SimplePooledObject pooledObject;
+            PooledObject pooledObject;
 
             if (_container)
             {
-                pooledObject = UnityEngine.Object.Instantiate(PooledObject, _container);
+                pooledObject = Object.Instantiate(PooledObject, _container);
             }
             else
             {
-                pooledObject = UnityEngine.Object.Instantiate(PooledObject);
+                pooledObject = Object.Instantiate(PooledObject);
             }
 
             pooledObject.Create(this);
@@ -61,26 +58,28 @@ namespace StudioScor.Utilities
             return pooledObject;
         }
 
-        public SimplePooledObject Get()
+        public PooledObject Get()
         {
             return Pool.Get();
         }
-
-        private void Getted(SimplePooledObject pooledObject)
-        {
-        }
-
-        public void Release(SimplePooledObject pooledObject)
+        public void Release(PooledObject pooledObject)
         {
             Pool.Release(pooledObject);
         }
 
-        public void Released(SimplePooledObject pooledObject)
+        private void OnGetted(PooledObject pooledObject)
+        {
+            pooledObject.OnActivate();
+        }
+
+        public void OnReleased(PooledObject pooledObject)
         {
             if (_container && pooledObject.transform.parent != _container)
             {
-                pooledObject.SetParent(_container, false);
+                pooledObject.transform.SetParent(_container, false);
             }
+
+            pooledObject.OnRelease();
         }
 
         public void Clear()

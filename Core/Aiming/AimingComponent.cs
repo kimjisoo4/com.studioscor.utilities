@@ -258,7 +258,7 @@ namespace StudioScor.Utilities
                     }
                 }
 
-                SUtility.Sort.SortRaycastHitByDistance(start, ref _hits);
+                SUtility.Sort.SortDistanceToPointByRaycastHit(start, _hits);
 
                 for(int i = 0; i < _hits.Count; i++)
                 {

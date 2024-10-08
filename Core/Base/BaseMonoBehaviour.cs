@@ -11,7 +11,8 @@ namespace StudioScor.Utilities
 
         #region EDITOR ONLY
 #if UNITY_EDITOR
-        [Header(" [ Use Debug ] ")]
+        [Header(" [ Base MonoBehaviour ] ")]
+        [Header(" Use Debug ")]
         public bool UseDebug;
 #else
         [HideInInspector] public bool UseDebug = false;

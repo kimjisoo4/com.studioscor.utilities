@@ -3,11 +3,11 @@
 
 namespace StudioScor.Utilities
 {
-    [CreateAssetMenu(menuName = "StudioScor/Utilities/New Simple Pool Container", fileName = "SimplePool_")]
-    public class SimplePoolContainer : BaseScriptableObject
+    [CreateAssetMenu(menuName = "StudioScor/Utilities/New Pool Container", fileName = "Pool_")]
+    public class PoolContainer : BaseScriptableObject
     {
         [Header(" [ Simple Pool Container ] ")]
-        [SerializeField] private SimplePooledObject simplePoolObject;
+        [SerializeField] private PooledObject simplePoolObject;
         [SerializeField] private GameObject container;
         [SerializeField] private int startSize = 5;
         [SerializeField] private int capacity = 10;
@@ -15,6 +15,7 @@ namespace StudioScor.Utilities
 
         private GameObject _instContainer;
         private SimplePool _simplePool;
+
 
         public void Initialization(Transform newContainer = null)
         {
@@ -52,27 +53,17 @@ namespace StudioScor.Utilities
             _simplePool = new SimplePool(simplePoolObject, _instContainer.transform, startSize, capacity, maxSize);
         }
 
-        public SimplePooledObject Get()
+        public PooledObject Get()
         {
             if (!_instContainer)
-            {
-                if (container)
-                    SetContainer(Instantiate(container));
-                else
-                    SetContainer(new GameObject($"[Pool]{name}"));
-            }
+                Initialization();
 
             return _simplePool.Get();
         }
-        public void Release(SimplePooledObject pooledObject)
+        public void Release(PooledObject pooledObject)
         {
             if (!_instContainer)
-            {
-                if (container)
-                    SetContainer(Instantiate(container));
-                else
-                    SetContainer(new GameObject($"[Pool]{name}"));
-            }
+                Initialization();
 
             _simplePool.Release(pooledObject);
         }
