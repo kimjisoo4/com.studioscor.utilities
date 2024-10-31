@@ -1,0 +1,23 @@
+{
+    "name": "StudioScor.Utilities.Behavior",
+    "rootNamespace": "StudioScor.Utilities.Behavior",
+    "references": [
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:73907d139b13f8a43b7e3e95c329d30a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.behavior",
+            "expression": "1.0.3",
+            "define": "SCOR_ENABLE_BEHAVIOR"
+        }
+    ],
+    "noEngineReferences": false
+}

@@ -7,15 +7,31 @@ namespace StudioScor.Utilities
 
     public static partial class SUtility
     {
+        public const string STRING_COLOR_DEFAULT = "#CCCCCCFF";
+        public const string STRING_COLOR_FAIL = "#e02929ff";
+        public const string STRING_COLOR_SUCCESS = "#29e029ff";
+
         public const string STRING_COLOR_ADD = "grenn";
         public const string STRING_COLOR_REMOVE = "red";
-        public const string STRING_COLOR_FAIL = "red";
-        public const string STRING_COLOR_SUCCESS = "green";
         public const string STRING_COLOR_RED = "red";
         public const string STRING_COLOR_YELLOW = "yellow";
         public const string STRING_COLOR_BLUE = "blue";
         public const string STRING_COLOR_GREEN = "green";
         public const string STRING_COLOR_GREY = "grey";
+        public const string STRING_COLOR_WHITE = "white";
+
+        public static string ToBold(this string message)
+        {
+            return $"<b>{message}</b>";
+        }
+        public static string ToColor(this string message, string color)
+        {
+            return $"<color={color}>{message}</color>";
+        }
+        public static string ToColor(this string message, Color color)
+        {
+            return $"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{message}</color>";
+        }
 
         public static class Debug
         {
@@ -77,7 +93,7 @@ namespace StudioScor.Utilities
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void Log(object message, Object context = null, string color = STRING_COLOR_GREY)
+            public static void Log(object message, Object context = null, string color = STRING_COLOR_DEFAULT)
             {
                 if (!UseDebug)
                     return;
@@ -86,7 +102,7 @@ namespace StudioScor.Utilities
             }
 
             [Conditional("UNITY_EDITOR")]
-            public static void LogError(object message, Object context = null, string color = STRING_COLOR_GREY)
+            public static void LogError(object message, Object context = null, string color = STRING_COLOR_RED)
             {
                 UnityEngine.Debug.LogError($"<color={color}>{message}</color>", context);
             }
