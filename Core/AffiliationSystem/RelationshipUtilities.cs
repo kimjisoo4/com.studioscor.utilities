@@ -34,5 +34,19 @@ namespace StudioScor.Utilities
         {
             return lhs.Team.CheckRelationship(rhs.Team);
         }
+
+
+        public static bool IsHostile(this TeamData lhs, IRelationshipSystem rhs)
+        {
+            return lhs.CheckRelationship(rhs.Team) == ERelationship.Hostile;
+        }
+        public static bool IsHostile(this IRelationshipSystem lhs, TeamData rhs)
+        {
+            return lhs.Team.CheckRelationship(rhs) == ERelationship.Hostile;
+        }
+        public static bool IsHostile(this IRelationshipSystem lhs, IRelationshipSystem rhs)
+        {
+            return lhs.Team.CheckRelationship(rhs.Team) == ERelationship.Hostile;
+        }
     }
 }

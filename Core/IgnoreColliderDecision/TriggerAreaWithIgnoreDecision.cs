@@ -7,9 +7,9 @@ namespace StudioScor.Utilities
         [Header(" [ Trigger Area With Ignore Decision Component ] ")]
         [SerializeField] private IgnoreColliderDecision[] _ignoreDecisions;
 
-        protected override bool CanTrigger(Collider other)
+        protected override bool CanTriggerEnter(Collider other)
         {
-            if (!base.CanTrigger(other))
+            if (!base.CanTriggerEnter(other))
                 return false;
 
             if (_ignoreDecisions is null || _ignoreDecisions.Length == 0)

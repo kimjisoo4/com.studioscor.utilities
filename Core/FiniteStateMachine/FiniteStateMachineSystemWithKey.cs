@@ -36,7 +36,8 @@ namespace StudioScor.Utilities
         }
 
         private bool needUpdateKey = false;
-        
+
+        public FiniteStateMachineSystemWithKey() { }
         public FiniteStateMachineSystemWithKey(TKey key, TState defaultState) : base(defaultState)
         {
             states = new()

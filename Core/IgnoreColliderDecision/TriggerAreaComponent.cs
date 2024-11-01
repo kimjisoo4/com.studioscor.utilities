@@ -78,7 +78,7 @@ namespace StudioScor.Utilities
         [SerializeField] private bool _useUnityEvent = false;
         [SerializeField] private UnityEvents _unityEvents;
 
-        private List<Collider> _stayedColliders;
+        private readonly List<Collider> _stayedColliders = new();
         public bool UseTriggerEnter => _useTriggerEnter;
         public bool UseTriggerExit => _useTriggerExit;
         public bool UseTriggerStay => _useTriggerStay;
@@ -109,14 +109,30 @@ namespace StudioScor.Utilities
         {
             if (_useUnityEvent)
                 _unityEvents.AddUnityEvent(this);
-
-            if (_useTriggerStay)
-                _stayedColliders = new();
         }
         private void OnDestroy()
         {
             if (_useUnityEvent)
                 _unityEvents.RemoveUnityEvent(this);
+        }
+
+        protected virtual void OnDisable()
+        {
+            if(!_stayedColliders.IsNullOrEmpty())
+            {
+                for (int i = 0; i < _stayedColliders.Count; i++)
+                {
+                    var collider = _stayedColliders[i];
+
+                    if (!collider)
+                        continue;
+
+                    TriggerExit(collider);
+                    Invoke_OnExitedTrigger(collider);
+                }
+
+                _stayedColliders.Clear();
+            }
         }
 
         private void FixedUpdate()
@@ -132,11 +148,20 @@ namespace StudioScor.Utilities
             Invoke_OnStayedTrigger();
         }
 
-        protected virtual bool CanTrigger(Collider other)
+        protected virtual bool CanTriggerEnter(Collider other)
         {
+            if (_stayedColliders.Contains(other))
+                return false;
+
             return true;
         }
+        protected virtual bool CanTriggerExit(Collider other)
+        {
+            if (!_stayedColliders.Contains(other))
+                return false;
 
+            return true;
+        }
         private void OnTriggerEnter(Collider other)
         {
             if (!_useTriggerEnter && !_useTriggerStay)
@@ -145,8 +170,10 @@ namespace StudioScor.Utilities
             if (_isOnceEnter && _wasEnterTrigger)
                 return;
 
-            if (!CanTrigger(other))
+            if (!CanTriggerEnter(other))
                 return;
+
+            _stayedColliders.Add(other);
 
             if (_useTriggerEnter)
             {
@@ -157,10 +184,8 @@ namespace StudioScor.Utilities
                 Invoke_OnEnteredTrigger(other);
             }
 
-            if (_useTriggerStay && !_stayedColliders.Contains(other))
+            if (_useTriggerStay && !_shouldStayTrigger)
             {
-                _stayedColliders.Add(other);
-
                 _shouldStayTrigger = true;
             }
 
@@ -175,8 +200,10 @@ namespace StudioScor.Utilities
             if (_isOnceExit && _wasExitTrigger)
                 return;
 
-            if (!CanTrigger(other))
+            if (!CanTriggerExit(other))
                 return;
+
+            _stayedColliders.Remove(other);
 
             if (_useTriggerExit)
             {
@@ -187,10 +214,8 @@ namespace StudioScor.Utilities
                 Invoke_OnExitedTrigger(other);
             }
 
-            if (_useTriggerStay && _stayedColliders.Contains(other))
+            if (_useTriggerStay && _shouldStayTrigger)
             {
-                _stayedColliders.Remove(other);
-
                 _shouldStayTrigger = _stayedColliders.Count > 0;
             }
 

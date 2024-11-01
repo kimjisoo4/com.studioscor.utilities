@@ -22,7 +22,7 @@ namespace StudioScor.Utilities
         }
         public static bool TryGetActor(this Component target, out IActor actor)
         {
-            actor = target.GetActor();
+            actor = target.gameObject.GetActor();
 
             return actor is not null;
         }

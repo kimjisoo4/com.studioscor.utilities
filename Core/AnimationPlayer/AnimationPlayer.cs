@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -136,7 +137,7 @@ namespace StudioScor.Utilities
         private float _nextOffset;
         private int _nextLayer;
 
-
+        private bool _wasFauiled;
         private readonly List<string> _notifyStates = new();
         
         public Animator Animator => _animator;
@@ -318,6 +319,8 @@ namespace StudioScor.Utilities
             CancelAnimation();
         }
 
+
+
         private void LateUpdate()
         {
             if (!_isPlaying)
@@ -331,12 +334,20 @@ namespace StudioScor.Utilities
             switch (_state)
             {
                 case EAnimationState.TryPlay:
+                    Log($"{_currentStateHash} || {currentState.shortNameHash} || {nextState.shortNameHash}");
+
                     if (currentState.shortNameHash == _currentStateHash || nextState.shortNameHash == _currentStateHash)
                     {
                         SetAnimationState(EAnimationState.Start);
                     }
                     else
                     {
+                        if(nextState.shortNameHash == 0 && !_wasFauiled)
+                        {
+                            _wasFauiled = true;
+                            return;
+                        }
+
                         SetAnimationState(EAnimationState.Failed);
 
                     }
@@ -548,6 +559,8 @@ namespace StudioScor.Utilities
 
         private void OnTryPlay()
         {
+            Log($"{nameof(OnTryPlay)} :: {_currentStateHash}");
+
             if (_useFixedTransition)
                 _animator.CrossFadeInFixedTime(_currentStateHash, _fadeIn, _layer, _offset);
             else
@@ -555,6 +568,7 @@ namespace StudioScor.Utilities
 
             _isPlaying = true;
             _normalizedTime = 0f;
+            _wasFauiled = false;
         }
         private void OnCancel()
         {
@@ -622,9 +636,7 @@ namespace StudioScor.Utilities
                 _currentAnimationEvents = _nextAnimationEvents;
                 _nextAnimationEvents = null;
 
-                Events temp = _currentEvents;
-                _currentEvents = _nextEvents;
-                _nextEvents = temp;
+                (_nextEvents, _currentEvents) = (_currentEvents, _nextEvents);
             }
         }
 
