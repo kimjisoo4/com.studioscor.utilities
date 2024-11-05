@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace StudioScor.Utilities
 {
+
     public abstract class BaseClass
     {
         [field: Header(" Use Debug ")]
