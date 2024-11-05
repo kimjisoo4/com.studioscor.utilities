@@ -1,9 +1,8 @@
 ﻿#if SCOR_ENABLE_BEHAVIOR
-using StudioScor.Utilities;
 using Unity.Behavior;
 using UnityEngine;
 
-namespace StudioScor.PlayerSystem.Behavior
+namespace StudioScor.Utilities.UnityBehavior
 {
     public abstract class BaseCondition : Condition
     {

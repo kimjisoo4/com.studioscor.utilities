@@ -1,10 +1,9 @@
 ﻿#if SCOR_ENABLE_BEHAVIOR
-using StudioScor.Utilities;
 using Unity.Behavior;
 using UnityEngine;
 using Action = Unity.Behavior.Action;
 
-namespace StudioScor.PlayerSystem.Behavior
+namespace StudioScor.Utilities.UnityBehavior
 {
     public abstract class BaseAction : Action
     {

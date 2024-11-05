@@ -1,5 +1,4 @@
 #if SCOR_ENABLE_BEHAVIOR
-using StudioScor.PlayerSystem.Behavior;
 using System;
 using Unity.Behavior;
 using UnityEngine;
