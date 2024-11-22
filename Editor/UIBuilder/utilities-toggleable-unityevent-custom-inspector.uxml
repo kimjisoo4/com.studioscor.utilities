@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:Toggle label="Use &quot;PropertyName&quot;" name="Toggle_UseUnityEvent" binding-path="_useUnityEvent" />
+    <uie:PropertyField name="PropertyField_UnityEvent" />
+</ui:UXML>

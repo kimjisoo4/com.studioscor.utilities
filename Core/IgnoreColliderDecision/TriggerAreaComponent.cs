@@ -13,7 +13,6 @@ namespace StudioScor.Utilities
 
         public GameObject gameObject { get; }
         public Transform transform { get; }
-
         public bool UseTriggerEnter { get; }
         public bool UseTriggerExit { get; }
         public bool UseTriggerStay { get; }

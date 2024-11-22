@@ -6,6 +6,8 @@ namespace StudioScor.Utilities.Editor
     public static class UtilitiesPathUtility
     {
         private static string _RootFolder;
+        public static string EditorPath => RootFolder + "Editor/";
+        public static string InspectorPath => RootFolder + "Editor/UIBuilder/";
         public static string RootFolder
         {
             get
