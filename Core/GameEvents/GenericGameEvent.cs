@@ -4,7 +4,6 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-
     public class GenericGameEvent<T> : GameEvent
     {
         [SerializeField][SReadOnly] private List<GenericGameEventListner<T>> genericEventList = new List<GenericGameEventListner<T>>();

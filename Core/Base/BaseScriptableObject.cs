@@ -19,16 +19,16 @@ namespace StudioScor.Utilities
         [HideInInspector]public bool UseDebug = false;
 #endif
 
-        [Conditional("UNITY_EDITOR")]
-        protected virtual void Log(object log, string color = "gray")
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        protected virtual void Log(object log, string color = SUtility.STRING_COLOR_DEFAULT)
         {
 #if UNITY_EDITOR
             if (UseDebug)
                 SUtility.Debug.Log(GetType().Name + " [ " + name + " ] : " + log, this, color);
 #endif
         }
-        [Conditional("UNITY_EDITOR")]
-        protected virtual void LogError(object log, string color = "red")
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        protected virtual void LogError(object log, string color = SUtility.STRING_COLOR_FAIL)
         {
 #if UNITY_EDITOR
             SUtility.Debug.LogError(GetType().Name + " [ " + name + " ] : " + log, this, color);

@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
+
     [System.Serializable]
     public class ToggleableUnityEvent
     {

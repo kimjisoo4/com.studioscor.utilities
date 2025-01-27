@@ -3,25 +3,17 @@ using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
-
-    [System.Serializable]
-    public class BaseStateMonoEvent
-    {
-        public UnityEvent<IState> OnEnteredState;
-        public UnityEvent<IState> OnExitedState;
-    }
-
     public abstract class BaseStateMono : BaseMonoBehaviour, IState
     {
         [Header(" [ State MonoBehaviour ] ")]
-        [SerializeField] private bool useUnityEvent = false;
-        [SerializeField] protected BaseStateMonoEvent unityEvents = new();
+        [SerializeField] private ToggleableUnityEvent _onEnteredState;
+        [SerializeField] private ToggleableUnityEvent _onExitedState;
 
-        public event UnityAction<IState> OnEnteredState;
-        public event UnityAction<IState> OnExitedState;
+        public event IState.StateEventHandler OnEnteredState;
+        public event IState.StateEventHandler OnExitedState;
 
-        private bool isPlaying;
-        public bool IsPlaying => isPlaying;
+        private bool _isPlaying;
+        public bool IsPlaying => _isPlaying;
 
         #region EDITOR ONLY
 
@@ -47,24 +39,24 @@ namespace StudioScor.Utilities
 
         public void ForceEnterState()
         {
-            isPlaying = true;
+            _isPlaying = true;
 
             enabled = true;
 
             EnterState();
 
-            Callback_OnEnteredState();
+            Invoke_OnEnteredState();
         }
 
         public void ForceExitState()
         {
-            isPlaying = false;
+            _isPlaying = false;
 
             ExitState();
 
             enabled = false;
 
-            Callback_OnExitedState();
+            Invoke_OnExitedState();
         }
 
         public bool TryEnterState()
@@ -87,43 +79,29 @@ namespace StudioScor.Utilities
             return true;
         }
 
-        protected virtual void EnterState()
+        protected virtual void EnterState() { }
+        protected virtual void ExitState() { }
+
+        private void Invoke_OnEnteredState()
         {
+            Log(nameof(OnEnteredState));
 
-        }
-        protected virtual void ExitState()
-        {
-
-        }
-
-        private void Callback_OnEnteredState()
-        {
-            Log("Entered State");
-
-            if (useUnityEvent)
-            {
-                unityEvents.OnEnteredState?.Invoke(this);
-            }
-
+            _onEnteredState.Invoke();
             OnEnteredState?.Invoke(this);
         }
-        private void Callback_OnExitedState()
+        private void Invoke_OnExitedState()
         {
-            Log("Exited State");
+            Log(nameof(OnExitedState));
 
-            if (useUnityEvent)
-            {
-                unityEvents.OnExitedState?.Invoke(this);
-            }
-
+            _onExitedState.Invoke();    
             OnExitedState?.Invoke(this);
         }
     }
 
     public abstract class BaseStateClass : BaseClass, IState
     {       
-        public event UnityAction<IState> OnEnteredState;
-        public event UnityAction<IState> OnExitedState;
+        public event IState.StateEventHandler OnEnteredState;
+        public event IState.StateEventHandler OnExitedState;
 
         protected bool _IsActivate;
         public bool IsActivate => _IsActivate;

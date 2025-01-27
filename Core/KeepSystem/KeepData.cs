@@ -7,5 +7,12 @@ namespace StudioScor.Utilities
         public abstract void ResetData();
         public abstract void Save(GameObject gameObject);
         public abstract void Load(GameObject gameObject);
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            hideFlags = HideFlags.DontUnloadUnusedAsset;
+        }
     }
 }

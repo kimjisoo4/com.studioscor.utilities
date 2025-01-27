@@ -28,7 +28,7 @@ namespace StudioScor.Utilities
         [SerializeField][SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Target)] private string targetSceneName;
 
 
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public void OnValidate()
         {
 #if UNITY_EDITOR

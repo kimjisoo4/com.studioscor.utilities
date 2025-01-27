@@ -40,7 +40,7 @@ namespace StudioScor.Utilities
             _HitResults = new();
         }
 
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public void OnDrawGizmos(Transform transform, bool isWire = false)
         {
 #if UNITY_EDITOR

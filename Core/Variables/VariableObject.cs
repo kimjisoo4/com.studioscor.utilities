@@ -8,11 +8,20 @@ namespace StudioScor.Utilities
 		public delegate void ValueHandler(VariableObject<T> variable, T currentValue, T prevValue);
 		#endregion
 
-		[SerializeField] protected T initialValue;
-		[SerializeField][SReadOnly] protected T runtimeValue;
+		public enum ESaveMode
+		{
+			None,
+			Auto,
+			Manual,
+		}
 
-		public T InitialValue => initialValue;
-		public T Value => runtimeValue;
+		[Header(" [ Variable Object ]  ")]
+		[SerializeField] protected T _initialValue;
+		[SerializeField][Readonly] protected T _runtimeValue;
+		[SerializeField] private ESaveMode _saveMode = ESaveMode.None;
+
+		public T InitialValue => _initialValue;
+		public T Value => _runtimeValue;
 
 		public event ValueHandler OnChangedValue;
 
@@ -26,29 +35,78 @@ namespace StudioScor.Utilities
 
 		}
 
-		protected override void OnReset()
+        protected override void OnEnable()
         {
-			runtimeValue = initialValue;
+            base.OnEnable();
+
+			if(_saveMode == ESaveMode.Auto)
+			{
+				LoadData();
+			}
+        }
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (_saveMode == ESaveMode.Auto)
+            {
+				SaveData();
+            }
+        }
+
+		protected virtual void OnDeleteData()
+		{
+            Debug.LogError(" Not Defined Save/Load");
+        }
+        protected virtual void OnLoadData()
+		{
+			Debug.LogError(" Not Defined Save/Load");
+		}
+		protected virtual void OnSaveData()
+		{
+            Debug.LogError(" Not Defined Save/Load");
+        }
+
+        protected override void OnReset()
+        {
+			_runtimeValue = _initialValue;
 
 			OnChangedValue = null;
 		}
 
 		public void Clear()
 		{
-			T prevValue = runtimeValue;
+			T prevValue = _runtimeValue;
 
-			runtimeValue = initialValue;
+			_runtimeValue = _initialValue;
 
 			Callback_OnChangeValue(prevValue);
 		}
+		[ContextMenu(nameof(DeleteData), false, 1000000)]
+		public void DeleteData()
+		{
+			Log(nameof(DeleteData));
+		}
+		public void SaveData()
+		{
+			Log(nameof(SaveData));
+
+			OnSaveData();
+		}
+		public void LoadData()
+		{
+            Log(nameof(LoadData));
+
+			OnLoadData();
+        }
 
 		public abstract void SetValue(T value);
 
 		protected void Callback_OnChangeValue(T prevValue)
         {
-			Log("On Changed Value - Current Value : " + runtimeValue + " PrevValue : " + prevValue);
+			Log("On Changed Value - Current Value : " + _runtimeValue + " PrevValue : " + prevValue);
 
-			OnChangedValue?.Invoke(this, runtimeValue, prevValue);
+			OnChangedValue?.Invoke(this, _runtimeValue, prevValue);
 		}
 	}
 

@@ -7,12 +7,37 @@ namespace StudioScor.Utilities
     {
         public override void SetValue(bool value)
         {
-            if (value == runtimeValue)
+            if (value == _runtimeValue)
                 return;
 
-            runtimeValue = value;
+            _runtimeValue = value;
 
-            Callback_OnChangeValue(!runtimeValue);
+            Callback_OnChangeValue(!_runtimeValue);
+        }
+
+        protected override void OnLoadData()
+        {
+            if(PlayerPrefs.HasKey(_id))
+            {
+                int value = PlayerPrefs.GetInt(_id);
+
+                _runtimeValue = value != 0;
+            }
+        }
+
+        protected override void OnSaveData()
+        {
+            PlayerPrefs.SetInt(_id, Value ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
+        protected override void OnDeleteData()
+        {
+            if(PlayerPrefs.HasKey(_id))
+            {
+                PlayerPrefs.DeleteKey(_id);
+                PlayerPrefs.Save();
+            }
         }
     }
 }

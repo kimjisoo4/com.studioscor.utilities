@@ -1,79 +1,31 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 
 
 namespace StudioScor.Utilities
 {
     public class PooledObject : BaseMonoBehaviour
     {
-        public delegate void PooledObjectEventHandler(PooledObject pooledObject);
-
-        [System.Serializable]
-        public class UnityEvents
+        public enum EPooledState
         {
-            [SerializeField] private UnityEvent _onCreated;
-            [SerializeField] private UnityEvent _onActivated;
-            [SerializeField] private UnityEvent _onReleased;
-
-            public void EnableUnityEvents(PooledObject pooledObject)
-            {
-                pooledObject.OnCreated += PooledObject_OnCreated;
-                pooledObject.OnActivated += PooledObject_OnActivated;
-                pooledObject.OnReleased += PooledObject_OnReleased;
-            }
-
-          
-
-            public void DisableUnityEvents(PooledObject pooledObject)
-            {
-                if(pooledObject)
-                {
-                    pooledObject.OnCreated -= PooledObject_OnCreated;
-                    pooledObject.OnActivated -= PooledObject_OnActivated;
-                    pooledObject.OnReleased -= PooledObject_OnReleased;
-                }
-            }
-            private void PooledObject_OnReleased(PooledObject pooledObject)
-            {
-                _onReleased?.Invoke();
-            }
-            private void PooledObject_OnActivated(PooledObject pooledObject)
-            {
-                _onActivated?.Invoke();
-            }
-            private void PooledObject_OnCreated(PooledObject pooledObject)
-            {
-                _onCreated?.Invoke();
-            }
+            None,
+            Activated,
+            Released,
         }
+        public delegate void PooledObjectEventHandler(PooledObject pooledObject);
 
         [Header(" [ Simple Pooled Object ] ")]
         [SerializeField] PoolContainer _poolContainer;
-        [Space(5f)]
-        [SerializeField] private bool _useUnityEvent = false;
-        [SerializeField] private UnityEvents _unityEvents;
+        [SerializeField] private ToggleableUnityEvent _onCreated;
+        [SerializeField] private ToggleableUnityEvent _onActivated;
+        [SerializeField] private ToggleableUnityEvent _onReleased;
 
         private SimplePool _pool;
-        private bool _isActivated = false;
+        private EPooledState _state;
 
         public event PooledObjectEventHandler OnCreated;
         public event PooledObjectEventHandler OnActivated;
         public event PooledObjectEventHandler OnReleased;
 
-        private void Awake()
-        {
-            if (_useUnityEvent)
-            {
-                _unityEvents.EnableUnityEvents(this);
-            }
-        }
-        private void OnDestroy()
-        {
-            if (_useUnityEvent)
-            {
-                _unityEvents.DisableUnityEvents(this);
-            }
-        }
 
         internal void Create(SimplePool poolContainer)
         {
@@ -89,12 +41,12 @@ namespace StudioScor.Utilities
 
         internal void OnActivate()
         {
-            if (_isActivated)
+            if (_state == EPooledState.Activated)
                 return;
 
             Log($"{nameof(OnActivate)}");
 
-            _isActivated = true;
+            _state = EPooledState.Activated;
 
             gameObject.SetActive(true);
 
@@ -102,12 +54,12 @@ namespace StudioScor.Utilities
         }
         internal void OnRelease()
         {
-            if (!_isActivated)
+            if (_state == EPooledState.Released)
                 return;
 
             Log($"{nameof(OnRelease)}");
 
-            _isActivated = false;
+            _state = EPooledState.Released;
 
             gameObject.SetActive(false);
 
@@ -116,7 +68,7 @@ namespace StudioScor.Utilities
 
         public void Release()
         {
-            if (!_isActivated)
+            if (_state == EPooledState.Released)
                 return;
 
             if (_pool is not null)
@@ -136,19 +88,22 @@ namespace StudioScor.Utilities
         private void Invoke_OnCreated()
         {
             Log($"{nameof(OnCreated)}");
-            
+
+            _onCreated.Invoke();
             OnCreated?.Invoke(this);
         }
         private void Invoke_OnActivated()
         {
             Log($"{nameof(OnActivated)}");
 
+            _onActivated.Invoke();
             OnActivated?.Invoke(this);
         }
         private void Invoke_OnReleased()
         {
             Log($"{nameof(OnReleased)}");
 
+            _onReleased.Invoke();
             OnReleased?.Invoke(this);
         }
     }

@@ -7,12 +7,12 @@ namespace StudioScor.Utilities
     {
         public override void SetValue(Color value)
         {
-            if (runtimeValue == value)
+            if (_runtimeValue == value)
                 return;
 
-            Color prevValue = runtimeValue;
+            Color prevValue = _runtimeValue;
 
-            runtimeValue = value;
+            _runtimeValue = value;
 
             Callback_OnChangeValue(prevValue);
         }

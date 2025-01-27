@@ -4,6 +4,75 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
+        public static GameObject GetGameObjectByTypeInParentOrChildren<T>(this GameObject target)
+        {
+            var gameObject = target.GetGameObjectByTypeInParent<T>();
+
+            if (gameObject)
+                return gameObject;
+
+            return target.GetGameObjectByTypeInChildren<T>();
+        }
+        public static GameObject GetGameObjectByTypeInChildren<T>(this GameObject target)
+        {
+            var targetClasses = target.GetComponentsInChildren<T>();
+
+            foreach ( var targetClass in targetClasses )
+            {
+                if (targetClass is Component component)
+                    return component.gameObject;
+            }
+
+            return null;
+        }
+        public static GameObject GetGameObjectByTypeInParent<T>(this GameObject target)
+        {
+            var targetClasses = target.GetComponentsInParent<T>();
+
+            foreach (var targetClass in targetClasses)
+            {
+                if (targetClass is Component component)
+                    return component.gameObject;
+            }
+
+            return null;
+        }
+        public static GameObject GetGameObjectByType<T>(this GameObject target)
+        {
+            var targetClass = target.GetComponent<T>();
+
+            if (targetClass is Component component)
+                return component.gameObject;
+
+            return null;
+        }
+        public static bool TryGetGameObjectByType<T>(this GameObject target, out GameObject gameObject)
+        {
+            gameObject = target.GetGameObjectByType<T>();
+
+            return gameObject;
+        }
+        public static bool TryGetGameObjectByTypeInParentOrChildren<T>(this GameObject target, out GameObject gameObject)
+        {
+            gameObject = target.GetGameObjectByTypeInParentOrChildren<T>();
+
+            return gameObject;
+        }
+        public static bool TryGetGameObjectByTypeInParent<T>(this GameObject target, out GameObject gameObject)
+        {
+            gameObject = target.GetGameObjectByTypeInParent<T>();
+
+            return gameObject;
+        }
+        public static bool TryGetGameObjectByTypeInChildren<T>(this GameObject target, out GameObject gameObject)
+        {
+            gameObject = target.GetGameObjectByTypeInChildren<T>();
+
+            return gameObject;
+        }
+
+
+
         // GetComponenet
         public static T GetComponentInParentOrChildren<T>(this GameObject gameObject)
         {

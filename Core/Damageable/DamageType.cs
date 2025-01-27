@@ -6,10 +6,14 @@ namespace StudioScor.Utilities
 	public class DamageType : BaseScriptableObject
     {
         [Header(" [ Damage Type ] ")]
-        [SerializeField] private string _name;
-        [SerializeField][TextArea] private string _description;
+        [SerializeField] private string _id;
 
-        public string Name => _name;
-        public string Description => _description; 
+        public string ID => _id;
+
+        [ContextMenu(nameof(NameToID), false, 1000000)]
+        private void NameToID()
+        {
+            _id = name;
+        }
     }
 }

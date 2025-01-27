@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 #if SCOR_ENABLE_CINEMACHINE
-using Cinemachine;
+using Unity.Cinemachine;
 #endif
 
 namespace StudioScor.Utilities

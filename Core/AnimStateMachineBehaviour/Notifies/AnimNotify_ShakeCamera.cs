@@ -1,4 +1,5 @@
-﻿using Cinemachine;
+﻿#if UNITY_EDITOR
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace StudioScor.Utilities
@@ -24,3 +25,4 @@ namespace StudioScor.Utilities
         }
     }
 }
+#endif

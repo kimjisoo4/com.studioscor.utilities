@@ -7,8 +7,7 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Particle Stop Event Receiver ] ")]
         [SerializeField] private bool _useDisable = true;
-        [SerializeField] private bool _useUnityEvent = true;
-        [SerializeField] private UnityEvent _onStoppedParticle;
+        [SerializeField] private ToggleableUnityEvent _onStoppedParticle;
 
         public event UnityAction OnStoppedParticle;
 
@@ -16,9 +15,7 @@ namespace StudioScor.Utilities
         {
             Log(nameof(OnStoppedParticle));
 
-            if(_useUnityEvent)
-                _onStoppedParticle?.Invoke();
-
+            _onStoppedParticle.Invoke();
             OnStoppedParticle?.Invoke();
 
             if (_useDisable)

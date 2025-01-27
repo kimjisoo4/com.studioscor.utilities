@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:MinMaxSlider value="10,12" low-limit="-10" high-limit="40" name="MinMaxSlider_Slider" label="slider" class="unity-base-field__aligned" style="display: flex; justify-content: flex-end; align-content: auto; flex-shrink: 1; flex-grow: 1;" />
+    <ui:Vector2Field name="Vector2Field_Value" enabled="true" label=" " class="unity-base-field__aligned" style="justify-content: flex-end; align-content: auto; flex-shrink: 1; flex-grow: 1; visibility: visible;" />
+</ui:UXML>

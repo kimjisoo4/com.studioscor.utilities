@@ -1,4 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <ui:Toggle label="Use &quot;PropertyName&quot;" name="Toggle_UseUnityEvent" binding-path="_useUnityEvent" />
-    <uie:PropertyField name="PropertyField_UnityEvent" />
+    <uie:PropertyField name="PropertyField_UseUnityEvent" data-source-type="StudioScor.Utilities.ToggleableUnityEvent, StudioScor.Utilities" binding-path="_useUnityEvent" />
+    <uie:PropertyField name="PropertyField_UnityEvent" binding-path="_unityEvent" data-source-type="StudioScor.Utilities.ToggleableUnityEvent, StudioScor.Utilities" />
 </ui:UXML>

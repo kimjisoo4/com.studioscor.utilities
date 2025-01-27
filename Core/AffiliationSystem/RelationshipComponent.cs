@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
 
         public event IRelationshipSystem.RelationshipTeamStateHandler OnChangedTeam;
 
-        public void ChangeReleationshipTeam(TeamData team)
+        public void ChangeTeam(TeamData team)
         {
             if (_team == team)
                 return;

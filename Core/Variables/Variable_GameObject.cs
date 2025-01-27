@@ -7,11 +7,11 @@ namespace StudioScor.Utilities
     {
         public override void SetValue(GameObject value)
         {
-            if (runtimeValue == value)
+            if (_runtimeValue == value)
                 return;
 
-            var prevValue = runtimeValue;
-            runtimeValue = value;
+            var prevValue = _runtimeValue;
+            _runtimeValue = value;
 
             Callback_OnChangeValue(prevValue);
         }

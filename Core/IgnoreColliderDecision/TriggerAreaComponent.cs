@@ -11,6 +11,7 @@ namespace StudioScor.Utilities
         public delegate void TriggerStateHandler(ITriggerArea triggerArea);
         public delegate void TriggerEventHandler(ITriggerArea triggerArea, Collider collider);
 
+
         public GameObject gameObject { get; }
         public Transform transform { get; }
         public bool UseTriggerEnter { get; }
@@ -18,6 +19,9 @@ namespace StudioScor.Utilities
         public bool UseTriggerStay { get; }
 
         public IReadOnlyList<Collider> StaryedColliders { get; }
+
+        public void Activate();
+        public void Deactivate();
 
         public event TriggerEventHandler OnEnteredTrigger;
         public event TriggerEventHandler OnExitedTrigger;
@@ -93,7 +97,7 @@ namespace StudioScor.Utilities
         private bool _shouldStayTrigger;
 
         #region EDITOR ONLY
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         private void DrawSphere(Vector3 position, Color color)
         {
 #if UNITY_EDITOR
@@ -132,6 +136,10 @@ namespace StudioScor.Utilities
 
                 _stayedColliders.Clear();
             }
+
+            _wasEnterTrigger = false;
+            _wasExitTrigger = false;
+            _shouldStayTrigger = false;
         }
 
         private void FixedUpdate()
@@ -145,6 +153,16 @@ namespace StudioScor.Utilities
             TriggerStay();
 
             Invoke_OnStayedTrigger();
+        }
+
+        public virtual void Activate()
+        {
+            enabled = true;
+        }
+
+        public virtual void Deactivate()
+        {
+            enabled = false;
         }
 
         protected virtual bool CanTriggerEnter(Collider other)
@@ -235,7 +253,7 @@ namespace StudioScor.Utilities
 
         }
 
-        #region Callback
+        #region Invoke
         private void Invoke_OnEnteredTrigger(Collider other)
         {
             Log($"{nameof(OnEnteredTrigger)} - [ {other.name} ]");
@@ -254,6 +272,8 @@ namespace StudioScor.Utilities
 
             OnStayedTrigger?.Invoke(this);
         }
+
+        
 
         #endregion
     }

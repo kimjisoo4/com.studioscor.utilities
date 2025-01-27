@@ -24,11 +24,11 @@ namespace StudioScor.Utilities
 
         public override void SetValue(float value)
         {
-			if (value == runtimeValue)
+			if (value == _runtimeValue)
 				return;
 
-			float prevValue = runtimeValue;
-			runtimeValue = value;
+			float prevValue = _runtimeValue;
+			_runtimeValue = value;
 
 			Callback_OnChangeValue(prevValue);
 		}

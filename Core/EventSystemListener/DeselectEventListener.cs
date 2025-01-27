@@ -86,18 +86,12 @@ namespace StudioScor.Utilities
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            switch (_inputType)
+            if (_inputType == EInputHandlerType.Button)
+                return;
+
+            if (EventSystem.current.currentSelectedGameObject == gameObject)
             {
-                case EInputHandlerType.Both:
-                    Deselect(eventData);
-                    break;
-                case EInputHandlerType.Button:
-                    break;
-                case EInputHandlerType.Pointer:
-                    Deselect(eventData);
-                    break;
-                default:
-                    break;
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
 

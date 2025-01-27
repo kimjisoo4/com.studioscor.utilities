@@ -11,9 +11,9 @@ namespace StudioScor.Utilities
             if (value == Vector2.zero)
                 return;
 
-            Vector2 prevValue = runtimeValue;
+            Vector2 prevValue = _runtimeValue;
 
-            runtimeValue += value;
+            _runtimeValue += value;
 
             Callback_OnChangeValue(prevValue);
         }
@@ -22,21 +22,21 @@ namespace StudioScor.Utilities
             if (value == Vector2.zero)
                 return;
 
-            Vector2 prevValue = runtimeValue;
+            Vector2 prevValue = _runtimeValue;
 
-            runtimeValue -= value;
+            _runtimeValue -= value;
 
             Callback_OnChangeValue(prevValue);
         }
 
         public override void SetValue(Vector2 value)
         {
-            if (runtimeValue.SafeEqauls(value))
+            if (_runtimeValue.SafeEqauls(value))
                 return;
 
-            Vector2 prevValue = runtimeValue;
+            Vector2 prevValue = _runtimeValue;
 
-            runtimeValue = value;
+            _runtimeValue = value;
 
             Callback_OnChangeValue(prevValue);
         }

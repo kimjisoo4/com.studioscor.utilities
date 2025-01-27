@@ -1,5 +1,4 @@
-﻿#if SCOR_ENABLE_VISUALSCRIPTING
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -21,20 +20,25 @@ namespace StudioScor.Utilities.Editor
             {
                 var inspectorXML = _inspectorXML.Instantiate();
 
-                var useUnityEvent = inspectorXML.Q<Toggle>("Toggle_UseUnityEvent");
-                useUnityEvent.label = $"Use {property.displayName.ToBold()}";
+                var useUnityEventProperty = property.FindPropertyRelative("_useUnityEvent");
+
+                var useUnityEventField = inspectorXML.Q<PropertyField>("PropertyField_UseUnityEvent");
+                useUnityEventField.label = $"Use {property.displayName.ToBold()}";
+
+                bool useUnityEvent = useUnityEventProperty.boolValue;
 
                 var unityEvent = inspectorXML.Q<PropertyField>("PropertyField_UnityEvent");
                 unityEvent.label = $"{property.displayName}";
-                unityEvent.BindProperty(property.FindPropertyRelative("_unityEvent"));
+                unityEvent.style.display = useUnityEvent ? DisplayStyle.Flex : DisplayStyle.None;
+                unityEvent.visible = useUnityEvent;
 
-                unityEvent.style.display = useUnityEvent.value ? DisplayStyle.Flex : DisplayStyle.None;
-                unityEvent.visible = useUnityEvent.value;
-
-                useUnityEvent.RegisterValueChangedCallback((use) =>
+                useUnityEventField.RegisterValueChangeCallback((useUnity) =>
                 {
-                    unityEvent.style.display = use.newValue ? DisplayStyle.Flex : DisplayStyle.None;
-                    unityEvent.visible = use.newValue;
+                    bool useUnityEvent = useUnityEventProperty.boolValue;
+
+                    unityEvent.style.display = useUnityEvent ? DisplayStyle.Flex : DisplayStyle.None;
+                    unityEvent.visible = useUnityEvent;
+
                 });
 
                 container.Add(inspectorXML);
@@ -44,4 +48,3 @@ namespace StudioScor.Utilities.Editor
         }
     }
 }
-#endif

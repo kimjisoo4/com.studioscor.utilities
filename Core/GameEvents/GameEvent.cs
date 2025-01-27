@@ -4,7 +4,7 @@ using System;
 
 namespace StudioScor.Utilities
 {
-    [CreateAssetMenu(fileName = "Event_", menuName = "StudioScor/Utilities/Event/New Event")]
+    [CreateAssetMenu(fileName = "Event_", menuName = "StudioScor/Utilities/Event/new Event")]
     public class GameEvent : BaseScriptableObject, ISerializationCallbackReceiver
     {
         [Header(" [ GameEvent ] ")]

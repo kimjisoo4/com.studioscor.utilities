@@ -47,6 +47,10 @@ namespace StudioScor.Utilities
 
             return colliection.ElementAt(UnityEngine.Random.Range(0, colliection.Count()));
         }
+        public static T[] RandomElements<T>(this IEnumerable<T> array, int count)
+        {
+            return array.ToArray().RandomElements(count);
+        }
         public static T[] RandomElements<T>(this T[] array, int count)
         {
             if (count > array.Count())

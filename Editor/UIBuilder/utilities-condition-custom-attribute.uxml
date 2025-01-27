@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-content: auto; justify-content: flex-end;">
+        <uie:PropertyField name="PropertyField_Field" style="flex-grow: 1; margin-right: 0; margin-top: 0; margin-bottom: 0; margin-left: 0;" />
+    </ui:VisualElement>
+</ui:UXML>

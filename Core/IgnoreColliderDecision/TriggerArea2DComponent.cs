@@ -93,7 +93,7 @@ namespace StudioScor.Utilities
         private bool _shouldStayTrigger;
 
         #region EDITOR ONLY
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         private void DrawSphere(Vector3 position, Color color)
         {
 #if UNITY_EDITOR

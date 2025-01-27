@@ -1,6 +1,5 @@
-﻿using Cinemachine;
-using System;
-using System.Collections;
+﻿#if SCOR_ENABLE_CINEMACHINE
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace StudioScor.Utilities
@@ -42,3 +41,4 @@ namespace StudioScor.Utilities
         }
     }
 }
+#endif

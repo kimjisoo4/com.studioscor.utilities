@@ -20,7 +20,7 @@ namespace StudioScor.Utilities
                 {
                     foreach (var state in states)
                     {
-                        if (state.Value == currentState)
+                        if (state.Value == _currentState)
                         {
                             currentStateKey = state.Key;
 
@@ -49,7 +49,7 @@ namespace StudioScor.Utilities
         public void SetDefaultState(TKey key, TState state)
         {
             defaultStateKey = key;
-            defaultState = state;
+            _defaultState = state;
 
             if(!states.ContainsKey(key))
             {

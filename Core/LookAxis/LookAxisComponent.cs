@@ -44,7 +44,7 @@ namespace StudioScor.InputSystem
 #endif
         }
 
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         protected virtual void DrawGizmos()
         {
 #if UNITY_EDITOR

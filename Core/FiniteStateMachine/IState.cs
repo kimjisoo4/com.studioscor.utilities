@@ -4,8 +4,7 @@ namespace StudioScor.Utilities
 {
     public interface IState
     {
-        public event UnityAction<IState> OnEnteredState;
-        public event UnityAction<IState> OnExitedState;
+        public delegate void StateEventHandler(IState state);
 
         public bool TryEnterState();
         public bool TryExitState();
@@ -13,5 +12,8 @@ namespace StudioScor.Utilities
         public bool CanExitState();
         public void ForceEnterState();
         public void ForceExitState(); 
+
+        public event StateEventHandler OnEnteredState;
+        public event StateEventHandler OnExitedState;
     }
 }

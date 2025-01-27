@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
         [HideInInspector] public virtual Object Context { get; set; } = null;
 
 
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         protected virtual void Log(object log, string color = SUtility.STRING_COLOR_GREY)
         {
 #if UNITY_EDITOR
@@ -20,7 +20,7 @@ namespace StudioScor.Utilities
 #endif
         }
 
-        [Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
         protected virtual void LogError(object log, string color = SUtility.STRING_COLOR_GREY)
         {
 #if UNITY_EDITOR

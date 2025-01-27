@@ -1,14 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace StudioScor.Utilities
 {
-
-
-
     public class SelectEventListener : BaseMonoBehaviour, ISelectHandler, IPointerEnterHandler, ISelectEventListener
     {
         [System.Serializable]
@@ -98,19 +94,10 @@ namespace StudioScor.Utilities
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            switch (_inputType)
-            {
-                case EInputHandlerType.Both:
-                    EventSystem.current.SetSelectedGameObject(gameObject);
-                    break;
-                case EInputHandlerType.Button:
-                    break;
-                case EInputHandlerType.Pointer:
-                    Select(eventData);
-                    break;
-                default:
-                    break;
-            }
+            if (_inputType == EInputHandlerType.Button)
+                return;
+
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         private void Select(BaseEventData eventData)
