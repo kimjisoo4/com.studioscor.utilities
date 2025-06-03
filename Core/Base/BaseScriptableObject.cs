@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 
-using System.Diagnostics;
-using UnityEngine.SceneManagement;
-
 
 #if UNITY_EDITOR
 using UnityEditor;

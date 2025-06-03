@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.Pool;
+#if SCOR_ENABLE_VISUALSCRIPTING
+using Unity.VisualScripting;
 
-
+#endif
 namespace StudioScor.Utilities
 {
+#if SCOR_ENABLE_VISUALSCRIPTING
+    [IncludeInSettings(true)]
+#endif
+    [System.Serializable]
     public class SimplePool
     {
         public SimplePool(PooledObject pooledObject, Transform container = null, int startSize = 5, int capacity = 10, int maxSize = 20)
@@ -22,9 +28,10 @@ namespace StudioScor.Utilities
                 _pool.Release(startPooledObject);
             }
         }
+        [Header(" [ Pool ] ")]
+        [SerializeField] private PooledObject _pooledObject;
+        [SerializeField] private Transform _container;
 
-        private readonly PooledObject _pooledObject;
-        private readonly Transform _container;
         private readonly ObjectPool<PooledObject> _pool;
 
         public PooledObject PooledObject => _pooledObject;

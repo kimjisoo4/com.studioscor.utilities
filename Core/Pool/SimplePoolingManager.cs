@@ -28,9 +28,9 @@ namespace StudioScor.Utilities
         [SerializeField] private List<FPooledObject> pooledObjects;
         private readonly Dictionary<PooledObject, SimplePool> pools = new();
 
-        protected override void Setup()
+        protected override void OnInit()
         {
-            base.Setup();
+            base.OnInit();
 
             foreach (var pooledObject in pooledObjects)
             {

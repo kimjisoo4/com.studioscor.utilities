@@ -1,17 +1,23 @@
-﻿using UnityEditor;
+﻿using System.Linq;
+using System.Reflection;
+using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace StudioScor.Utilities.Editor
 {
-    [CustomPropertyDrawer(typeof(UnitAttribute))]
+    [CustomPropertyDrawer(typeof(SUnitAttribute))]
     public class UnitAttributeDrawer : PropertyDrawer
     {
         public VisualTreeAsset _inspectorXML;
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var container = new VisualElement();
+            var container = base.CreatePropertyGUI(property);
+
+            if (container is null)
+                container = new();
 
             _inspectorXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{UtilitiesPathUtility.InspectorPath}utilities-unit-custom-attribute.uxml");
 
@@ -22,7 +28,7 @@ namespace StudioScor.Utilities.Editor
                 var propertyField = inspectorXML.Q<PropertyField>("PropertyField_Field");
                 propertyField.BindProperty(property);
 
-                UnitAttribute unitAttribute = (UnitAttribute)attribute;
+                SUnitAttribute unitAttribute = (SUnitAttribute)attribute;
                 var unitLabel = inspectorXML.Q<Label>("Label_Unit");
                 unitLabel.text = unitAttribute.Unit;
 
@@ -35,5 +41,6 @@ namespace StudioScor.Utilities.Editor
 
             return container;
         }
+
     }
 }

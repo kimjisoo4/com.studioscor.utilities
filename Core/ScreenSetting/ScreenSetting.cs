@@ -12,9 +12,9 @@ namespace StudioScor.Utilities
         #endregion
 
         [Header(" [ Screen Setting ] ")]
-        [SerializeField] private int fps = 60;
-        [SerializeField] private Vector2 resolution = new Vector2(1920, 1080);
-        [SerializeField] private FullScreenMode screenMode = FullScreenMode.ExclusiveFullScreen;
+        [SerializeField] private int _fps = 60;
+        [SerializeField] private Vector2 _resolution = new Vector2(1920, 1080);
+        [SerializeField] private FullScreenMode _screenMode = FullScreenMode.ExclusiveFullScreen;
 
         private int currentFPS;
         private Vector2 currentResolution;
@@ -32,9 +32,9 @@ namespace StudioScor.Utilities
         }
         public void OnScreenSetting()
         {
-            SetFPS(fps);
-            SetUseFullScreen(screenMode);
-            SetResolution(resolution);
+            SetFPS(_fps);
+            SetUseFullScreen(_screenMode);
+            SetResolution(_resolution);
         }
 
         public void Setup(int fps, Vector2 resolution, FullScreenMode mode)
@@ -51,7 +51,7 @@ namespace StudioScor.Utilities
 
             Application.targetFrameRate = currentFPS;
 
-            Callback_OnChangedFPS(prevFPS);
+            Invoke_OnChangedFPS(prevFPS);
         }
 
         public void SetUseFullScreen(FullScreenMode newMode)
@@ -61,7 +61,7 @@ namespace StudioScor.Utilities
 
             Screen.fullScreenMode = currentMode;
 
-            Callback_OnChangedUseFullScreen(prevMode);
+            Invoke_OnChangedUseFullScreen(prevMode);
         }
 
         public void SetResolution(Vector2 newResolution) 
@@ -71,24 +71,24 @@ namespace StudioScor.Utilities
 
             Screen.SetResolution((int)currentResolution.x, (int)currentResolution.y, currentMode);
 
-            Callback_OnChangedResolution(prevResolution);
+            Invoke_OnChangedResolution(prevResolution);
         }
 
         #region Callback
-        private void Callback_OnChangedUseFullScreen(FullScreenMode prevMode)
+        private void Invoke_OnChangedUseFullScreen(FullScreenMode prevMode)
         {
             Log($"On Changed Use FullScreen - CurrentMode : {currentMode} PrevMode : {prevMode}");
 
             OnChangedFullScreen?.Invoke(this, currentMode, prevMode);
         }
 
-        private void Callback_OnChangedFPS(int prevFPS)
+        private void Invoke_OnChangedFPS(int prevFPS)
         {
             Log($"On Changed FSP - CurrentFPS : {currentFPS} PrevFPS : {prevFPS}");
 
             OnChangedFPS?.Invoke(this, currentFPS, prevFPS);
         }
-        private void Callback_OnChangedResolution(Vector2 prevResolution)
+        private void Invoke_OnChangedResolution(Vector2 prevResolution)
         {
             Log($"On Changed Resolution - CurrentResolution : X {currentResolution.x } /  Y {currentResolution.y} PrevResolution : X {currentResolution.x} /  Y {currentResolution.y}");
 

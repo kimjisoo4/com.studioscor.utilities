@@ -2,8 +2,30 @@
 
 namespace StudioScor.Utilities
 {
+
+
+
     public static partial class SUtility
     {
+        public static bool IsNullOrDestroyed(this System.Object obj)
+        {
+            if (object.ReferenceEquals(obj, null))
+                return true;
+
+            if (obj is UnityEngine.Object)
+                return (obj as UnityEngine.Object) == null;
+
+            return false;
+        }
+
+        public static GameObject GetGameObject(this Collider collider)
+        {
+            if (!collider)
+                return null;
+
+            return collider.attachedRigidbody ? collider.attachedRigidbody.gameObject : collider.gameObject;
+        }
+
         public static GameObject GetGameObjectByTypeInParentOrChildren<T>(this GameObject target)
         {
             var gameObject = target.GetGameObjectByTypeInParent<T>();
@@ -79,8 +101,20 @@ namespace StudioScor.Utilities
             if (!gameObject)
                 return default;
 
-            var component = gameObject.GetComponentInParent<T>();
+            var component = gameObject.GetComponentInChildren<T>();
             
+            if (component is not null)
+                return component;
+
+            return gameObject.GetComponentInParent<T>();
+        }
+        public static T GetComponentInChildrenOrParent<T>(this GameObject gameObject)
+        {
+            if (!gameObject)
+                return default;
+
+            var component = gameObject.GetComponentInParent<T>();
+
             if (component is not null)
                 return component;
 
@@ -98,9 +132,19 @@ namespace StudioScor.Utilities
 
             return component is not null;
         }
+        public static bool TryGetComponentInChildrenOrParent<T>(this GameObject gameObject, out T component)
+        {
+            component = gameObject.GetComponentInChildrenOrParent<T>();
+
+            return component is not null;
+        }
         public static bool TryGetComponentInParentOrChildren<T>(this Component target, out T component)
         {
             return target.gameObject.TryGetComponentInParentOrChildren(out component);
+        }
+        public static bool TryGetComponentInChildrenOrParent<T>(this Component target, out T component)
+        {
+            return target.gameObject.TryGetComponentInChildrenOrParent(out component);
         }
 
 

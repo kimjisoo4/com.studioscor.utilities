@@ -17,7 +17,7 @@ namespace StudioScor.Utilities
 
 		[Header(" [ Variable Object ]  ")]
 		[SerializeField] protected T _initialValue;
-		[SerializeField][Readonly] protected T _runtimeValue;
+		[SerializeField][SReadonly] protected T _runtimeValue;
 		[SerializeField] private ESaveMode _saveMode = ESaveMode.None;
 
 		public T InitialValue => _initialValue;

@@ -10,7 +10,7 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Default State ] ")]
         [SerializeField][FormerlySerializedAs("defaultState")] protected T _defaultState;
-        [SerializeField][Readonly] protected T _currentState;
+        [SerializeField][SReadonly] protected T _currentState;
         protected T _prevState;
         protected T _nextState;
 

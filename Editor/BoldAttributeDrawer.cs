@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace StudioScor.Utilities.Editor
 {
-    [CustomPropertyDrawer(typeof(FontStyleAttribute))]
+    [CustomPropertyDrawer(typeof(SFontStyleAttribute))]
     public class BoldAttributeDrawer : PropertyDrawer
     {
         public VisualTreeAsset _inspectorXML;
@@ -24,7 +24,7 @@ namespace StudioScor.Utilities.Editor
                 var propertyField = inspectorXML.Q<PropertyField>("PropertyField_Field");
                 propertyField.BindProperty(property);
 
-                FontStyleAttribute condition = (FontStyleAttribute)attribute;
+                SFontStyleAttribute condition = (SFontStyleAttribute)attribute;
 
                 FontStyle fontStyle = condition.UseBold ? condition.UseItalic ? FontStyle.BoldAndItalic : FontStyle.Bold : FontStyle.Normal;
 

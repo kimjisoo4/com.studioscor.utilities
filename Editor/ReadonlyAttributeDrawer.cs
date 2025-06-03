@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace StudioScor.Utilities.Editor
 {
-    [CustomPropertyDrawer(typeof(ReadonlyAttribute))]
+    [CustomPropertyDrawer(typeof(SReadonlyAttribute))]
     public class ReadonlyAttributeDrawer : PropertyDrawer
     {
         public VisualTreeAsset _inspectorXML;
@@ -24,7 +24,7 @@ namespace StudioScor.Utilities.Editor
                 var propertyField = inspectorXML.Q<PropertyField>("PropertyField_Field");
                 propertyField.BindProperty(property);
 
-                ReadonlyAttribute readonlyAttribte = (ReadonlyAttribute)attribute;
+                SReadonlyAttribute readonlyAttribte = (SReadonlyAttribute)attribute;
 
                 if (readonlyAttribte.ReadonlyWhenPlaying)
                 {

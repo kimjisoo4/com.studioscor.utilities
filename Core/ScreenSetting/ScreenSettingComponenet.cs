@@ -1,38 +1,33 @@
 ﻿using UnityEngine;
 
-#if UNITY_EDITOR
-#endif
-
 namespace StudioScor.Utilities
 {
     public class ScreenSettingComponenet : BaseMonoBehaviour
     {
         [Header(" [ Screen Setting Component ]")]
-        [SerializeField] private ScreenSetting screenSetting;
+        [SerializeField] private ScreenSetting _screenSetting;
 
-        [SerializeField] private bool useOverrideSetting = false;
-        [SerializeField][SCondition(nameof(useOverrideSetting))] private int fps = 60;
-        [SerializeField][SCondition(nameof(useOverrideSetting))] private Vector2 resolution = new Vector3(1920, 1080);
-        [SerializeField][SCondition(nameof(useOverrideSetting))] private FullScreenMode screenMode = FullScreenMode.ExclusiveFullScreen;
+        [SerializeField] private bool _useOverrideSetting = false;
+        [SerializeField][SCondition(nameof(_useOverrideSetting))] private int _fps = 60;
+        [SerializeField][SCondition(nameof(_useOverrideSetting))] private Vector2Int _resolution = new Vector2Int(1920, 1080);
+        [SerializeField][SCondition(nameof(_useOverrideSetting))] private FullScreenMode _screenMode = FullScreenMode.ExclusiveFullScreen;
 
         private void Awake()
         {
-            if (screenSetting)
+            if (_screenSetting && !_useOverrideSetting)
             {
-                if (useOverrideSetting)
-                {
-                    Log("Override Screen Setting.");
+                Log("On Screen Setting.");
 
-                    screenSetting.Setup(fps, resolution, screenMode);
-                }
-                else
-                {
-                    Log("On Screen Setting.");
+                _screenSetting.OnScreenSetting();
+            }
+            else
+            {
+                Log("Override Screen Setting.");
 
-                    screenSetting.OnScreenSetting();
-                }
+                Application.targetFrameRate = _fps;
+                Screen.fullScreenMode = _screenMode;
+                Screen.SetResolution(_resolution.x, _resolution.y, _screenMode);
             }
         }
     }
-
 }

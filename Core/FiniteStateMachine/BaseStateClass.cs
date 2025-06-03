@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 
 namespace StudioScor.Utilities
 {
@@ -20,6 +19,16 @@ namespace StudioScor.Utilities
         protected virtual void Reset()
         {
 #if UNITY_EDITOR
+            enabled = false;
+#endif
+        }
+
+        protected virtual void OnValidate()
+        {
+#if UNITY_EDITOR
+            if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+                return;
+
             enabled = false;
 #endif
         }

@@ -5,24 +5,55 @@ namespace StudioScor.Utilities
     public class ScreenFPS : BaseStateMono
     {
         [Header(" [ Screen FPS ] ")]
-        [SerializeField][SReadOnlyWhenPlaying] private bool useRight = false;
+        [SerializeField] private bool _verticalFlip = false;
 
-        [SerializeField] private float high = 50f;
-        [SerializeField] private float low = 30f;
-        
-        private float fps;
-        private Rect rect;
+        [SerializeField][SUnit("fps")] private float _high = 0f;
+        [SerializeField][SUnit("fps")] private float _low = 10f;
 
-        private GUIStyle lowStyle;
-        private GUIStyle normalStyle;
-        private GUIStyle highStyle;
+        [Header(" GUI ")]
+        [SerializeField][SUnit("pixel")] private Vector2 _position = new Vector2(10f, 10f);
+        [SerializeField][SUnit("pixel")] private Vector2 _size = new Vector2(100, 20);
+        [SerializeField][SUnit("point")] private int _fontSize = 12;
+
+        private float _fps;
+        private Rect _rect;
+
+        private GUIStyle _lowStyle;
+        private GUIStyle _normalStyle;
+        private GUIStyle _highStyle;
+
+        private bool _prevVerticalFlip;
+        private Vector2 _prevPosition;
+        private Vector2 _prevSize;
+        private int _prevFontSize;
+
+
+        protected override void OnValidate()
+        {
+#if UNITY_EDITOR
+            base.OnValidate();
+
+            if(Application.isPlaying && didAwake)
+            {
+                if (_prevVerticalFlip != _verticalFlip || _position != _prevPosition || _size != _prevSize || _fontSize != _prevFontSize)
+                {
+                    _prevVerticalFlip = _verticalFlip;
+                    _prevPosition = _position;
+                    _prevSize = _size;
+                    _prevFontSize = _fontSize;
+
+                    UpdateGUI();
+                }
+            }
+#endif
+        }
 
 
         private void Awake()
         {
-            lowStyle = new();
-            highStyle = new();
-            normalStyle = new();
+            _lowStyle = new();
+            _highStyle = new();
+            _normalStyle = new();
         }
 
         void Start()
@@ -33,52 +64,69 @@ namespace StudioScor.Utilities
 
         protected override void EnterState()
         {
-            highStyle.normal.textColor = Color.green;
-            normalStyle.normal.textColor = Color.white;
-            lowStyle.normal.textColor = Color.red;
+            UpdateGUI();
+        }
 
-            rect = new Rect(10, 10, 100, 20);
+        private void UpdateGUI()
+        {
+            _highStyle.normal.textColor = Color.green;
+            _normalStyle.normal.textColor = Color.white;
+            _lowStyle.normal.textColor = Color.red;
 
-            if (useRight)
+            _rect = new Rect(_position, _size);
+
+            _highStyle.fontSize = _fontSize;
+            _normalStyle.fontSize = _fontSize;
+            _lowStyle.fontSize = _fontSize;
+
+            if (_verticalFlip)
             {
-                rect.x = Screen.width - rect.x - rect.width;
+                _rect.x = Screen.width - _rect.x - _rect.width;
 
-                highStyle.alignment = TextAnchor.MiddleRight;
-                normalStyle.alignment = TextAnchor.MiddleRight;
-                lowStyle.alignment = TextAnchor.MiddleRight;
+                _highStyle.alignment = TextAnchor.MiddleRight;
+                _normalStyle.alignment = TextAnchor.MiddleRight;
+                _lowStyle.alignment = TextAnchor.MiddleRight;
             }
             else
             {
-                highStyle.alignment = TextAnchor.MiddleLeft;
-                normalStyle.alignment = TextAnchor.MiddleLeft;
-                lowStyle.alignment = TextAnchor.MiddleLeft;
+                _highStyle.alignment = TextAnchor.MiddleLeft;
+                _normalStyle.alignment = TextAnchor.MiddleLeft;
+                _lowStyle.alignment = TextAnchor.MiddleLeft;
             }
         }
 
         private void Update()
         {
-            fps += (Time.deltaTime - fps) * 0.1f;
+            _fps += (Time.deltaTime - _fps) * 0.1f;
         }
 
         private void OnGUI()
         {
-            float fps = 1.0f / this.fps;
+            float targetFPS = Application.targetFrameRate;
+
+            float fps = 1.0f / _fps;
             GUIStyle guiStyle;
 
-            if (fps.InRange(low, high))
+            if (fps.InRange(targetFPS - _low, targetFPS + _high))
             {
-                guiStyle = normalStyle;
-            }
-            else if (fps < low)
+                guiStyle = _normalStyle;
+            }   
+            else if (fps < _low)
             {
-                guiStyle = lowStyle;
+                guiStyle = _lowStyle;
             }
             else
             {
-                guiStyle = highStyle;
+                guiStyle = _highStyle;
             }
 
-            GUI.Label(rect, $"[ FPS : {fps:N2} ]", guiStyle);
+            var sb = SUtility.GetStringBuilder();
+
+            sb.Append("[ FPS : ");
+            sb.Append(fps.ToString("N2"));
+            sb.Append(" ]");
+
+            GUI.Label(_rect, sb.ToString(), guiStyle);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace StudioScor.Utilities
 {
+    [DefaultExecutionOrder(-1)]
     public class Singleton<T> : BaseMonoBehaviour where T : Singleton<T>
 	{
         [Header(" [ Singleton ] ")]
@@ -52,7 +52,7 @@ namespace StudioScor.Utilities
 
 		private void Initialization()
         {
-			Log("Initialization", SUtility.STRING_COLOR_GREEN);
+			Log(nameof(Initialization), SUtility.STRING_COLOR_GREEN);
 
 			if (_useDontDestroy)
             {
@@ -63,12 +63,11 @@ namespace StudioScor.Utilities
 				
 			instance = GetComponent<T>();
 
-			instance.Setup();
+			instance.OnInit();
 		}
 
-		protected virtual void Setup() 
+		protected virtual void OnInit() 
 		{
-			Log("Setup");
 		}
     }
 

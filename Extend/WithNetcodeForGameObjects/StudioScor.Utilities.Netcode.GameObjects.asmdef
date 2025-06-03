@@ -1,0 +1,25 @@
+{
+    "name": "StudioScor.Utilities.Netcode.GameObjects",
+    "rootNamespace": "StudioScor.Utilities.Netcode.GameObjects",
+    "references": [
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:1491147abca9d7d4bb7105af628b223e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "SCOR_ENABLE_NETCODE_GAMEOBJECTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.netcode.gameobjects",
+            "expression": "2.2.0",
+            "define": "SCOR_ENABLE_NETCODE_GAMEOBJECTS"
+        }
+    ],
+    "noEngineReferences": false
+}

@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 namespace StudioScor.Utilities.UnityBehavior
 {
+
+
     [Serializable, Unity.Properties.GeneratePropertyBag]
     [NodeDescription(name: "Get Random Position", story: "Set [Variable] to Get Random Position within an [Radius] m from the [Origin] ", category: "Action/StudioScor/Utilities", id: "utilities_getrandomposition")]
     public class GetRandomPosition : BaseAction

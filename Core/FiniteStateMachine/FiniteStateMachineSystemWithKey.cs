@@ -6,13 +6,13 @@ namespace StudioScor.Utilities
     [System.Serializable]
     public class FiniteStateMachineSystemWithKey<TKey, TState> : FiniteStateMachineSystem<TState> where TState : class,IState
     {
-        [SerializeField] private TKey defaultStateKey;
+        [SerializeField] private TKey defaultKey;
         
-        private TKey currentStateKey;
+        private TKey currentKey;
         
         private readonly Dictionary<TKey, TState> states = new();
         public IReadOnlyDictionary<TKey, TState> States => states;
-        public TKey CurrentStateKey
+        public TKey CurrentKey
         {
             get
             {
@@ -22,7 +22,7 @@ namespace StudioScor.Utilities
                     {
                         if (state.Value == _currentState)
                         {
-                            currentStateKey = state.Key;
+                            currentKey = state.Key;
 
                             needUpdateKey = false;
 
@@ -31,7 +31,7 @@ namespace StudioScor.Utilities
                     }
                 }
 
-                return currentStateKey;
+                return currentKey;
             }
         }
 
@@ -48,7 +48,7 @@ namespace StudioScor.Utilities
 
         public void SetDefaultState(TKey key, TState state)
         {
-            defaultStateKey = key;
+            defaultKey = key;
             _defaultState = state;
 
             if(!states.ContainsKey(key))

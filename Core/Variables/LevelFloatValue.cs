@@ -6,68 +6,85 @@ namespace StudioScor.Utilities
 	public class LevelFloatValue
     {
 		[Header(" [ Level Float Value ] ")]
-		[SerializeField] private float _Min = 0f;
-		[SerializeField] private float _Max = 1f;
-		[SerializeField] private int _Round = 1;
-		[SerializeField] private int _MaxLevel = 10;
-		[SerializeField] private bool _UseCurve = true;
-		[SerializeField] private AnimationCurve _Curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-		[SerializeField] private float[] _Values;
+		[SerializeField] private float _min = 0f;
+		[SerializeField] private float _max = 1f;
+		[SerializeField] private int _round = 1;
+		[SerializeField] private int _maxLevel = 10;
+		[SerializeField] private bool _useCurve = true;
+		[SCondition(nameof(_useCurve))][SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+		[SerializeField] private float[] _values;
 
-		public float Min => _Min;
-		public float Max => _Max;
+		public float Min => _min;
+		public float Max => _max;
 
 		public LevelFloatValue(float min, float max, int round = 1, int maxLevel = 10, bool useCurve = true, AnimationCurve curve = null)
         {
-			_Min = min;
-			_Max = max;
-			_Round = round;
-			_MaxLevel = maxLevel;
-			_UseCurve = useCurve;
+			_min = min;
+			_max = max;
+			_round = round;
+			_maxLevel = maxLevel;
+			_useCurve = useCurve;
 
 			if (curve is null)
-				_Curve = AnimationCurve.Linear(0, 0, 1, 1);
+				_curve = AnimationCurve.Linear(0, 0, 1, 1);
 			else
-				_Curve = curve;
+				_curve = curve;
 
 			UpdateValue();
 		}
 
 		public float Get(int level)
         {
-			if(_Values is null)
+			if(_values is null)
             {
 				UpdateValue();
             }
 
 			if (level < 0)
-				return _Min;
+				return _min;
 
-			if (level >= _MaxLevel)
-				return _Max;
+			if (level >= _maxLevel)
+				return _max;
 
-			return _Values[level];
+			return _values[level];
 		}
 
 		public void UpdateValue()
         {
-			if(_MaxLevel == 0 || !_UseCurve)
+			if(_maxLevel == 0)
             {
 				return;
             }
 
-			_Values = new float[_MaxLevel];
+			if(_useCurve)
+			{
+                _values = new float[_maxLevel];
 
-			_Values[0] = _Min;
-			float step = _MaxLevel - 1;
+                _values[0] = _min;
+                float step = _maxLevel - 1;
 
-			for(int i = 1; i < _MaxLevel; i++)
-            {
-				float value = i / step;
-				float lerp = _Curve.Evaluate(value);
+                for (int i = 1; i < _maxLevel; i++)
+                {
+                    float value = i / step;
+                    float lerp = _curve.Evaluate(value);
 
-				_Values[i] = System.MathF.Round(Mathf.Lerp(_Min, _Max, lerp), _Round);
-			}
+                    _values[i] = System.MathF.Round(Mathf.Lerp(_min, _max, lerp), _round);
+                }
+            }
+			else
+			{
+                _values = new float[_maxLevel];
+
+                _values[0] = _min;
+                float step = _maxLevel - 1;
+
+                for (int i = 1; i < _maxLevel; i++)
+                {
+                    float value = i / step;
+
+                    _values[i] = System.MathF.Round(Mathf.Lerp(_min, _max, value), _round);
+                }
+            }
         }
     }
 

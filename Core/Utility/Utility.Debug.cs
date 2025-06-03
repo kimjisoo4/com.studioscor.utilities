@@ -1,44 +1,11 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
-        public const string STRING_COLOR_DEFAULT = "#CCCCCCFF";
-        public const string STRING_COLOR_FAIL = "#e02929ff";
-        public const string STRING_COLOR_SUCCESS = "#29e029ff";
-
-        public const string STRING_COLOR_ADD = "grenn";
-        public const string STRING_COLOR_REMOVE = "red";
-        public const string STRING_COLOR_RED = "red";
-        public const string STRING_COLOR_YELLOW = "yellow";
-        public const string STRING_COLOR_BLUE = "blue";
-        public const string STRING_COLOR_GREEN = "green";
-        public const string STRING_COLOR_GREY = "grey";
-        public const string STRING_COLOR_WHITE = "white";
-
-        public static string ToBold(this string message)
-        {
-            var sb = new System.Text.StringBuilder();
-            sb.Append("<b>").Append(message).Append("</b>");
-            
-            return sb.ToString();
-        }
-        public static string ToColor(this string message, string color)
-        {
-            var sb = new System.Text.StringBuilder();
-            sb.Append("<color=").Append(color).Append(">").Append(message).Append("</color>");
-
-            return sb.ToString();
-        }
-        public static string ToColor(this string message, Color color)
-        {
-            var sb = new System.Text.StringBuilder();
-            sb.Append("<color=#").Append(ColorUtility.ToHtmlStringRGBA(color)).Append(">").Append(message).Append("</color>");
-
-            return sb.ToString();
-        }
 
         public static class Debug
         {
@@ -63,7 +30,7 @@ namespace StudioScor.Utilities
                 return v;
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void Log(object message, Object context = null, string color = STRING_COLOR_DEFAULT)
             {
                 if (!UseDebug)
@@ -72,21 +39,21 @@ namespace StudioScor.Utilities
                 UnityEngine.Debug.Log(message.ToString().ToColor(color), context);
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void LogError(object message, Object context = null, string color = STRING_COLOR_RED)
             {
                 UnityEngine.Debug.LogError(message.ToString().ToColor(color), context);
             }
 
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawRay(Vector3 start, Vector3 direction, Color color = default, float duration = 0f, bool depthTest = true)
             {
                 color = (color == default) ? Color.white : color;
 
                 UnityEngine.Debug.DrawRay(start, direction, color, duration, depthTest);
             }
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawLine(Vector3 start, Vector3 end, Color color = default, float duration = 0f, bool depthTest = true)
             {
                 color = (color == default) ? Color.white : color;
@@ -95,21 +62,21 @@ namespace StudioScor.Utilities
             }
 
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugPoint(Vector3 position, float scale = 1.0f, Color color = default, float duration = 0, bool depthTest = true)
             {
                 color = (color == default(Color)) ? Color.white : color;
 
-                
+
                 DrawRay(position + (Vector3.up * (scale * 0.5f)), -Vector3.up * scale, color, duration, depthTest);
-                
+
                 DrawRay(position + (Vector3.right * (scale * 0.5f)), -Vector3.right * scale, color, duration, depthTest);
-                
+
                 DrawRay(position + (Vector3.forward * (scale * 0.5f)), -Vector3.forward * scale, color, duration, depthTest);
             }
 
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugBounds(Bounds bounds, Color color = default, float duration = 0, bool depthTest = true)
             {
                 Vector3 center = bounds.center;
@@ -144,7 +111,7 @@ namespace StudioScor.Utilities
                 DrawLine(lbd, rdb, color, duration, depthTest);
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugLocalCube(Transform transform, Vector3 size, Vector3 center = default, Color color = default, float duration = 0, bool depthTest = true)
             {
                 Vector3 lbb = transform.TransformPoint(center + ((-size) * 0.5f));
@@ -175,7 +142,7 @@ namespace StudioScor.Utilities
                 DrawLine(rbf, ruf, color, duration, depthTest);
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugCircle(Vector3 position, Vector3 upAxis, float radius, Color color = default, float duration = 0, bool depthTest = true)
             {
                 Vector3 up = upAxis.normalized * radius;
@@ -214,7 +181,7 @@ namespace StudioScor.Utilities
                 }
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugWireSphere(Vector3 position, float radius = 1.0f, Color color = default, float duration = 0, bool depthTest = true)
             {
                 float angle = 10.0f;
@@ -244,7 +211,7 @@ namespace StudioScor.Utilities
                 }
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugCylinder(Vector3 start, Vector3 end, float radius, Color color = default, float duration = 0, bool depthTest = true)
             {
                 Vector3 up = (end - start).normalized * radius;
@@ -272,7 +239,7 @@ namespace StudioScor.Utilities
                 DrawLine(end - forward, end + forward, color, duration, depthTest);
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugCone(Vector3 position, Vector3 direction, float angle, Color color = default, float duration = 0, bool depthTest = true)
             {
                 float length = direction.magnitude;
@@ -296,18 +263,18 @@ namespace StudioScor.Utilities
                 DrawRay(position, Vector3.Slerp(forward, right, angle / 90.0f).normalized * dist, color, duration, depthTest);
                 DrawRay(position, Vector3.Slerp(forward, -right, angle / 90.0f).normalized * dist, color, duration, depthTest);
 
-                DebugCircle(position + forward, direction,(forward - (slerpedVector.normalized * dist)).magnitude, color, duration, depthTest);
+                DebugCircle(position + forward, direction, (forward - (slerpedVector.normalized * dist)).magnitude, color, duration, depthTest);
                 DebugCircle(position + (forward * 0.5f), direction, ((forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude, color, duration, depthTest);
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugArrow(Vector3 position, Vector3 direction, Color color = default, float duration = 0, bool depthTest = true)
             {
                 DrawRay(position, direction, color, duration, depthTest);
                 DebugCone(position + direction, -direction * 0.333f, 15, color, duration, depthTest);
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DebugCapsule(Vector3 start, Vector3 end, float radius, Color color = default, float duration = 0, bool depthTest = true)
             {
                 Vector3 up = (end - start).normalized * radius;
@@ -323,7 +290,7 @@ namespace StudioScor.Utilities
 
                 //Radial circles
                 DebugCircle(start, up, radius, color, duration, depthTest);
-                DebugCircle(end, -up, radius, color,  duration, depthTest);
+                DebugCircle(end, -up, radius, color, duration, depthTest);
 
                 //Side lines
                 DrawLine(start + right, end + right, color, duration, depthTest);
@@ -351,8 +318,8 @@ namespace StudioScor.Utilities
 
 
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
-            public static void DrawSliceSphere(Vector3 position, Quaternion rotation, float radius, float horizontalAngle, float verticalAngle,Color color, float duration)
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
+            public static void DrawSliceSphere(Vector3 position, Quaternion rotation, float radius, float horizontalAngle, float verticalAngle, Color color, float duration)
             {
                 if (!UseDebug)
                     return;
@@ -364,16 +331,16 @@ namespace StudioScor.Utilities
 
                 UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(0, -halfHorizontalAngle, 0) * endDistance, color, duration);
                 UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(0, halfHorizontalAngle, 0) * endDistance, color, duration);
-                  
+
                 UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(-halfVerticalAngle, 0, 0) * endDistance, color, duration);
                 UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(halfVerticalAngle, 0, 0) * endDistance, color, duration);
 
-                UnityEngine.Debug.DrawLine(position, position +rotation * Quaternion.Euler(halfVerticalAngle, -halfHorizontalAngle, 0) * endDistance, color, duration);
-                UnityEngine.Debug.DrawLine(position, position +rotation * Quaternion.Euler(halfVerticalAngle, halfHorizontalAngle, 0) * endDistance, color, duration);
-                UnityEngine.Debug.DrawLine(position, position +rotation * Quaternion.Euler(halfVerticalAngle, 0, 0) * endDistance, color, duration);
+                UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(halfVerticalAngle, -halfHorizontalAngle, 0) * endDistance, color, duration);
+                UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(halfVerticalAngle, halfHorizontalAngle, 0) * endDistance, color, duration);
+                UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(halfVerticalAngle, 0, 0) * endDistance, color, duration);
 
-                UnityEngine.Debug.DrawLine(position, position +rotation * Quaternion.Euler(-halfVerticalAngle, -halfHorizontalAngle, 0) * endDistance, color, duration);
-                UnityEngine.Debug.DrawLine(position, position +rotation * Quaternion.Euler(-halfVerticalAngle, halfHorizontalAngle, 0) * endDistance, color, duration);
+                UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(-halfVerticalAngle, -halfHorizontalAngle, 0) * endDistance, color, duration);
+                UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(-halfVerticalAngle, halfHorizontalAngle, 0) * endDistance, color, duration);
                 UnityEngine.Debug.DrawLine(position, position + rotation * Quaternion.Euler(-halfVerticalAngle, 0, 0) * endDistance, color, duration);
 
 
@@ -381,7 +348,7 @@ namespace StudioScor.Utilities
 
                 float horizontalTickAngle = horizontalAngle / horizontalCount;
 
-                
+
 
                 for (int i = 1; i <= horizontalCount; i++)
                 {
@@ -393,7 +360,7 @@ namespace StudioScor.Utilities
                         Vector3 startPosition = position + rotation * Quaternion.Euler(verticalAngle * j * 0.5f, startAngle, 0) * endDistance;
                         Vector3 endPosition = position + rotation * Quaternion.Euler(verticalAngle * j * 0.5f, endAngle, 0) * endDistance;
 
-                        UnityEngine.Debug.DrawLine(startPosition,endPosition,color, duration);
+                        UnityEngine.Debug.DrawLine(startPosition, endPosition, color, duration);
                     }
                 }
 
@@ -415,7 +382,7 @@ namespace StudioScor.Utilities
                 }
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawCone(Vector3 position, Quaternion rotation, float distance, float angle, Color color, float duration = 0f)
             {
                 if (!UseDebug)
@@ -461,7 +428,7 @@ namespace StudioScor.Utilities
 
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawCone(Vector3 position, Vector3 direction, float distance, float angle, Color color, float duration = 0f)
             {
                 if (!UseDebug)
@@ -472,7 +439,7 @@ namespace StudioScor.Utilities
 
 
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawCapsule(Vector4 start, Vector4 end, float radius, Color color, float duration = 0f)
             {
                 if (!UseDebug)
@@ -516,7 +483,7 @@ namespace StudioScor.Utilities
 
                 DrawSphere(end, radius, color, duration);
             }
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawCapsule(Vector4 pos, float radius, Vector4 direction, float distance, Color color, float duration = 0f)
             {
                 if (!UseDebug)
@@ -557,7 +524,7 @@ namespace StudioScor.Utilities
 
 
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawSphere(Vector4 pos, float radius, Color color, float duration = 0f)
             {
                 if (!UseDebug)
@@ -580,7 +547,7 @@ namespace StudioScor.Utilities
                 }
             }
 
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawPoint(Vector4 pos, Color color, float scale = 1f, float duration = 1f)
             {
                 if (!UseDebug)
@@ -597,7 +564,7 @@ namespace StudioScor.Utilities
                 UnityEngine.Debug.DrawLine(sY, eY, color, duration);
                 UnityEngine.Debug.DrawLine(sZ, eZ, color, duration);
             }
-            [System.Diagnostics.Conditional("UNITY_EDITOR")]
+            [System.Diagnostics.Conditional(DEFINE_UNITY_EDITOR)]
             public static void DrawPoint(Vector4 pos, float scale = 1f, float duration = 1f)
             {
                 if (!UseDebug)
@@ -616,6 +583,4 @@ namespace StudioScor.Utilities
             }
         }
     }
-    
-
 }

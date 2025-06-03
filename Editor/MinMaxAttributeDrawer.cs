@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace StudioScor.Utilities.Editor
 {
-    [CustomPropertyDrawer(typeof(MinMaxAttribute))]
+    [CustomPropertyDrawer(typeof(SMinMaxAttribute))]
     public class MinMaxAttributeDrawer : PropertyDrawer
     {
         public VisualTreeAsset _inspectorXML;
@@ -27,7 +27,7 @@ namespace StudioScor.Utilities.Editor
                 var vector = inspectorXML.Q<Vector2Field>("Vector2Field_Value");
                 vector.BindProperty(property);
 
-                MinMaxAttribute minmax = (MinMaxAttribute)attribute;
+                SMinMaxAttribute minmax = (SMinMaxAttribute)attribute;
 
                 minmaxSlider.lowLimit = minmax.Min;
                 minmaxSlider.highLimit = minmax.Max;

@@ -1,0 +1,36 @@
+{
+    "name": "StudioScor.Utilities.Netcode.GameObjects.VisualScripting",
+    "rootNamespace": "StudioScor.Utilities.Netcode.GameObjects.VisualScripting",
+    "references": [
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:3e9e89fe9ac80204bb8307921a80ee26",
+        "GUID:86e142e42ae369045bd4eecea14b3e0a",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:ea715009a4efd4c6cbc85be3ae097dd3",
+        "GUID:315d634a9ac6d460a9515f5a56be6311"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "SCOR_ENABLE_VISUALSCRIPTING",
+        "SCOR_ENABLE_NETCODE_GAMEOBJECTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.visualscripting",
+            "expression": "1.9.5",
+            "define": "SCOR_ENABLE_VISUALSCRIPTING"
+        },
+        {
+            "name": "com.unity.netcode.gameobjects",
+            "expression": "2.2.0",
+            "define": "SCOR_ENABLE_NETCODE_GAMEOBJECTS"
+        }
+    ],
+    "noEngineReferences": false
+}

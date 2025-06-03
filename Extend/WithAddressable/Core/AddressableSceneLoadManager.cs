@@ -38,7 +38,14 @@ namespace StudioScor.Utilities
 
         public event SceneLoadHandler OnStartedSceneLoad;
         public event SceneLoadHandler OnFinishedSceneLoad;
-         
+
+        protected override void OnInit()
+        {
+            base.OnInit();
+
+            if (_Start)
+                ForceLoadScene(_Start);
+        }
 
         private void Update()
         {
@@ -57,11 +64,7 @@ namespace StudioScor.Utilities
                 }
             }
         }
-        protected override void Setup()
-        {
-            if (_Start)
-                ForceLoadScene(_Start);
-        }
+        
 
         public void ForceLoadScene(AddressableSceneContainer targetSceneContainer)
         {

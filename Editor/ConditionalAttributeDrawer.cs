@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace StudioScor.Utilities.Editor
 {
-    [CustomPropertyDrawer(typeof(ConditionalAttribute))]
+    [CustomPropertyDrawer(typeof(SConditionalAttribute))]
     public class ConditionalAttributeDrawer : PropertyDrawer
     {
         public VisualTreeAsset _inspectorXML;
@@ -23,7 +23,7 @@ namespace StudioScor.Utilities.Editor
                 var propertyField = inspectorXML.Q<PropertyField>("PropertyField_Field");
                 propertyField.BindProperty(property);
 
-                ConditionalAttribute condition = (ConditionalAttribute)attribute;
+                SConditionalAttribute condition = (SConditionalAttribute)attribute;
 
                 bool enabled = true;
                 string propertyPath = property.propertyPath;

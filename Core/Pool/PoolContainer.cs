@@ -7,11 +7,11 @@ namespace StudioScor.Utilities
     public class PoolContainer : BaseScriptableObject
     {
         [Header(" [ Simple Pool Container ] ")]
-        [SerializeField] private PooledObject simplePoolObject;
-        [SerializeField] private GameObject container;
-        [SerializeField] private int startSize = 5;
-        [SerializeField] private int capacity = 10;
-        [SerializeField] private int maxSize = 20;
+        [SerializeField] private PooledObject _pooledObject;
+        [SerializeField] private GameObject _container;
+        [SerializeField] private int _startSize = 5;
+        [SerializeField] private int _capacity = 10;
+        [SerializeField] private int _maxSize = 20;
 
         private GameObject _instContainer;
         private SimplePool _simplePool;
@@ -26,9 +26,9 @@ namespace StudioScor.Utilities
             {
                 SetContainer(newContainer.gameObject);
             }
-            else if(container)
+            else if(_container)
             {
-                SetContainer(Instantiate(container));
+                SetContainer(Instantiate(_container));
             }
             else
             {
@@ -50,7 +50,7 @@ namespace StudioScor.Utilities
                 _simplePool = null;
             }
 
-            _simplePool = new SimplePool(simplePoolObject, _instContainer.transform, startSize, capacity, maxSize);
+            _simplePool = new SimplePool(_pooledObject, _instContainer.transform, _startSize, _capacity, _maxSize);
         }
 
         public PooledObject Get()
