@@ -92,6 +92,7 @@ namespace StudioScor.Utilities
         [Header(" [ Animation Player ] ")]
         [SerializeField] private Animator _animator;
         [SerializeField] private string _defaultState = "Empty";
+        [SerializeField] private int _layer = 0;
 
         private Events _currentAnimationEvents;
         private Events _nextAnimationEvents;
@@ -118,7 +119,6 @@ namespace StudioScor.Utilities
         
         private EAnimationState _state;
 
-        private int _layer = 0;
         private int _currentStateHash;
 
         private bool _useFixedTransition;
@@ -135,7 +135,6 @@ namespace StudioScor.Utilities
         private bool _nextUseFixedTransition;
         private float _nextFadeIn;
         private float _nextOffset;
-        private int _nextLayer;
 
         private bool _wasFauiled;
         private readonly List<string> _notifyStates = new();
@@ -144,6 +143,7 @@ namespace StudioScor.Utilities
         public bool IsPlaying => _isPlaying;
         public bool IsFinished => _isFinished;
         public float NormalizedTime => _normalizedTime;
+        public int Layer => _layer;
         public EAnimationState State => _state;
 
 
@@ -379,14 +379,14 @@ namespace StudioScor.Utilities
             }
         }
 
-        public void Play(string stateName, float fadeIn = 0.2f, float offset = 0f, int layer = 0, bool fixedTransition = false)
+        public void Play(string stateName, float fadeIn = 0.2f, float offset = 0f, bool fixedTransition = false)
         {
             int hash = Animator.StringToHash(stateName);
 
-            PlayAnimation(hash, fadeIn, offset, layer, fixedTransition);
+            PlayAnimation(hash, fadeIn, offset, fixedTransition);
         }
 
-        public void Play(int stateHash, float fadeIn = 0.2f, float offset = 0f, int layer = 0, bool fixedTransition = false)
+        public void Play(int stateHash, float fadeIn = 0.2f, float offset = 0f, bool fixedTransition = false)
         {
             if (!_animator)
             {
@@ -398,10 +398,10 @@ namespace StudioScor.Utilities
                 }
             }
 
-            PlayAnimation(stateHash, fadeIn, offset, layer, fixedTransition);
+            PlayAnimation(stateHash, fadeIn, offset, fixedTransition);
         }
 
-        private void PlayAnimation(int stateHash, float fadeIn, float offset, int layer, bool fixedTransition)
+        private void PlayAnimation(int stateHash, float fadeIn, float offset, bool fixedTransition)
         {
             if(_inEnded)
             {
@@ -415,7 +415,6 @@ namespace StudioScor.Utilities
                 _nextUseFixedTransition = fixedTransition;
                 _nextFadeIn = fadeIn;
                 _nextOffset = offset;
-                _nextLayer = layer;
             }
             else
             {
@@ -428,7 +427,6 @@ namespace StudioScor.Utilities
                 _useFixedTransition = fixedTransition;
                 _fadeIn = fadeIn;
                 _offset = offset;
-                _layer = layer;
 
                 SetAnimationState(EAnimationState.TryPlay);
             }
@@ -585,7 +583,7 @@ namespace StudioScor.Utilities
             {
                 _hasNextPlay = false;
 
-                Play(_nextStateHash, _nextFadeIn, _nextOffset, _nextLayer, _nextUseFixedTransition);
+                Play(_nextStateHash, _nextFadeIn, _nextOffset, _nextUseFixedTransition);
             }
         }
         private void OnStart()
@@ -606,7 +604,7 @@ namespace StudioScor.Utilities
             {
                 _hasNextPlay = false;
 
-                Play(_nextStateHash, _nextFadeIn, _nextOffset, _nextLayer, _nextUseFixedTransition);
+                Play(_nextStateHash, _nextFadeIn, _nextOffset, _nextUseFixedTransition);
             }
         }
 
@@ -631,7 +629,7 @@ namespace StudioScor.Utilities
             {
                 _hasNextPlay = false;
 
-                Play(_nextStateHash, _nextFadeIn, _nextOffset, _nextLayer, _nextUseFixedTransition);
+                Play(_nextStateHash, _nextFadeIn, _nextOffset, _nextUseFixedTransition);
 
                 _currentAnimationEvents = _nextAnimationEvents;
                 _nextAnimationEvents = null;

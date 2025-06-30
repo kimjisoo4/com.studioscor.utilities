@@ -11,7 +11,7 @@ namespace StudioScor.Utilities.DialogueSystem
         
         public void Init();
         public void Activate();
-        public void Inactivate();
+        public void Deactivate();
         public void SetDialogue(IDialogue dialogue);
         public void StartWriting();
         public void EndWriting();
@@ -21,7 +21,7 @@ namespace StudioScor.Utilities.DialogueSystem
         public event DialogueDisplayEventHandler OnActivated;
         public event DialogueDisplayEventHandler OnFinishedBlendIn;
         public event DialogueDisplayEventHandler OnStartedBlendOut;
-        public event DialogueDisplayEventHandler OnInactivated;
+        public event DialogueDisplayEventHandler OnDeactivated;
         public event DialogueDisplayEventHandler OnStartedWriting;
         public event DialogueDisplayEventHandler OnSkipedWriting;
         public event DialogueDisplayEventHandler OnEndedWriting;
@@ -36,7 +36,7 @@ namespace StudioScor.Utilities.DialogueSystem
         [SerializeField] private ToggleableUnityEvent _onActivated;
         [SerializeField] private ToggleableUnityEvent _onFinishedBlendIn;
         [SerializeField] private ToggleableUnityEvent _onStartedBlendOut;
-        [SerializeField] private ToggleableUnityEvent _onInactivated;
+        [SerializeField] private ToggleableUnityEvent _onDeactivated;
         [SerializeField] private ToggleableUnityEvent _onStartedWriting;
         [SerializeField] private ToggleableUnityEvent _onSkipedWriting;
         [SerializeField] private ToggleableUnityEvent _onEndedWriting;
@@ -51,7 +51,7 @@ namespace StudioScor.Utilities.DialogueSystem
         public event IDialogueDisplay.DialogueDisplayEventHandler OnActivated;
         public event IDialogueDisplay.DialogueDisplayEventHandler OnFinishedBlendIn;
         public event IDialogueDisplay.DialogueDisplayEventHandler OnStartedBlendOut;
-        public event IDialogueDisplay.DialogueDisplayEventHandler OnInactivated;
+        public event IDialogueDisplay.DialogueDisplayEventHandler OnDeactivated;
         public event IDialogueDisplay.DialogueDisplayEventHandler OnStartedWriting;
         public event IDialogueDisplay.DialogueDisplayEventHandler OnSkipedWriting;
         public event IDialogueDisplay.DialogueDisplayEventHandler OnEndedWriting;
@@ -80,11 +80,11 @@ namespace StudioScor.Utilities.DialogueSystem
             Invoke_OnFinishedBlendIn();
         }
 
-        public virtual void Inactivate()
+        public virtual void Deactivate()
         {
             Invoke_OnStartedBlendOut();
             _dialogueDisplayActor.SetActive(false);
-            Invoke_OnInactivated();
+            Invoke_OnDeactivated();
         }
 
         public void SetDialogue(IDialogue dialogue)
@@ -173,12 +173,12 @@ namespace StudioScor.Utilities.DialogueSystem
             _onActivated.Invoke();
             OnActivated?.Invoke(this);
         }
-        protected void Invoke_OnInactivated()
+        protected void Invoke_OnDeactivated()
         {
-            Log(nameof(OnInactivated));
+            Log(nameof(OnDeactivated));
 
-            _onInactivated.Invoke();
-            OnInactivated?.Invoke(this);
+            _onDeactivated.Invoke();
+            OnDeactivated?.Invoke(this);
         }
         protected void Invoke_OnFinishedBlendIn()
         {

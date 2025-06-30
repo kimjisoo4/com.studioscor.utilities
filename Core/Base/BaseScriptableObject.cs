@@ -40,6 +40,7 @@ namespace StudioScor.Utilities
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
 #endif
         }
+
         protected virtual void OnDisable()
         {
 #if UNITY_EDITOR

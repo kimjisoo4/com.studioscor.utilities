@@ -7,24 +7,6 @@ namespace StudioScor.Utilities
 {
     public class SelectEventListener : BaseMonoBehaviour, ISelectHandler, IPointerEnterHandler, ISelectEventListener
     {
-        [System.Serializable]
-        public class UnityEvents
-        {
-            [SerializeField] private UnityEvent _onSelected;
-            public void AddUnityEvent(ISelectEventListener selectEventHandler)
-            {
-                selectEventHandler.OnSelected += SubmitEventHandler_OnSubmited;
-            }
-            public void RemoveUnityEvent(ISelectEventListener submitEventHandler)
-            {
-                submitEventHandler.OnSelected -= SubmitEventHandler_OnSubmited;
-            }
-
-            private void SubmitEventHandler_OnSubmited(ISelectEventListener selectEventListener, BaseEventData eventData)
-            {
-                _onSelected?.Invoke();
-            }
-        }
 
         [Header(" [ Select Event Listner ] ")]
         [SerializeField] private CanvasGroup _canvasGroup;
@@ -32,8 +14,7 @@ namespace StudioScor.Utilities
         [SerializeField] private EInputHandlerType _inputType = EInputHandlerType.Both;
 
         [Header(" Unity Event ")]
-        [SerializeField] private bool _useUnityEvent = false;
-        [SerializeField] private UnityEvents _unityEvents;
+        [SerializeField] private ToggleableUnityEvent _onSelected;
 
         public event ISelectEventListener.SelectEventHandler OnSelected;
 
@@ -61,18 +42,10 @@ namespace StudioScor.Utilities
             {
                 _selectable = GetComponent<Selectable>();
             }
-            if (_useUnityEvent)
-            {
-                _unityEvents.AddUnityEvent(this);
-            }
         }
         protected virtual void OnDestroy()
         {
-            if (_useUnityEvent && ReferenceEquals(_unityEvents, null))
-            {
-                _unityEvents.RemoveUnityEvent(this);
-            }
-
+            _onSelected.Dispose();
             OnSelected = null;
         }
 
@@ -107,6 +80,7 @@ namespace StudioScor.Utilities
 
             Log($"{nameof(OnSelect)}");
 
+            _onSelected.Invoke();
             OnSelected?.Invoke(this, eventData);
         }
     }

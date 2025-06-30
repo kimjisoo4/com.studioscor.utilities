@@ -26,7 +26,7 @@ namespace StudioScor.Utilities
         protected virtual void OnValidate()
         {
 #if UNITY_EDITOR
-            if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+            if (SUtility.IsPlayingOrWillChangePlaymode)
                 return;
 
             enabled = false;
@@ -34,6 +34,14 @@ namespace StudioScor.Utilities
         }
         #endregion
 
+        protected virtual void OnDestroy()
+        {
+            _onEnteredState.Dispose();
+            _onExitedState.Dispose();
+
+            OnEnteredState = null;
+            OnExitedState = null;
+        }
 
         public virtual bool CanEnterState()
         {

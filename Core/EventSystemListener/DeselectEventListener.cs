@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -7,33 +6,14 @@ namespace StudioScor.Utilities
 {
     public class DeselectEventListener : BaseMonoBehaviour, IDeselectHandler, IPointerExitHandler, IDeselectEventListener
     {
-        [System.Serializable]
-        public class UnityEvents
-        {
-            [SerializeField] private UnityEvent _onDeselected;
-            public void AddUnityEvent(IDeselectEventListener selectEventHandler)
-            {
-                selectEventHandler.OnDeselected += DeselectEventHandler_OnDeselect;
-            }
-            public void RemoveUnityEvent(IDeselectEventListener submitEventHandler)
-            {
-                submitEventHandler.OnDeselected -= DeselectEventHandler_OnDeselect;
-            }
-
-            private void DeselectEventHandler_OnDeselect(IDeselectEventListener selectEventListener, BaseEventData eventData)
-            {
-                _onDeselected?.Invoke();
-            }
-        }
-
-        [Header(" [ Select Event Listner ] ")]
+        [Header(" [ Deselect Event Listner ] ")]
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Selectable _selectable;
         [SerializeField] private EInputHandlerType _inputType = EInputHandlerType.Both;
+        [SerializeField] private bool _isDeselectOnBackground = false;
 
         [Header(" Unity Event ")]
-        [SerializeField] private bool _useUnityEvent = false;
-        [SerializeField] private UnityEvents _unityEvents;
+        [SerializeField] private ToggleableUnityEvent _onDeselected;
 
         public event IDeselectEventListener.DeselectEventHandler OnDeselected;
 
@@ -50,20 +30,21 @@ namespace StudioScor.Utilities
             }
 #endif
         }
-
         protected virtual void Awake()
         {
-            if (_useUnityEvent)
+            if (!_canvasGroup)
             {
-                _unityEvents.AddUnityEvent(this);
+                _canvasGroup = GetComponentInParent<CanvasGroup>();
+            }
+            if (!_selectable)
+            {
+                _selectable = GetComponent<Selectable>();
             }
         }
+
         protected virtual void OnDestroy()
         {
-            if (_useUnityEvent && ReferenceEquals(_unityEvents, null))
-            {
-                _unityEvents.RemoveUnityEvent(this);
-            }
+            _onDeselected.Dispose();
 
             OnDeselected = null;
         }
@@ -91,7 +72,10 @@ namespace StudioScor.Utilities
 
             if (EventSystem.current.currentSelectedGameObject == gameObject)
             {
-                EventSystem.current.SetSelectedGameObject(null);
+                if(_isDeselectOnBackground)
+                {
+                    EventSystem.current.SetSelectedGameObject(null);
+                }
             }
         }
 
@@ -102,6 +86,7 @@ namespace StudioScor.Utilities
 
             Log($"{nameof(OnDeselected)}");
 
+            _onDeselected.Invoke();
             OnDeselected?.Invoke(this, eventData);
         }
     }

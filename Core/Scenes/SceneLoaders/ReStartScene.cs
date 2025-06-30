@@ -138,7 +138,7 @@ namespace StudioScor.Utilities
             OnFinishe();
         }
 
-        public override void UnLoadScene()
+        public override void UnloadScene()
         {
             SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
         }

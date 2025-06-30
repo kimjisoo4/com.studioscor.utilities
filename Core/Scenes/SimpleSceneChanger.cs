@@ -18,8 +18,8 @@ namespace StudioScor.Utilities
 
         private void Start()
         {
-            scene.OnStarted += Scene_OnStarted;
-            scene.OnFinished += Scene_OnFinished;
+            scene.OnLoadStarted += Scene_OnStarted;
+            scene.OnLoadFinished += Scene_OnFinished;
 
             if (isAutoPlaying)
                 LoadScene();
@@ -27,8 +27,8 @@ namespace StudioScor.Utilities
 
         private void OnDestroy()
         {
-            scene.OnStarted -= Scene_OnStarted;
-            scene.OnFinished -= Scene_OnFinished;
+            scene.OnLoadStarted -= Scene_OnStarted;
+            scene.OnLoadFinished -= Scene_OnFinished;
         }
 
         public void LoadScene()
@@ -52,7 +52,7 @@ namespace StudioScor.Utilities
         {
             Log("Un Load Scene");
 
-            scene.UnLoadScene();
+            scene.UnloadScene();
         }
 
         private void SimpleSceneChanger_Completed(AsyncOperation async)

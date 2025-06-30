@@ -21,6 +21,11 @@ namespace StudioScor.Utilities
         public const string STRING_COLOR_GREY = "grey";
         public const string STRING_COLOR_WHITE = "white";
 
+        public const string UNIT_METER = "m";
+        public const string UNIT_DEGREE = "°";
+        public const string UNIT_METER_PER_SEC = "m/s";
+        public const string UNIT_DEGREE_PER_SEC = "deg/s";
+
         public static readonly StringBuilder StringBuilder = new();
 
         public static StringBuilder GetStringBuilder()

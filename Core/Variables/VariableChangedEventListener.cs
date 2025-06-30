@@ -6,7 +6,7 @@ namespace StudioScor.Utilities
     public class VariableChangedEventListener<T> : BaseMonoBehaviour
     {
         [Header(" [ Variable Changed Event Listner ] ")]
-        [SerializeField] private VariableObject<T> _Variable;
+        [SerializeField] private SOVariable<T> _Variable;
         [SerializeField] private UnityEvent<T> _OnChangedVariable;
         public event UnityAction<T> OnChangedVariable;
 
@@ -15,15 +15,15 @@ namespace StudioScor.Utilities
             _OnChangedVariable?.Invoke(_Variable.Value);
             OnChangedVariable?.Invoke(_Variable.Value);
 
-            _Variable.OnChangedValue += Variable_OnChangedValue;
+            _Variable.OnValueChanged += Variable_OnChangedValue;
         }
 
         private void OnDisable()
         {
-            _Variable.OnChangedValue -= Variable_OnChangedValue;
+            _Variable.OnValueChanged -= Variable_OnChangedValue;
         }
 
-        private void Variable_OnChangedValue(VariableObject<T> variable, T currentValue, T prevValue)
+        private void Variable_OnChangedValue(SOVariable<T> variable, T currentValue, T prevValue)
         {
             _OnChangedVariable?.Invoke(currentValue);
             OnChangedVariable?.Invoke(currentValue);

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,41 +7,14 @@ namespace StudioScor.Utilities
 {
     public class SubmitEventListener : BaseMonoBehaviour, ISubmitHandler, IPointerClickHandler, ISubmitEventListener
     {
-
-        [System.Serializable]
-        public class UnityEvents
-        {
-            [SerializeField] private UnityEvent _onSubmited;
-            [SerializeField] private UnityEvent _onFailedSubmited;
-            public void AddUnityEvent(ISubmitEventListener submitEventHandler)
-            {
-                submitEventHandler.OnSubmited += SubmitEventHandler_OnSubmited;
-                submitEventHandler.OnFailedSubmited += SubmitEventHandler_OnFailedSubmited;
-            }
-            public void RemoveUnityEvent(ISubmitEventListener submitEventHandler)
-            {
-                submitEventHandler.OnSubmited -= SubmitEventHandler_OnSubmited;
-                submitEventHandler.OnFailedSubmited -= SubmitEventHandler_OnFailedSubmited;
-            }
-
-            private void SubmitEventHandler_OnSubmited(ISubmitEventListener submitEventListener,BaseEventData obj)
-            {
-                _onSubmited?.Invoke();
-            }
-            private void SubmitEventHandler_OnFailedSubmited(ISubmitEventListener submitEventListener, BaseEventData eventData)
-            {
-                _onFailedSubmited?.Invoke();
-            }
-        }
-
         [Header(" [ Submit Event Listner ] ")]
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Selectable _selectable;
         [SerializeField] private EInputHandlerType _inputType = EInputHandlerType.Both;
 
         [Header(" Unity Event ")]
-        [SerializeField] private bool _useUnityEvent = false;
-        [SerializeField] private UnityEvents _unityEvents;
+        [SerializeField] private ToggleableUnityEvent _onSubmited;
+        [SerializeField] private ToggleableUnityEvent _onSubmitedFailed;
 
         public event ISubmitEventListener.SubmitEventHandler OnSubmited;
         public event ISubmitEventListener.SubmitEventHandler OnFailedSubmited;
@@ -71,17 +43,11 @@ namespace StudioScor.Utilities
             {
                 _selectable = GetComponent<Selectable>();
             }
-            if (_useUnityEvent)
-            {
-                _unityEvents.AddUnityEvent(this);
-            }
         }
         protected virtual void OnDestroy()
         {
-            if (_useUnityEvent && ReferenceEquals(_unityEvents, null))
-            {
-                _unityEvents.RemoveUnityEvent(this);
-            }
+            _onSubmited.Dispose();
+            _onSubmitedFailed.Dispose();
 
             OnSubmited = null;
             OnFailedSubmited = null;
@@ -103,12 +69,15 @@ namespace StudioScor.Utilities
             if (!CanSubmit())
             {
                 Log($"{nameof(OnFailedSubmited)}");
+                
+                _onSubmitedFailed.Invoke();
                 OnFailedSubmited?.Invoke(this, eventData);
                 return;
             }
 
             Log($"{nameof(OnSubmited)}");
 
+            _onSubmited.Invoke();
             OnSubmited?.Invoke(this, eventData);
         }
 
@@ -120,13 +89,16 @@ namespace StudioScor.Utilities
             if (!CanSubmit())
             {
                 Log($"{nameof(OnFailedSubmited)}");
+
+                _onSubmitedFailed.Invoke();
                 OnFailedSubmited?.Invoke(this, eventData);
                 return;
             }
 
             Log($"{nameof(OnSubmited)}");
 
-            OnSubmited?.Invoke(this,eventData);
+            _onSubmited.Invoke();
+            OnSubmited?.Invoke(this, eventData);
         }
     }
 }

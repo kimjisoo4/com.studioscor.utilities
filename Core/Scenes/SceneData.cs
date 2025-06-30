@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Diagnostics;
 using UnityEngine.SceneManagement;
 
 
@@ -15,7 +14,7 @@ namespace StudioScor.Utilities
             Target,
         }
 
-        [Header(" [ Simple Scene Changer ]")]
+        [Header(" [ Scene Data ]")]
         [SerializeField] private ESceneInputFieldType sceneFiledType = ESceneInputFieldType.Target;
 
         [SerializeField, SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Name)] private string sceneName;

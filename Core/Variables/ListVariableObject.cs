@@ -5,7 +5,7 @@ using System.Linq;
 namespace StudioScor.Utilities
 {
 
-    public abstract class ListVariableObject<T> : EmptyVariable, ISerializationCallbackReceiver
+    public abstract class ListVariableObject<T> : BaseScriptableVariable, ISerializationCallbackReceiver
 	{
 		#region Events
 		public delegate void ListMemberEventHandler(ListVariableObject<T> variable, T value);

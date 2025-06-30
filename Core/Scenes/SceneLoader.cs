@@ -1,31 +1,31 @@
-﻿using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace StudioScor.Utilities
 {
+
     public abstract class SceneLoader : BaseScriptableObject
     {
         public bool IsPlaying { get; protected set; }
 
         public abstract void LoadScene();
-        public abstract void UnLoadScene();
+        public abstract void UnloadScene();
         public abstract Scene GetScene { get; }
 
-        public event UnityAction<SceneLoader> OnStarted;
-        public event UnityAction<SceneLoader> OnFinished;
+        public event UnityAction<SceneLoader> OnLoadStarted;
+        public event UnityAction<SceneLoader> OnLoadFinished;
 
         protected void Callback_OnStarted()
         {
-            Log(" On Started Load Scene");
+            Log(nameof(OnLoadStarted));
 
-            OnStarted?.Invoke(this);
+            OnLoadStarted?.Invoke(this);
         }
         protected void Callback_OnFinished()
         {
-            Log(" On Finished Load Scene");
+            Log(nameof(OnLoadStarted));
 
-            OnFinished?.Invoke(this);
+            OnLoadFinished?.Invoke(this);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿#if SCOR_ENABLE_CINEMACHINE
 using Unity.Cinemachine;
 using UnityEngine;
 

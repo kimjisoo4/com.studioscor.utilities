@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace StudioScor.Utilities
@@ -43,7 +44,8 @@ namespace StudioScor.Utilities
 
             _isPlaying = true;
 
-            ForceSetDefaultState();
+            if(_defaultState is not null)
+                ForceSetDefaultState();
         }
 
         public virtual void End()
@@ -118,12 +120,13 @@ namespace StudioScor.Utilities
 
         public virtual void ForceSetState(T state)
         {
-            if(_isPlaying)
+            if(!_isPlaying && state is not null)
             {
                 _isPlaying = true;
             }
 
             _prevState = _currentState;
+            _nextState = state;
             _currentState = state;
 
             if (_prevState is not null)
@@ -137,7 +140,6 @@ namespace StudioScor.Utilities
 
             Invoke_OnChangedState(_prevState);
             
-            _prevState = null;
             _nextState = null;
         }
 

@@ -5,22 +5,13 @@ using System;
 namespace StudioScor.Utilities
 {
     [CreateAssetMenu(fileName = "Event_", menuName = "StudioScor/Utilities/Event/new Event")]
-    public class GameEvent : BaseScriptableObject, ISerializationCallbackReceiver
+    public class GameEvent : BaseScriptableObject
     {
         [Header(" [ GameEvent ] ")]
         [SerializeField, TextArea] protected string description;
 
         [SerializeField][SReadOnly] private List<GameEventListner> eventList = new List<GameEventListner>();
         public event Action OnTriggerEvent;
-
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            OnReset();
-        }
 
         protected override void OnReset()
         {

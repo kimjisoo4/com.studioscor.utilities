@@ -8,25 +8,65 @@ namespace StudioScor.Utilities.FadeSystem
         public delegate void FadeSystemEventHandler(IFadeSystem fadeSystem);
         public delegate void FadeSystemUpdateAmountEventHandler(IFadeSystem fadeSystem, float amount);
 
+        /// <summary>
+        /// Fade를 할 때까지 걸리는 시간
+        /// </summary>
         public float Duration { get; }
+
+        /// <summary>
+        /// Fade 의 정도 ( 0 ~ 1 )
+        /// </summary>
         public float Amount { get; }
+
+        /// <summary>
+        /// Fade 가 진행중인가의 여부
+        /// </summary>
         public bool IsFading { get; }
+
+        /// <summary>
+        /// 현재 Fade 의 상태
+        /// </summary>
         public EFadeState State { get; }
 
-        public event FadeSystemEventHandler OnStartedFadeIn;
-        public event FadeSystemEventHandler OnStartedFadeOut;
-        public event FadeSystemEventHandler OnFinishedFadeIn;
-        public event FadeSystemEventHandler OnFinishedFadeOut;
-        public event FadeSystemEventHandler OnStartedFading;
-        public event FadeSystemEventHandler OnFinishedFading;
-
-        public event FadeSystemUpdateAmountEventHandler OnUpdatedAmount;
-
+        /// <summary>
+        /// 서서히 화면을 보이게 함
+        /// </summary>
+        /// <param name="duration"> 화면이 보이게 되기까지 걸리는 시간</param>
+        /// <param name="playFromStart"> True 일 경우, 화면을 가리고 시작</param>
         public void StartFadeIn(float duration, bool playFromStart = false);
+
+        /// <summary>
+        /// 서서히 화면을 가리게 함.
+        /// </summary>
+        /// <param name="duration"> 화면이 안보이게 되기까지 걸리는 시간</param>
+        /// <param name="playFromStart"> True 일 경우, 화면을 보이고 시작</param>
         public void StartFadeOut(float duration, bool playFromStart = false);
+
+        /// <summary>
+        /// 상태를 업데이트.
+        /// </summary>
+        /// <param name="deltaTime"></param>
         public void UpdateFading(float deltaTime);
+
+        /// <summary>
+        /// FadeIn 이 진행중일 경우, 즉시 화면을 보이게함.
+        /// </summary>
         public void EndFadeIn();
+
+        /// <summary>
+        /// FadeOut 이 진행중일 경우, 즉시 화면을 안보이게함.
+        /// </summary>
         public void EndFadeOut();
+
+
+        public event FadeSystemEventHandler OnFadeInStarted;
+        public event FadeSystemEventHandler OnFadeOutStarted;
+        public event FadeSystemEventHandler OnFadeInFinished;
+        public event FadeSystemEventHandler OnFadeOutFinished;
+        public event FadeSystemEventHandler OnFadingStarted;
+        public event FadeSystemEventHandler OnFadingFinished;
+
+        public event FadeSystemUpdateAmountEventHandler OnAmountUpdated;
     }
 
     public class FadeSystemComponent : BaseMonoBehaviour, IFadeSystem
@@ -36,12 +76,12 @@ namespace StudioScor.Utilities.FadeSystem
         [SerializeField] private float _duration = 1f;
 
         [Header(" Events ")]
-        [SerializeField] private ToggleableUnityEvent _onStartedFadeIn;
-        [SerializeField] private ToggleableUnityEvent _onFinishedFadeIn;
-        [SerializeField] private ToggleableUnityEvent _onStartedFadeOut;
-        [SerializeField] private ToggleableUnityEvent _onFinishedFadeOut;
-        [SerializeField] private ToggleableUnityEvent _onStartedFading;
-        [SerializeField] private ToggleableUnityEvent _onFinishedFading;
+        [SerializeField] private ToggleableUnityEvent _onFadeInStarted;
+        [SerializeField] private ToggleableUnityEvent _onFadeInFinished;
+        [SerializeField] private ToggleableUnityEvent _onFadeOutStarted;
+        [SerializeField] private ToggleableUnityEvent _onFadeOutFinished;
+        [SerializeField] private ToggleableUnityEvent _onFadingStarted;
+        [SerializeField] private ToggleableUnityEvent _onFadingFinished;
 
         private bool _isFading;
         private float _amount;
@@ -63,19 +103,19 @@ namespace StudioScor.Utilities.FadeSystem
 
                 _amount = value;
 
-                Invoke_OnUpdatedAmount();
+                RaiseOnAmountUpdated();
             }
         }
         public bool IsFading => _isFading;
         public EFadeState State => _state;
 
-        public event IFadeSystem.FadeSystemEventHandler OnStartedFadeIn;
-        public event IFadeSystem.FadeSystemEventHandler OnStartedFadeOut;
-        public event IFadeSystem.FadeSystemEventHandler OnFinishedFadeIn;
-        public event IFadeSystem.FadeSystemEventHandler OnFinishedFadeOut;
-        public event IFadeSystem.FadeSystemEventHandler OnStartedFading;
-        public event IFadeSystem.FadeSystemEventHandler OnFinishedFading;
-        public event IFadeSystem.FadeSystemUpdateAmountEventHandler OnUpdatedAmount;
+        public event IFadeSystem.FadeSystemEventHandler OnFadeInStarted;
+        public event IFadeSystem.FadeSystemEventHandler OnFadeOutStarted;
+        public event IFadeSystem.FadeSystemEventHandler OnFadeInFinished;
+        public event IFadeSystem.FadeSystemEventHandler OnFadeOutFinished;
+        public event IFadeSystem.FadeSystemEventHandler OnFadingStarted;
+        public event IFadeSystem.FadeSystemEventHandler OnFadingFinished;
+        public event IFadeSystem.FadeSystemUpdateAmountEventHandler OnAmountUpdated;
 
         private void Awake()
         {
@@ -95,11 +135,13 @@ namespace StudioScor.Utilities.FadeSystem
 
         private void OnDestroy()
         {
-            OnStartedFadeIn = null;
-            OnStartedFadeOut = null;
-            OnFinishedFadeIn = null;
-            OnFinishedFadeOut = null;
-            OnUpdatedAmount = null;
+            OnFadeInStarted = null;
+            OnFadeOutStarted = null;
+            OnFadeInFinished = null;
+            OnFadeOutFinished = null;
+            OnFadingStarted = null;
+            OnFadingFinished = null;
+            OnAmountUpdated = null;
         }
 
         private void Update()
@@ -136,10 +178,14 @@ namespace StudioScor.Utilities.FadeSystem
             _state = EFadeState.FadeIn;
             _isFading = true;
 
-            Invoke_OnStartedFadeIn();
-            Invoke_OnStartedFading();
+            OnStartFadeIn();
+            RaiseOnFadeInStarted();
+
+            OnStartFading();
+            RaiseOnFadingStarted();
 
             enabled = true;
+
         }
 
         public void StartFadeOut(float duration, bool playFromStart = false)
@@ -153,9 +199,12 @@ namespace StudioScor.Utilities.FadeSystem
             _elapsedTime = _duration * Amount;
             _state = EFadeState.FadeOut;
             _isFading = true;
+            
+            OnStartFadeOut();
+            RaiseOnFadeOutStarted();
 
-            Invoke_OnStartedFadeOut();
-            Invoke_OnStartedFading();
+            OnStartFading();
+            RaiseOnFadingStarted();
 
             enabled = true;
         }
@@ -202,73 +251,101 @@ namespace StudioScor.Utilities.FadeSystem
             }
         }
 
+
+
         public void EndFadeIn()
         {
+            if (!_isFading)
+                return;
+
+            if (_state != EFadeState.FadeIn)
+                return;
+
             enabled = false;
             _isFading = false;
             Amount = 0f;
 
-            Invoke_OnFinishedFading();
-            Invoke_OnFinishedFadeIn();
+            OnEndFading();
+            RaiseOnFadingFinished();
+
+            OnEndFadeIn();
+            RaiseOnFadeInFinished();
         }
         public void EndFadeOut()
         {
+            if (!_isFading)
+                return;
+
+            if (_state != EFadeState.FadeOut)
+                return;
+
             enabled = false;
             _isFading = false;
             Amount = 1f;
 
-            Invoke_OnFinishedFading();
-            Invoke_OnFinishedFadeOut();
+            OnEndFading();
+            RaiseOnFadingFinished();
+
+            OnEndFadeOut();
+            RaiseOnFadeOutFinished();
         }
 
-        protected void Invoke_OnUpdatedAmount()
-        {
-            Log($"{nameof(OnUpdatedAmount)} - Amount : {_amount}");
+        protected virtual void OnStartFadeIn() { }
+        protected virtual void OnStartFadeOut() { }
+        protected virtual void OnEndFadeIn() { }
+        protected virtual void OnEndFadeOut() { }
 
-            OnUpdatedAmount?.Invoke(this, _amount);
+        protected virtual void OnStartFading() { }
+        protected virtual void OnEndFading() { }
+
+        protected void RaiseOnAmountUpdated()
+        {
+            Log($"{nameof(OnAmountUpdated)} - Amount : {_amount}");
+
+            OnAmountUpdated?.Invoke(this, _amount);
         }
 
-        protected void Invoke_OnStartedFadeIn()
+        protected void RaiseOnFadeInStarted()
         {
-            Log(nameof(OnStartedFadeIn));
+            Log(nameof(OnFadeInStarted));
 
-            _onStartedFadeIn.Invoke();
-            OnStartedFadeIn?.Invoke(this);
+            _onFadeInStarted.Invoke();
+            OnFadeInStarted?.Invoke(this);
         }
-        protected void Invoke_OnStartedFadeOut()
+        protected void RaiseOnFadeOutStarted()
         {
-            Log(nameof(OnStartedFadeOut));
+            Log(nameof(OnFadeOutStarted));
 
-            _onStartedFadeOut.Invoke();
-            OnStartedFadeOut?.Invoke(this);
+            _onFadeOutStarted.Invoke();
+            OnFadeOutStarted?.Invoke(this);
         }
-        protected void Invoke_OnFinishedFadeIn()
+        protected void RaiseOnFadeInFinished()
         {
-            Log(nameof(OnFinishedFadeIn));
+            Log(nameof(OnFadeInFinished));
 
-            _onFinishedFadeIn.Invoke();
-            OnFinishedFadeIn?.Invoke(this);
+            _onFadeInFinished.Invoke();
+            OnFadeInFinished?.Invoke(this);
         }
-        protected void Invoke_OnFinishedFadeOut()
+        protected void RaiseOnFadeOutFinished()
         {
-            Log(nameof(OnFinishedFadeOut));
+            Log(nameof(OnFadeOutFinished));
 
-            _onFinishedFadeOut.Invoke();
-            OnFinishedFadeOut?.Invoke(this);
+            _onFadeOutFinished.Invoke();
+            OnFadeOutFinished?.Invoke(this);
         }
-        protected void Invoke_OnStartedFading()
+        protected void RaiseOnFadingStarted()
         {
-            Log(nameof(OnStartedFading));
+            Log(nameof(OnFadingStarted));
 
-            _onStartedFading.Invoke();
-            OnStartedFading?.Invoke(this);
+            _onFadingStarted.Invoke();
+            OnFadingStarted?.Invoke(this);
         }
-        protected void Invoke_OnFinishedFading()
+        protected void RaiseOnFadingFinished()
         {
-            Log(nameof(OnFinishedFading));
+            Log(nameof(OnFadingFinished));
 
-            _onFinishedFading.Invoke();
-            OnFinishedFading?.Invoke(this);
+            _onFadingFinished.Invoke();
+            OnFadingFinished?.Invoke(this);
         }
     }
 

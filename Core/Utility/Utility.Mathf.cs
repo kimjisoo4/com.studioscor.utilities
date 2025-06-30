@@ -136,6 +136,14 @@ namespace StudioScor.Utilities
             }
         }
 
+        public static bool InRangeAngle(this float angle, float range, bool inclusive = true)
+        {
+            if(inclusive)
+                return -range <= angle && angle <= range;
+            else
+                return -range < angle && angle < range;
+        }
+
 
         // Get Angle In Forward
         public static float AngleOnForward(this Transform transform, Vector3 targetPosition)

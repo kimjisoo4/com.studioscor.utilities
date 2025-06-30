@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 
 namespace StudioScor.Utilities.Editor
 {
+
     [CustomPropertyDrawer(typeof(ToggleableUnityEvent))]
     public class ToggleableUnityEvent_PropertyDrawer : PropertyDrawer
     {

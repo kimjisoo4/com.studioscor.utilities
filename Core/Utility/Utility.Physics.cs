@@ -529,8 +529,9 @@ namespace StudioScor.Utilities
                     {
                         Debug.DrawSphere(position, radius, successColor, duration);
 
-                        foreach (var result in results)
+                        for(int i = 0; i < hitCount; i++)
                         {
+                            var result = results[i];
                             Debug.DrawPoint(result.bounds.center, 1f, duration);
                         }
                     }

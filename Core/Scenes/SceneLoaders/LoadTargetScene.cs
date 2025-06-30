@@ -39,30 +39,30 @@ namespace StudioScor.Utilities
         {
             IsPlaying = true;
 
-            runtimeTarget.OnStarted += Target_OnStarted;
-            runtimeTarget.OnFinished += Target_OnFinished;
+            runtimeTarget.OnLoadStarted += Target_OnStarted;
+            runtimeTarget.OnLoadFinished += Target_OnFinished;
 
             runtimeTarget.LoadScene();
         }
 
         private void Target_OnStarted(SceneLoader scene)
         {
-            scene.OnStarted -= Target_OnStarted;
+            scene.OnLoadStarted -= Target_OnStarted;
 
             Callback_OnStarted();
         }
         private void Target_OnFinished(SceneLoader scene)
         {
-            scene.OnFinished -= Target_OnFinished;
+            scene.OnLoadFinished -= Target_OnFinished;
 
             IsPlaying = false;
 
             Callback_OnFinished();
         }
 
-        public override void UnLoadScene()
+        public override void UnloadScene()
         {
-            runtimeTarget.UnLoadScene();
+            runtimeTarget.UnloadScene();
         }
 
     }

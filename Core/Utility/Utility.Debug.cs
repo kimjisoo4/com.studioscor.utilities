@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace StudioScor.Utilities
 {
+
     public static partial class SUtility
     {
-
         public static class Debug
         {
             public static bool UseDebug = true;

@@ -19,6 +19,14 @@ namespace StudioScor.Utilities
             _useUnityEvent = useUnityEvent;
         }
 
+        public void Dispose()
+        {
+            if (!_useUnityEvent)
+                return;
+
+            _unityEvent.RemoveAllListeners();
+        }
+
         public void Invoke()
         {
             if (!_useUnityEvent)

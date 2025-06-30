@@ -47,14 +47,14 @@ namespace StudioScor.Utilities
             IsPlaying = false;
         }
 
-        public override void UnLoadScene()
+        public override void UnloadScene()
         {
             loadingScene.UnLoadScene();
         }
 
         private void LoadingScene_OnFinished(SceneLoader scene)
         {
-            scene.OnFinished -= LoadingScene_OnFinished;
+            scene.OnLoadFinished -= LoadingScene_OnFinished;
         }
 
         private void UnLoadOtherScenes()

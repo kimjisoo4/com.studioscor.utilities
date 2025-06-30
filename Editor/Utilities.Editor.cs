@@ -7,8 +7,54 @@ namespace StudioScor.Utilities.Editor
 {
     public static class Lables
     {
+        [MenuItem("Tools/StudioScor/Transform/Round Position to Int")]
+        public static void RoundPositionToInt()
+        {
+            RoundPosition(1f);
+        }
+        [MenuItem("Tools/StudioScor/Transform/Round Rotation to Int")]
+        public static void RoundRotationToInt()
+        {
+            RoundRotation(1f);
+        }
 
-        [MenuItem("Utilities/Reset Labels")]
+        private static void RoundPosition(float snapValue)
+        {
+            foreach (GameObject obj in Selection.gameObjects)
+            {
+                Undo.RecordObject(obj.transform, "Round Position");
+
+                Vector3 pos = obj.transform.position;
+
+                pos.x = Mathf.Round(pos.x / snapValue) * snapValue;
+                pos.y = Mathf.Round(pos.y / snapValue) * snapValue;
+                pos.z = Mathf.Round(pos.z / snapValue) * snapValue;
+
+                obj.transform.position = pos;
+
+                EditorUtility.SetDirty(obj.transform);
+            }
+        }
+        private static void RoundRotation(float snapValue)
+        {
+            foreach (GameObject obj in Selection.gameObjects)
+            {
+                Undo.RecordObject(obj.transform, "Round Rotation");
+
+                Vector3 angles = obj.transform.eulerAngles;
+
+                angles.x = Mathf.Round(angles.x / snapValue) * snapValue;
+                angles.y = Mathf.Round(angles.y / snapValue) * snapValue;
+                angles.z = Mathf.Round(angles.z / snapValue) * snapValue;
+
+                obj.transform.eulerAngles = angles;
+
+                EditorUtility.SetDirty(obj.transform);
+            }
+        }
+
+
+        [MenuItem("Tools/StudioScor/Label/Reset Labels")]
         private static void ResetLables()
         {
             var selectObjects = Selection.objects;
@@ -19,7 +65,7 @@ namespace StudioScor.Utilities.Editor
             }
         }
 
-        [MenuItem("Utilities/Set Labels")]
+        [MenuItem("Tools/StudioScor/Label/Set Labels")]
         private static void SetLabels()
         {
             var selectObjects = Selection.objects;
@@ -146,7 +192,7 @@ namespace StudioScor.Utilities.Editor
         }
         #endregion
 
-        [MenuItem("Utilities/Set Auto Animation Naming")]
+        [MenuItem("Tools/StudioScor/Animation/Set Auto Animation Clip Naming")]
         private static void OnAutoAnimationNaming()
         {
             var selects = Selection.objects;
@@ -182,7 +228,7 @@ namespace StudioScor.Utilities.Editor
             }
         }
 
-        [MenuItem("Utilities/Set Auto Rename MeshtintStudio Asset")]
+        [MenuItem("Tools/StudioScor/Animation/Set Auto Rename MeshtintStudio Asset")]
         private static void OnAutoRenameMeshtintStudioAsset()
         {
             var selects = Selection.objects;

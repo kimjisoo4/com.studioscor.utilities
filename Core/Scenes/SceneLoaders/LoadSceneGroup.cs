@@ -25,14 +25,14 @@ namespace StudioScor.Utilities
         {
             IsPlaying = true;
 
-            mainScene.OnFinished += MainScene_OnFinished;
+            mainScene.OnLoadFinished += MainScene_OnFinished;
 
             mainScene.LoadScene();
         }
 
         private void MainScene_OnFinished(SceneLoader scene)
         {
-            scene.OnFinished -= MainScene_OnFinished;
+            scene.OnLoadFinished -= MainScene_OnFinished;
 
             _Count = 0;
 
@@ -40,7 +40,7 @@ namespace StudioScor.Utilities
             {
                 _Count++;
 
-                subScene.OnFinished += SubScene_OnFinished;
+                subScene.OnLoadFinished += SubScene_OnFinished;
 
                 subScene.LoadScene();
             }
@@ -48,7 +48,7 @@ namespace StudioScor.Utilities
 
         private void SubScene_OnFinished(SceneLoader scene)
         {
-            scene.OnFinished -= SubScene_OnFinished;
+            scene.OnLoadFinished -= SubScene_OnFinished;
 
             _Count--;
 
@@ -60,14 +60,14 @@ namespace StudioScor.Utilities
             }
         }
 
-        public override void UnLoadScene()
+        public override void UnloadScene()
         {
             foreach (var scene in subScenes)
             {
-                scene.UnLoadScene();
+                scene.UnloadScene();
             }
 
-            mainScene.UnLoadScene();
+            mainScene.UnloadScene();
         }
     }
 }

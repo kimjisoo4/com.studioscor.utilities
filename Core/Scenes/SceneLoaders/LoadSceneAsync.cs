@@ -59,7 +59,7 @@ namespace StudioScor.Utilities
             Callback_OnFinished();
         }
 
-        public override void UnLoadScene()
+        public override void UnloadScene()
         {
             scene.UnLoadScene();
         }

@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Diagnostics;
+﻿using System;
+using UnityEngine;
 
 namespace StudioScor.Utilities
 {
@@ -24,6 +24,14 @@ namespace StudioScor.Utilities
 #if UNITY_EDITOR
             if (UseDebug)
                 SUtility.Debug.Log($"{GetType().Name} [{name}] : {log}", this, color);
+#endif
+        }
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        protected virtual void Log(Action action, string color = SUtility.STRING_COLOR_GREY)
+        {
+#if UNITY_EDITOR
+            if (UseDebug)
+                SUtility.Debug.Log($"{GetType().Name} [{name}] : {action.Method.Name}", this, color);
 #endif
         }
 

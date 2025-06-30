@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+
 #if SCOR_ENABLE_LOCALIZATION
 using UnityEngine.Localization;
 #endif

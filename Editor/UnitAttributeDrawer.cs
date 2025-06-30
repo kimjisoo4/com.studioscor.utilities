@@ -41,6 +41,5 @@ namespace StudioScor.Utilities.Editor
 
             return container;
         }
-
     }
 }

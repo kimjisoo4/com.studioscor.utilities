@@ -29,14 +29,9 @@ namespace StudioScor.Utilities.FadeSystem
         private void Awake()
         {
             _fadeSystem = _fadeSystemActor.GetComponent<IFadeSystem>();
-
             _canvasGroup.alpha = _fadeSystem.Amount;
 
-            _fadeSystem.OnStartedFadeOut += _fadeSystem_OnStartedFadeOut;
-            _fadeSystem.OnFinishedFadeIn += _fadeSystem_OnFinishedFadeIn;
-            _fadeSystem.OnUpdatedAmount += _fadeSystem_OnUpdatedAmount;
-
-            if (_fadeSystem.State == EFadeState.FadeIn && !_fadeSystem.IsFading)
+            if (_fadeSystem.IsFading)
             {
                 _fadeUIActor.SetActive(true);
             }
@@ -44,32 +39,35 @@ namespace StudioScor.Utilities.FadeSystem
             {
                 _fadeUIActor.SetActive(false);
             }
+
+            _fadeSystem.OnFadingStarted += _fadeSystem_OnFadingStarted;
+            _fadeSystem.OnFadeInFinished += _fadeSystem_OnFadeInFinished;
+            _fadeSystem.OnAmountUpdated += _fadeSystem_OnAmountUpdated;
         }
+
+
 
         private void OnDestroy()
         {
             if (_fadeSystem is not null)
             {
-                _fadeSystem.OnStartedFadeOut -= _fadeSystem_OnStartedFadeOut;
-                _fadeSystem.OnFinishedFadeIn -= _fadeSystem_OnFinishedFadeIn;
-                _fadeSystem.OnUpdatedAmount -= _fadeSystem_OnUpdatedAmount;
+                _fadeSystem.OnFadingStarted -= _fadeSystem_OnFadingStarted;
+                _fadeSystem.OnFadeInFinished -= _fadeSystem_OnFadeInFinished;
+                _fadeSystem.OnAmountUpdated -= _fadeSystem_OnAmountUpdated;
             }
         }
 
 
-        private void _fadeSystem_OnFinishedFadeIn(IFadeSystem fadeSystem)
+        private void _fadeSystem_OnFadingStarted(IFadeSystem fadeSystem)
+        {
+            _fadeUIActor.SetActive(true);
+        }
+        private void _fadeSystem_OnFadeInFinished(IFadeSystem fadeSystem)
         {
             _fadeUIActor.SetActive(false);
         }
 
-        private void _fadeSystem_OnStartedFadeOut(IFadeSystem fadeSystem)
-        {
-            _fadeUIActor.SetActive(true);
-        }
-
-       
-
-        private void _fadeSystem_OnUpdatedAmount(IFadeSystem fadeSystem, float amount)
+        private void _fadeSystem_OnAmountUpdated(IFadeSystem fadeSystem, float amount)
         {
             _canvasGroup.alpha = amount;
         }
