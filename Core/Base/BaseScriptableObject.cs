@@ -13,8 +13,12 @@ namespace StudioScor.Utilities
 {
     public abstract class BaseScriptableData : BaseScriptableObject, IData
     {
+#if ODIN_INSPECTOR
         [BoxGroup("Base Scriptable Data", GroupID = "Data")]
-        [BoxGroup("Data")][SerializeField][ReadOnly] private int _id = 0;
+        [BoxGroup("Data")]
+        [ReadOnly]
+#endif
+        [SerializeField]private int _id = 0;
         public int ID => _id;
 
         protected virtual void OnValidate()
