@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
         [field: SerializeField] public Vector3 Direction { get; set; } = Vector3.forward;
         [field: SerializeField] public float TurnSpeed { get; set; } = 180f;
 
-        [SerializeField][SReadOnly] private bool isPlaying = false;
+        [SerializeField] private bool isPlaying = false;
         [SerializeField] private Quaternion turnRotation;
         public bool IsPlaying => isPlaying;
         public Quaternion Rotation => turnRotation;

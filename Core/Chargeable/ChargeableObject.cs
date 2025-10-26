@@ -71,7 +71,7 @@ namespace StudioScor.Utilities
 
         [Header(" Events ")]
         [SerializeField] private bool _useUnityEvent = true;
-        [SerializeField][SCondition(nameof(_useUnityEvent))] private UnityEvents _unityEvents;
+        [SerializeField] private UnityEvents _unityEvents;
 
         public event IChargeable.ChargingLevelStateHandler OnChangedChargeLevel { add => _chargeable.OnChangedChargeLevel += value; remove => _chargeable.OnChangedChargeLevel -= value; }
         public event IChargeable.ChargingStateHander OnStartedCharge { add { _chargeable.OnStartedCharge += value; } remove { _chargeable.OnStartedCharge -= value; } }

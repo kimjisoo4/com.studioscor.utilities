@@ -1,59 +1,59 @@
-﻿namespace StudioScor.Utilities
+﻿using UnityEngine;
+
+namespace StudioScor.Utilities
 {
     public class InRangeValue : BaseClass
     {
         public delegate void InRangeValueStateEventHandler(InRangeValue inRangeValue);
+        [field: SerializeField] public Vector2 Range { get; set; }
+        public bool InRange { get; private set; }
+        public bool IsPlaying { get; private set; }
 
-        public float MinValue { get; set; }
-        public float MaxValue { get; set; }
+        public event InRangeValueStateEventHandler OnValueChanged;
 
-        private bool _inRange = false;
-        public bool InRange => _inRange;
-
-        public event InRangeValueStateEventHandler OnChangedInRange;
-
-        public InRangeValue()
+        public void Dispose()
         {
-
-        }
-        public InRangeValue(float minValue, float maxValue)
-        {
-            Setup(minValue, maxValue);
+            OnValueChanged = null;
         }
 
-        public void Setup(float minValue, float maxValue)
+        public void Start()
         {
-            MinValue = minValue;
-            MaxValue = maxValue;
+            if (IsPlaying)
+                return;
+
+            IsPlaying = true;
+
+            InRange = false;
+        }
+        public void End()
+        {
+            if (!IsPlaying)
+                return;
+
+            IsPlaying = false;
+
+            if (InRange)
+            {
+                InRange = false;
+                RaiseOnValueChanged();
+            }
+
         }
 
         public void UpdateValue(float value)
         {
-            if(InRange)
-            {
-                if(MaxValue <= value)
-                {
-                    _inRange = false;
+            var prevValue = InRange;
+            InRange = value.InRange(Range);
 
-                    Invoke_OnChangedInRange();
-                }
-            }
-            else
+            if (InRange != prevValue)
             {
-                if (MinValue <= value)
-                {
-                    _inRange = true;
-
-                    Invoke_OnChangedInRange();
-                }
+                RaiseOnValueChanged();
             }
         }
 
-        private void Invoke_OnChangedInRange()
+        private void RaiseOnValueChanged()
         {
-            Log($"{nameof(OnChangedInRange)} :: InRange - {InRange}");
-
-            OnChangedInRange?.Invoke(this);
+            OnValueChanged?.Invoke(this);
         }
     }
 }

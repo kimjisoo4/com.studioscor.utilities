@@ -10,7 +10,7 @@ namespace StudioScor.Utilities
         [Header(" [ GameEvent ] ")]
         [SerializeField, TextArea] protected string description;
 
-        [SerializeField][SReadOnly] private List<GameEventListner> eventList = new List<GameEventListner>();
+        [SerializeField] private List<GameEventListner> eventList = new List<GameEventListner>();
         public event Action OnTriggerEvent;
 
         protected override void OnReset()

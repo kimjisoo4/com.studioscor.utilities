@@ -4,7 +4,7 @@ namespace StudioScor.Utilities
 {
     public abstract class BaseStateMono : BaseMonoBehaviour, IState
     {
-        [Header(" [ State MonoBehaviour ] ")]
+        [Header(" [ Base State MonoBehaviour ] ")]
         [SerializeField] private ToggleableUnityEvent _onEnteredState;
         [SerializeField] private ToggleableUnityEvent _onExitedState;
 
@@ -120,8 +120,8 @@ namespace StudioScor.Utilities
         public event IState.StateEventHandler OnEnteredState;
         public event IState.StateEventHandler OnExitedState;
 
-        protected bool _IsActivate;
-        public bool IsActivate => _IsActivate;
+        protected bool _isPlaying;
+        public bool IsPlaying => _isPlaying;
 
         public BaseStateClass()
         {
@@ -148,18 +148,18 @@ namespace StudioScor.Utilities
         }
         public virtual bool CanEnterState()
         {
-            return !_IsActivate;
+            return !_isPlaying;
         }
         public virtual bool CanExitState()
         {
-            return _IsActivate;
+            return _isPlaying;
         }
         public void ForceEnterState()
         {
-            if (_IsActivate)
+            if (_isPlaying)
                 return;
 
-            _IsActivate = true;
+            _isPlaying = true;
 
             EnterState();
 
@@ -167,17 +167,17 @@ namespace StudioScor.Utilities
         }
         public void ForceExitState()
         {
-            if (!_IsActivate)
+            if (!_isPlaying)
                 return;
 
-            _IsActivate = false;
+            _isPlaying = false;
 
             ExitState();
 
             Invoke_OnExitedState();
         }
 
-        protected abstract void EnterState();
+        protected virtual void EnterState() { }
         protected virtual void ExitState() { }
 
         private void Invoke_OnEnteredState()

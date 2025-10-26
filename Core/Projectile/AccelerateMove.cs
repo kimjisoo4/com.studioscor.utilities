@@ -76,8 +76,8 @@ namespace StudioScor.Utilities
         [field: SerializeField] public float DecelerateSpeed { get; set; } = 20f;
         [field: SerializeField] public bool IsStopped { get; set; } = false;
 
-        [SerializeField][SReadOnly] private bool isPlaying = false;
-        [SerializeField][SReadOnly] private float speed = 0f;
+        [SerializeField] private bool isPlaying = false;
+        [SerializeField] private float speed = 0f;
 
         public bool IsPlaying => isPlaying;
         public float Speed => speed;

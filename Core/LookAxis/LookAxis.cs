@@ -24,8 +24,8 @@ namespace StudioScor.InputSystem
         [SerializeField] private bool inversePicth = false;
         [SerializeField] private bool inverseYaw = false;
 
-        [SerializeField][SReadOnly] private float picth;
-        [SerializeField][SReadOnly] private float yaw;
+        [SerializeField] private float picth;
+        [SerializeField] private float yaw;
 
         public float Speed => speed;
         public float PitchSpeed => pitchSpeed;

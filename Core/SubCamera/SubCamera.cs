@@ -10,7 +10,7 @@ namespace StudioScor.Utilities
         [Header(" [ Sub Camera ] ")]
         [SerializeField] private Camera targetCamera;
         [SerializeField] private bool isChildTransform = true;
-        [SerializeField][SCondition(nameof(isChildTransform))] private bool isStayPosition = false;
+        [SerializeField]private bool isStayPosition = false;
 
         [Header(" [ Auto Playing ] ")]
         [SerializeField] private bool isAutoPlaying = true;

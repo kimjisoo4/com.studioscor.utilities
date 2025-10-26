@@ -1,26 +1,31 @@
-﻿using UnityEngine;
+﻿using Codice.Client.BaseCommands;
+using UnityEngine;
 
 namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
-        public static bool SafeEquals(this float lhs, int rhs, float equaly = 0.001f)
+        public static bool IsZero(this float lhs, float tolerance = 0.001f)
         {
-            float value = lhs - rhs;
-
-            return value.IsPositive() ? value <= equaly : value >= -equaly;
+            return lhs.IsPositive() ? lhs <= tolerance : lhs >= -tolerance;
         }
-        public static bool SafeEquals(this int lhs, float rhs, float equaly = 0.001f)
+        public static bool SafeEquals(this float lhs, int rhs, float tolerance = 0.001f)
         {
             float value = lhs - rhs;
 
-            return value.IsPositive() ? value <= equaly : value >= -equaly;
+            return value.IsPositive() ? value <= tolerance : value >= -tolerance;
         }
-        public static bool SafeEquals(this float lhs, float rhs, float equaly = 0.001f)
+        public static bool SafeEquals(this int lhs, float rhs, float tolerance = 0.001f)
         {
             float value = lhs - rhs;
 
-            return value.IsPositive()? value <= equaly : value >= -equaly;
+            return value.IsPositive() ? value <= tolerance : value >= -tolerance;
+        }
+        public static bool SafeEquals(this float lhs, float rhs, float tolerance = 0.001f)
+        {
+            float value = lhs - rhs;
+
+            return value.IsPositive()? value <= tolerance : value >= -tolerance;
         }
 
         // Safe Divide
@@ -85,6 +90,32 @@ namespace StudioScor.Utilities
             return value < 0;
         }
         // In Range
+
+        public static bool InRange(this float value, Vector2 range, bool inclusiveMin = true, bool inclusiveMax = true)
+        {
+            if (inclusiveMin)
+            {
+                if (inclusiveMax)
+                {
+                    return value >= range.x && value <= range.y;
+                }
+                else
+                {
+                    return value >= range.x && value < range.y;
+                }
+            }
+            else
+            {
+                if (inclusiveMax)
+                {
+                    return value > range.x && value <= range.y;
+                }
+                else
+                {
+                    return value > range.x && value < range.y;
+                }
+            }
+        }
         public static bool InRange(this float value, float min, float max, bool inclusiveMin = true, bool inclusiveMax = true)
         {
             if (inclusiveMin)

@@ -11,7 +11,7 @@ namespace StudioScor.Utilities
 		[SerializeField] private int _round = 1;
 		[SerializeField] private int _maxLevel = 10;
 		[SerializeField] private bool _useCurve = true;
-		[SCondition(nameof(_useCurve))][SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+		[SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 		[SerializeField] private float[] _values;
 
 		public float Min => _min;

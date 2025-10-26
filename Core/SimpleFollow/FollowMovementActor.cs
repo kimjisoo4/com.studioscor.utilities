@@ -34,12 +34,12 @@ namespace StudioScor.Utilities
 
         [Header(" Following Condition ")]
         [SerializeField] private bool _useCondition = true;
-        [SerializeField][SCondition(nameof(_useCondition))] private float _ignoreDistance = 1f;
-        [SerializeField][SCondition(nameof(_useCondition))] private float _reachDistance = 0.01f;
+        [SerializeField] private float _ignoreDistance = 1f;
+        [SerializeField] private float _reachDistance = 0.01f;
 
         [Header(" Following Limit ")]
         [SerializeField] private bool _useLimit = true;
-        [SerializeField][SCondition(nameof(_useLimit))] private float _maxDistance = 2f;
+        [SerializeField] private float _maxDistance = 2f;
 
         [Header(" Auto Playing ")]
         [SerializeField] private bool _isAutoPlaying = true;

@@ -26,7 +26,7 @@ namespace StudioScor.Utilities
         {
             timer = new();
 
-            timer.OnFinishedTimer += Timer_OnFinishedTimer;
+            timer.OnFinished += Timer_OnFinishedTimer;
         }
 
         private void Timer_OnFinishedTimer(ITimer timer)
@@ -39,7 +39,7 @@ namespace StudioScor.Utilities
             if (!useRigidity)
                 return;
 
-            timer.OnTimer(duration);
+            timer.Play(duration);
 
             Invoke_OnStartedRigidity();
         }

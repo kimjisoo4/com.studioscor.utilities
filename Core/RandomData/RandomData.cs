@@ -13,9 +13,9 @@ namespace StudioScor.Utilities
             public string Name;
             public T Data;
             public float Chance;
-            [SReadOnly] public float Percent;
-            [SReadOnly] public float MinRange;
-            [SReadOnly] public float MaxRange;
+            public float Percent;
+            public float MinRange;
+            public float MaxRange;
 
             public FRandomData(string name, T data, float chance, float percent, float minRange, float maxRange)
             {
@@ -29,7 +29,7 @@ namespace StudioScor.Utilities
         }
 
         [SerializeField] private FRandomData[] initialData;
-        [SerializeField][SReadOnly] private List<FRandomData> runtimeData;
+        [SerializeField] private List<FRandomData> runtimeData;
         
         private float initialMaxChance = 0f;
         private float runtimeMaxChance = 0f;

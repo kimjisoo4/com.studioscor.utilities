@@ -34,10 +34,10 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Chargeable ] ")]
         [SerializeField] private float[] _chargeValues = new float[] { 1f };
-        [SerializeField][SReadOnly][SRange(0f,1f)] private float _strength;
-        [SerializeField][SReadOnly] private bool _isPlaying;
-        [SerializeField][SReadOnly] private bool _isFulled;
-        [SerializeField][SReadOnly] private int _currentChargeLevel;
+        [SerializeField] private float _strength;
+        [SerializeField] private bool _isPlaying;
+        [SerializeField] private bool _isFulled;
+        [SerializeField] private int _currentChargeLevel;
         public float Strength => _strength;
         public bool IsPlaying => _isPlaying;
         public bool IsFulled => _isFulled;

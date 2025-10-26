@@ -17,21 +17,21 @@ namespace StudioScor.Utilities
             [SerializeField] private UnityEvent _onResumedTimer;
             public void AddUnityEvent(ITimer timer)
             {
-                timer.OnStartedTimer += Timer_OnStartedTimer;
-                timer.OnCanceledTimer += Timer_OnCanceledTimer;
-                timer.OnFinishedTimer += Timer_OnFinishedTimer;
-                timer.OnEndedTimer += Timer_OnEndedTimer;
-                timer.OnPausedTimer += Timer_OnPausedTimer;
-                timer.OnResumedTimer += Timer_OnResumedTimer;
+                timer.OnStarted += Timer_OnStartedTimer;
+                timer.OnCanceled += Timer_OnCanceledTimer;
+                timer.OnFinished += Timer_OnFinishedTimer;
+                timer.OnEnded += Timer_OnEndedTimer;
+                timer.OnPaused += Timer_OnPausedTimer;
+                timer.OnResumed += Timer_OnResumedTimer;
             }
             public void RemoveUnityEvent(ITimer timer)
             {
-                timer.OnStartedTimer -= Timer_OnStartedTimer;
-                timer.OnCanceledTimer -= Timer_OnCanceledTimer;
-                timer.OnFinishedTimer -= Timer_OnFinishedTimer;
-                timer.OnEndedTimer -= Timer_OnEndedTimer;
-                timer.OnPausedTimer -= Timer_OnPausedTimer;
-                timer.OnResumedTimer -= Timer_OnResumedTimer;
+                timer.OnStarted -= Timer_OnStartedTimer;
+                timer.OnCanceled -= Timer_OnCanceledTimer;
+                timer.OnFinished -= Timer_OnFinishedTimer;
+                timer.OnEnded -= Timer_OnEndedTimer;
+                timer.OnPaused -= Timer_OnPausedTimer;
+                timer.OnResumed -= Timer_OnResumedTimer;
             }
 
             private void Timer_OnResumedTimer(ITimer timer)
@@ -70,7 +70,7 @@ namespace StudioScor.Utilities
         [Header("[ Timer Component ]")]
         [SerializeField] private Timer _timer;
         [SerializeField] private EExitAction _exitAction = EExitAction.Destroy;
-        [SerializeField][SEnumCondition(nameof(_exitAction), (int)EExitAction.None)] private bool _playExitActionInCancel = false;
+        [SerializeField] private bool _playExitActionInCancel = false;
 
         [Header(" [ Auto Playing ] ")]
         [SerializeField] private bool isAutoPlaying = true;
@@ -92,12 +92,12 @@ namespace StudioScor.Utilities
         private bool _wasInitialized = false;
 
 
-        public event ITimer.TimerStateHandler OnStartedTimer { add => _timer.OnStartedTimer += value; remove => _timer.OnStartedTimer -= value; }
-        public event ITimer.TimerStateHandler OnFinishedTimer { add => _timer.OnFinishedTimer += value; remove => _timer.OnFinishedTimer -= value; }
-        public event ITimer.TimerStateHandler OnCanceledTimer { add => _timer.OnCanceledTimer += value; remove => _timer.OnCanceledTimer -= value; }
-        public event ITimer.TimerStateHandler OnEndedTimer { add => _timer.OnEndedTimer += value; remove => _timer.OnEndedTimer -= value; }
-        public event ITimer.TimerStateHandler OnPausedTimer { add => _timer.OnPausedTimer += value; remove => _timer.OnPausedTimer -= value; }
-        public event ITimer.TimerStateHandler OnResumedTimer { add => _timer.OnResumedTimer += value; remove => _timer.OnResumedTimer -= value; }
+        public event ITimer.TimerStateHandler OnStarted { add => _timer.OnStarted += value; remove => _timer.OnStarted -= value; }
+        public event ITimer.TimerStateHandler OnFinished { add => _timer.OnFinished += value; remove => _timer.OnFinished -= value; }
+        public event ITimer.TimerStateHandler OnCanceled { add => _timer.OnCanceled += value; remove => _timer.OnCanceled -= value; }
+        public event ITimer.TimerStateHandler OnEnded { add => _timer.OnEnded += value; remove => _timer.OnEnded -= value; }
+        public event ITimer.TimerStateHandler OnPaused { add => _timer.OnPaused += value; remove => _timer.OnPaused -= value; }
+        public event ITimer.TimerStateHandler OnResumed { add => _timer.OnResumed += value; remove => _timer.OnResumed -= value; }
 
         private void Awake()
         {
@@ -108,7 +108,7 @@ namespace StudioScor.Utilities
             if (!_wasInitialized)
                 return;
 
-            _timer.OnEndedTimer -= _timer_OnEndedTimer;
+            _timer.OnEnded -= _timer_OnEndedTimer;
 
             if (_useUnityEvent)
             {
@@ -118,7 +118,7 @@ namespace StudioScor.Utilities
         private void OnEnable()
         {
             if (isAutoPlaying)
-                OnTimer();
+                Play();
         }
 
         private void Initialization()
@@ -127,7 +127,7 @@ namespace StudioScor.Utilities
                 return;
 
             _wasInitialized = true;
-            _timer.OnEndedTimer += _timer_OnEndedTimer;
+            _timer.OnEnded += _timer_OnEndedTimer;
 
             if (_useUnityEvent)
             {
@@ -135,7 +135,7 @@ namespace StudioScor.Utilities
             }
         }
         
-        public void OnTimer(float newDuration = -1) => _timer.OnTimer(newDuration);
+        public void Play(float newDuration = -1) => _timer.Play(newDuration);
         public void EndTimer() => _timer.EndTimer();
         public void UpdateTimer(float deltaTime) => _timer.UpdateTimer(deltaTime);
         public void JumpTime(float newTime) => _timer.JumpTime(newTime);
@@ -143,7 +143,7 @@ namespace StudioScor.Utilities
 
         public void ResumeTimer() => _timer.ResumeTimer();
 
-        public void FinishTimer() => _timer.FinishTimer();
+        public void End() => _timer.End();
 
         public void CancelTimer() => _timer.CancelTimer();
 

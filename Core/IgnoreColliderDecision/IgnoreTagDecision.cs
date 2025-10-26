@@ -7,7 +7,7 @@ namespace StudioScor.Utilities
     public class IgnoreTagDecision : IgnoreColliderDecision
     {
         [Header(" [ Tags ] ")]
-        [SerializeField][STagSelector] private string[] tags;
+        [SerializeField] private string[] tags;
         [SerializeField] private bool isIgnoreTag = false;
 
         public override bool Decision(Collider other)

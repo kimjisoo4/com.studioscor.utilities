@@ -27,7 +27,7 @@ namespace StudioScor.Utilities
 
         [Header(" Unity Event ")]
         [SerializeField] private bool _UseUnityEvent = false;
-        [SerializeField][SCondition(nameof(_UseUnityEvent))] private UnityEvent<bool> _OnChangedRootMotionState;
+        [SerializeField] private UnityEvent<bool> _OnChangedRootMotionState;
 
         public event IApplyRootMotion.RootMotionStateEventHandler OnChangedRootMotionState;
 

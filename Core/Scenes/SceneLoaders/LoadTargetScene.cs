@@ -8,7 +8,7 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Load Target Scene ] ")]
         [SerializeField] private SceneLoader target;
-        [SerializeField][SReadOnly]private SceneLoader runtimeTarget;
+        [SerializeField] private SceneLoader runtimeTarget;
 
         public override Scene GetScene => runtimeTarget.GetScene;
 

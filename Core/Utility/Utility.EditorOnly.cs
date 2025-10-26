@@ -58,6 +58,17 @@ namespace StudioScor.Utilities
             return null;
 #endif
         }
+        public static int GetSceneLocalUniqueID(this Object lhs)
+        {
+#if UNITY_EDITOR
+            var globalID = UnityEditor.GlobalObjectId.GetGlobalObjectIdSlow(lhs).ToString();
+
+            return globalID.GetHashCode();
+#else
+        return -1;
+#endif
+        }
+
         public static string GUID(this Object target)
         {
 #if UNITY_EDITOR

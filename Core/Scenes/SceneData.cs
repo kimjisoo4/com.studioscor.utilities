@@ -17,14 +17,14 @@ namespace StudioScor.Utilities
         [Header(" [ Scene Data ]")]
         [SerializeField] private ESceneInputFieldType sceneFiledType = ESceneInputFieldType.Target;
 
-        [SerializeField, SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Name)] private string sceneName;
-        [SerializeField, SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Number)] private int sceneNumber;
+        [SerializeField] private string sceneName;
+        [SerializeField] private int sceneNumber;
 
 #if UNITY_EDITOR
-        [SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Target)] public Object Target;
+        public Object Target;
 #endif
 
-        [SerializeField][SEnumCondition(nameof(sceneFiledType), (int)ESceneInputFieldType.Target)] private string targetSceneName;
+        [SerializeField] private string targetSceneName;
 
 
         [System.Diagnostics.Conditional("UNITY_EDITOR")]

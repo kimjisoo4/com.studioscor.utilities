@@ -16,9 +16,9 @@ namespace StudioScor.Utilities
 
         [Header(" [ Aiming Component ] ")]
         [SerializeField] private EAimingOrigin _aimingOrigin = EAimingOrigin.Screen;
-        [SerializeField][SEnumCondition(nameof(_aimingOrigin), (int)EAimingOrigin.Transform)] private Transform _originTransform;
-        [SerializeField][SEnumCondition(nameof(_aimingOrigin), (int)EAimingOrigin.Transform)] private Vector3 _offset;
-        [SerializeField][SEnumCondition(nameof(_aimingOrigin), (int)EAimingOrigin.Screen)] private Camera _camera;
+        [SerializeField] private Transform _originTransform;
+        [SerializeField] private Vector3 _offset;
+        [SerializeField] private Camera _camera;
         [SerializeField] private float _distance = 10f;
         [SerializeField] private float _radius = 1f;
         [SerializeField] private LayerMask _layer;

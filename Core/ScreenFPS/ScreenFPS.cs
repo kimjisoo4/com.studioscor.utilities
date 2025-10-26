@@ -7,13 +7,13 @@ namespace StudioScor.Utilities
         [Header(" [ Screen FPS ] ")]
         [SerializeField] private bool _verticalFlip = false;
 
-        [SerializeField][SUnit("fps")] private float _high = 0f;
-        [SerializeField][SUnit("fps")] private float _low = 10f;
+        [SerializeField] private float _high = 0f;
+        [SerializeField] private float _low = 10f;
 
         [Header(" GUI ")]
-        [SerializeField][SUnit("pixel")] private Vector2 _position = new Vector2(10f, 10f);
-        [SerializeField][SUnit("pixel")] private Vector2 _size = new Vector2(100, 20);
-        [SerializeField][SUnit("point")] private int _fontSize = 12;
+        [SerializeField] private Vector2 _position = new Vector2(10f, 10f);
+        [SerializeField] private Vector2 _size = new Vector2(100, 20);
+        [SerializeField] private int _fontSize = 12;
 
         private float _fps;
         private Rect _rect;

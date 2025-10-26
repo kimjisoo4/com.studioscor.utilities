@@ -12,7 +12,7 @@ namespace StudioScor.Utilities
 		#endregion
 
 		[SerializeField] protected List<T> _initialValues;
-		[SerializeField][SReadOnly] protected List<T> _runtimeValues;
+		[SerializeField] protected List<T> _runtimeValues;
 
 		public IReadOnlyList<T> InitialValues
 		{

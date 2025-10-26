@@ -4,14 +4,18 @@ namespace StudioScor.Utilities
 {
     public static partial class SUtility
     {
-        public static bool SafeEquals(this Vector3 lhs, Vector3 rhs, float equaly = 0.0001f)
+        public static bool IsZero(this Vector3 lhs, float tolerance = 0.0001f)
         {
-            return Vector3.SqrMagnitude(lhs - rhs) < equaly;
+            return Vector3.SqrMagnitude(lhs) <= tolerance;
+        }
+        public static bool SafeEquals(this Vector3 lhs, Vector3 rhs, float tolerance = 0.0001f)
+        {
+            return Vector3.SqrMagnitude(lhs - rhs) <= tolerance;
         }
 
-        public static bool SafeEqauls(this Vector2 lhs, Vector2 rhs, float equaly = 0.0001f)
+        public static bool SafeEqauls(this Vector2 lhs, Vector2 rhs, float tolerance = 0.0001f)
         {
-            return Vector2.SqrMagnitude(lhs - rhs) < equaly;
+            return Vector2.SqrMagnitude(lhs - rhs) <= tolerance;
         }
 
         // horizontal Magnitude

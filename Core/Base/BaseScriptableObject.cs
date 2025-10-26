@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
+using StudioScor.Utilities.DataContainer;
 
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#endif
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -7,6 +11,46 @@ using UnityEditor;
 
 namespace StudioScor.Utilities
 {
+    public abstract class BaseScriptableData : BaseScriptableObject, IData
+    {
+        [BoxGroup("Base Scriptable Data", GroupID = "Data")]
+        [BoxGroup("Data")][SerializeField][ReadOnly] private int _id = 0;
+        public int ID => _id;
+
+        protected virtual void OnValidate()
+        {
+#if UNITY_EDITOR
+            if (_id == 0)
+                ResetID();
+#endif
+        }
+
+
+#if ODIN_INSPECTOR
+        [ButtonGroup("Data/Buttons")]
+#endif
+        [AddComponentMenu(nameof(ResetID), 1000000)]
+        public void ResetID()
+        {
+#if UNITY_EDITOR
+            _id = this.GUIDToHash();
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
+        }
+
+
+#if ODIN_INSPECTOR
+        [ButtonGroup("Data/Buttons")]
+#endif
+        [AddComponentMenu(nameof(ResetID), 1000000)]
+        public void Ping()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorGUIUtility.PingObject(this);
+#endif
+        }
+    }
+
     public abstract class BaseScriptableObject : ScriptableObject
     {
 #if UNITY_EDITOR
@@ -34,9 +78,9 @@ namespace StudioScor.Utilities
 
         protected virtual void OnEnable()
         {
-#if UNITY_EDITOR
             OnReset();
 
+#if UNITY_EDITOR
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
 #endif
         }
@@ -54,8 +98,6 @@ namespace StudioScor.Utilities
             switch (obj)
             {
                 case PlayModeStateChange.EnteredEditMode:
-                    OnReset();
-                    break;
                 case PlayModeStateChange.ExitingEditMode:
                     OnReset();
                     break;

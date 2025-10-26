@@ -11,8 +11,8 @@ namespace StudioScor.Utilities
 
         [Header(" [ Scene Load System ] ")]
         [SerializeField] private SceneReferenceSO _loadingScene;
-        [SerializeField][SReadOnly] private bool _isLoading;
-        [SerializeField][SReadOnly] private SceneReferenceSO _targetScene;
+        [SerializeField] private bool _isLoading;
+        [SerializeField] private SceneReferenceSO _targetScene;
 
         private AsyncOperation _loadAsync;
 

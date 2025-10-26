@@ -6,7 +6,7 @@ namespace StudioScor.Utilities
 {
     public class GenericGameEvent<T> : GameEvent
     {
-        [SerializeField][SReadOnly] private List<GenericGameEventListner<T>> genericEventList = new List<GenericGameEventListner<T>>();
+        [SerializeField] private List<GenericGameEventListner<T>> genericEventList = new List<GenericGameEventListner<T>>();
 
         public event UnityAction<T> OnTriggerGenericEvent;
 

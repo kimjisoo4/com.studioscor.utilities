@@ -8,7 +8,7 @@ namespace StudioScor.Utilities
     {
         [Header(" [ Not Has Component ] ")]
         [SerializeField] private bool useRigidbody = true;
-        [SerializeField][SCondition(nameof(useRigidbody))] private bool checkHasRigidbody = true;
+        [SerializeField] private bool checkHasRigidbody = true;
         public override void Ignore(Transform tracer, ref List<RaycastHit> hits)
         {
             if(useRigidbody)

@@ -8,9 +8,9 @@ namespace StudioScor.Utilities
         [SerializeField] private ScreenSetting _screenSetting;
 
         [SerializeField] private bool _useOverrideSetting = false;
-        [SerializeField][SCondition(nameof(_useOverrideSetting))] private int _fps = 60;
-        [SerializeField][SCondition(nameof(_useOverrideSetting))] private Vector2Int _resolution = new Vector2Int(1920, 1080);
-        [SerializeField][SCondition(nameof(_useOverrideSetting))] private FullScreenMode _screenMode = FullScreenMode.ExclusiveFullScreen;
+        [SerializeField] private int _fps = 60;
+        [SerializeField] private Vector2Int _resolution = new Vector2Int(1920, 1080);
+        [SerializeField] private FullScreenMode _screenMode = FullScreenMode.ExclusiveFullScreen;
 
         private void Awake()
         {
